@@ -1,0 +1,19 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:v2.8.0
+    container_name: mealie
+    restart: unless-stopped
+    ports:
+      - "9925:9000"
+    environment:
+      - ALLOW_SIGNUP=false
+      - PUID=0
+      - PGID=0
+      - TZ=Etc/UTC
+      - MAX_WORKERS=1
+      - WEB_CONCURRENCY=1
+      - BASE_URL=http://77.68.33.121/mealie
+    volumes:
+      - mealie-data:/app/data
+volumes:
+  mealie-data:

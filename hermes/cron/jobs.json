@@ -1,0 +1,98 @@
+{
+  "jobs": [
+    {
+      "id": "813b03d1a3e1",
+      "name": "Geeves Morning Digest",
+      "prompt": "You are OWL, the Geeves personal assistant. It's morning \u2014 time for the daily digest.\n\nTASK: Run the bulletin fetcher, then compose and send the morning digest email with PDF attachment.\n\n## Steps\n\n1. Run `python3 /root/Geeves/scripts/bulletin_fetch.py --write` to fetch today's data into Airtable\n2. Run `python3 /root/Geeves/scripts/build_digest_html.py --save` to build the HTML digest (saved to /root/Geeves/digests/digest_YYYY-MM-DD.html)\n3. Run `python3 /root/Geeves/scripts/digest_to_pdf.py --file /root/Geeves/digests/digest_YYYY-MM-DD.html` to generate the PDF\n\n4. Send the email via AgentMail to dj@djaccounts.com:\n   - Use the HTML digest content as the email body (same content as the PDF)\n   - Attach the PDF file\n   - Subject: \"\u2600\ufe0f Geeves Morning Digest \u2014 [today's date]\"\n   - Use base64 encoding for the PDF attachment (see skill pattern)\n\n## Important\n\n- The HTML from build_digest_html.py is the SINGLE SOURCE of truth for both email body and PDF\n- Do NOT compose a separate plain text email \u2014 use the HTML digest as-is\n- If any step fails, continue with remaining steps and note the failure\n- Do NOT post to Slack \u2014 email only",
+      "skills": [
+        "bulletin-agent",
+        "public-apis"
+      ],
+      "skill": "bulletin-agent",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "bulletin_fetch_write.sh",
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * *",
+        "display": "0 6 * * *"
+      },
+      "schedule_display": "0 6 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 4
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-02T15:29:19.046414+00:00",
+      "next_run_at": "2026-06-07T06:00:00+00:00",
+      "last_run_at": "2026-06-06T06:02:33.838500+00:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7DJU5412",
+        "chat_name": "C0B7DJU5412",
+        "thread_id": "1780412698.365269"
+      },
+      "enabled_toolsets": [
+        "terminal",
+        "file",
+        "skills"
+      ],
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "66e8f0382f2f",
+      "name": "Remove Nemotron Free Tier Fallback",
+      "prompt": "The nvidia/nemotron-3-ultra:free promo ends today (June 18). \n\nEdit /root/.hermes/config.yaml and remove the fallback_providers entry:\n  - provider: nvidia\n    model: nvidia/nemotron-3-ultra:free\n\nUse Python yaml to read, modify, and write the file. Then restart the gateway with: systemctl --user restart hermes-gateway\n\nAfter restart, verify the fallback_providers list no longer contains nemotron-3-ultra:free. Send a brief summary to David on Slack (channel C0B7C89HKQ9) confirming the change.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "once",
+        "run_at": "2026-06-18T09:00:00+00:00",
+        "display": "once at 2026-06-18 09:00"
+      },
+      "schedule_display": "once at 2026-06-18 09:00",
+      "repeat": {
+        "times": 1,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-04T19:05:31.621477+00:00",
+      "next_run_at": "2026-06-18T09:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7C89HKQ9",
+        "chat_name": "C0B7C89HKQ9",
+        "thread_id": "1780412829.325359"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    }
+  ],
+  "updated_at": "2026-06-06T07:25:09.422220+00:00"
+}

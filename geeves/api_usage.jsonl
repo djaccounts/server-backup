@@ -1,0 +1,8 @@
+{"timestamp": "2026-06-01T20:11:25.875347Z", "date": "2026-06-01", "service": "airtable", "tokens": 0, "note": "Day 1 connectivity: list bases"}
+{"timestamp": "2026-06-01T20:11:25.875484Z", "date": "2026-06-01", "service": "airtable", "tokens": 0, "note": "Day 1 connectivity: inspect Geeves schema"}
+{"timestamp": "2026-06-01T20:11:25.875528Z", "date": "2026-06-01", "service": "ollama", "tokens": 0, "note": "Day 1 connectivity: check local models"}
+{"timestamp": "2026-06-01T19:40:00Z", "date": "2026-06-01", "service": "airtable", "tokens": 0, "note": "list bases"}
+{"timestamp": "2026-06-01T19:41:00Z", "date": "2026-06-01", "service": "airtable", "tokens": 0, "note": "inspect Geeves schema (list tables)"}
+{"timestamp": "2026-06-01T19:42:00Z", "date": "2026-06-01", "service": "ollama", "tokens": 0, "note": "check local models via /api/tags"}
+{"timestamp": "2026-06-01T19:43:00Z", "date": "2026-06-01", "service": "openrouter", "tokens": 0, "note": "Hermes session model check (in-use)"}
+{"timestamp": "2026-06-01T19:45:00Z", "date": "2026-06-01", "service": "slack", "tokens": 0, "note": "verify Slack gateway (messages flowing)"}

@@ -1,0 +1,233 @@
+{
+  "base_id": "appzvmonQXs4x2AlL",
+  "base_name": "Geeves",
+  "last_synced": "2026-06-03T08:15:00Z",
+  "schema_version": "v2",
+  "tables": {
+    "tbl1WMPtQhWYW7bTI": {
+      "name": "People",
+      "module": "Phase 1 — Foundation",
+      "description": "The people graph spine. One record per person David knows.",
+      "fields": {
+        "fldQphROBOyCuNjOv": { "name": "Name", "type": "singleLineText", "purpose": "Full name of the person", "status": "active" },
+        "fldb7cEOHEZLAe5yd": { "name": "Birthday", "type": "date", "purpose": "Birthday, no year required if unknown", "status": "active" },
+        "fldLDoG3tVW1vWF6M": { "name": "Phone", "type": "phoneNumber", "purpose": "Phone number for contact matching", "status": "active" },
+        "fldhPsRJjshQiSylF": { "name": "Email", "type": "email", "purpose": "Email address", "status": "active" },
+        "fldb56Sqw8FLbbKeK": { "name": "How I know them", "type": "singleLineText", "purpose": "Origin of the relationship", "status": "active" },
+        "fldsGil2KUvsvTMoc": { "name": "Food dislikes", "type": "multilineText", "purpose": "Foods they dislike (free text)", "status": "active" },
+        "fldgcubbsQijhgmAj": { "name": "Portion Notes", "type": "singleLineText", "purpose": "e.g. small eater, big appetite", "status": "active" },
+        "fldLPqjIO5d7gwqAH": { "name": "Hobbies & interests", "type": "multilineText", "purpose": "What they're into", "status": "active" },
+        "fldGWXFngCdVqnsKm": { "name": "Topics They Love", "type": "multilineText", "purpose": "Good conversation territory", "status": "active" },
+        "flddmdJi3jQmtYDs9": { "name": "Topics to Avoid", "type": "multilineText", "purpose": "Sensitive subjects", "status": "active" },
+        "fldAKXP2nGsKiyQG0": { "name": "Gift interests", "type": "multilineText", "purpose": "What to consider for presents", "status": "active" },
+        "fldgVtVMAdHRwS8Eq": { "name": "Social Style", "type": "singleLineText", "purpose": "How they like to socialise", "status": "active" },
+        "fldgL8kdBSeOE91mp": { "name": "Venue Preferences", "type": "multilineText", "purpose": "e.g. hates loud places", "status": "active" },
+        "fld42wo2qrztgBSKD": { "name": "Anniversaries", "type": "multilineText", "purpose": "Wedding, other recurring dates", "status": "active" },
+        "fldCasBkw7MP9iRy9": { "name": "Last Seen", "type": "date", "purpose": "Updated after each interaction", "status": "active" },
+        "fldjfZQEC05jfaFZ9": { "name": "Relationship Notes", "type": "multilineText", "purpose": "Timestamped freeform relationship notes", "status": "active" },
+        "fldU04RSVVKHKC5ig": { "name": "Tier", "type": "singleSelect", "purpose": "Data richness tier: Tier 1-4", "status": "active", "choices": ["Tier 1", "Tier 2", "Tier 3", "Tier 4"] },
+        "fld09aTwNwRriFBuF": { "name": "Created", "type": "createdTime", "purpose": "Auto timestamp", "status": "system" },
+        "fldHtnrSsaXy7MygY": { "name": "Last Modified", "type": "lastModifiedTime", "purpose": "Auto timestamp", "status": "system" },
+        "fldg02n9AkwgYGE4o": { "name": "Photo", "type": "multipleAttachments", "purpose": "Photo for guest briefings", "status": "active" },
+        "fldu3ULkIdfKLvn7J": { "name": "Food preferences", "type": "multilineText", "purpose": "Foods they love (separate from dislikes)", "status": "active" },
+        "fldkUtDsuF1GLVAod": { "name": "Relationship type", "type": "singleSelect", "purpose": "Me/Spouse/Family/Close friend/Friend/Colleague/Acquaintance/Other", "status": "active", "choices": ["Me", "Spouse", "Family", "Close friend", "Friend", "Colleague", "Acquaintance", "Other"] },
+        "fldgH8T2udcQqpArX": { "name": "Dietary reqs", "type": "multipleSelects", "purpose": "Dietary requirements as fixed options", "status": "active", "choices": ["Vegetarian", "Vegan", "Pescatarian", "Halal", "Kosher", "Gluten-free", "Dairy-free", "None"] },
+        "flde7vOm8jKPSBvDT": { "name": "Allergy list", "type": "multipleSelects", "purpose": "Allergies as fixed options", "status": "active", "choices": ["Nuts", "Shellfish", "Eggs", "Dairy", "Gluten", "Soy", "Other"] },
+        "fldJj1Av215vY3NCi": { "name": "Gift budget range", "type": "singleSelect", "purpose": "Budget range for gifts", "status": "active", "choices": ["Under £20", "£20–50", "£50–100", "£100+"] },
+        "fldQ6uM96gqbloq5L": { "name": "Typical contact frequency", "type": "singleSelect", "purpose": "How often David typically contacts them", "status": "active", "choices": ["Weekly", "Monthly", "Quarterly", "Yearly", "Rarely"] },
+        "fldTa20XVZOhPSASI": { "name": "Person Notes", "type": "multipleRecordLinks", "purpose": "Link to Person Notes table", "status": "active", "links_to": "tbl6hnxzXXmWFkVfh" },
+        "fldqFoASgwHuhA0NZ": { "name": "Conversation Log", "type": "multipleRecordLinks", "purpose": "Link to Conversation Log table", "status": "active", "links_to": "tbl2dbgksA9XveLcx" },
+        "fldzCBmmkSoL7BCnG": { "name": "FilmClub_Data", "type": "singleLineText", "purpose": "JUNK — leftover from subagent, safe to delete", "status": "junk" },
+        "fld46iZd1EesSGZNX": { "name": "FilmClub_Log", "type": "singleLineText", "purpose": "JUNK — leftover from subagent, safe to delete", "status": "junk" },
+        "fldn4tjSGRSBYHrEe": { "name": "Films", "type": "multipleRecordLinks", "purpose": "JUNK — duplicate Films link, safe to delete", "status": "junk", "links_to": "tblqCpp3EB7wU2ZZ3" },
+        "fldrtOEZteAbnhWMq": { "name": "Films 2", "type": "multipleRecordLinks", "purpose": "JUNK — duplicate Films link, safe to delete", "status": "junk", "links_to": "tblqCpp3EB7wU2ZZ3" },
+        "fldPdM4o4BVUR8iTF": { "name": "Films 3", "type": "multipleRecordLinks", "purpose": "JUNK — duplicate Films link, safe to delete", "status": "junk", "links_to": "tblqCpp3EB7wU2ZZ3" },
+        "fldl09k4siRf13j0P": { "name": "Films 4", "type": "multipleRecordLinks", "purpose": "JUNK — duplicate Films link, safe to delete", "status": "junk", "links_to": "tblqCpp3EB7wU2ZZ3" }
+      }
+    },
+    "tblXH4eCLwM8S30cn": {
+      "name": "Memory_Summaries",
+      "module": "Core",
+      "description": "Periodic long-term memory summaries generated by Hermes.",
+      "fields": {
+        "fldXGYUKTsXZQQZFQ": { "name": "Period", "type": "singleLineText", "purpose": "Time period this summary covers", "status": "active" },
+        "fldEkQra1F0zh8sy9": { "name": "Summary", "type": "multilineText", "purpose": "The summary text", "status": "active" },
+        "fldQeVIimjp48YDNL": { "name": "Source Entries", "type": "multilineText", "purpose": "Raw entries that were summarised", "status": "active" },
+        "fldOdk6WVlQZUBT5h": { "name": "Created", "type": "date", "purpose": "When the summary was created", "status": "active" }
+      }
+    },
+    "tbldJT41dAAX1WTkC": {
+      "name": "Output_Log",
+      "module": "Core",
+      "description": "Log of what Geeves generated, when, and how it was rated.",
+      "fields": {
+        "fldab4bfNUl1V5ngl": { "name": "Item", "type": "singleLineText", "purpose": "What was generated", "status": "active" },
+        "fldFKls8VJ2fPOZZ6": { "name": "Module", "type": "singleLineText", "purpose": "Which module produced this", "status": "active" },
+        "fldmBNcjjlxvlADz7": { "name": "Generated At", "type": "date", "purpose": "When it was created", "status": "active" },
+        "fldQFpvS40Wj5YSoE": { "name": "Content", "type": "multilineText", "purpose": "The generated output", "status": "active" },
+        "fldrC7kiN1tGzAcrI": { "name": "Rating", "type": "singleSelect", "purpose": "How David rated it", "status": "active", "choices": ["★★★ Great", "★★ OK", "★ Poor"] },
+        "fldFnImp2aevtB2az": { "name": "Feedback", "type": "multilineText", "purpose": "David's feedback notes", "status": "active" },
+        "flddcds6EenssxxnQ": { "name": "Prompt Used", "type": "multilineText", "purpose": "The prompt that generated this", "status": "active" }
+      }
+    },
+    "tblTcdZQ9AIltQDfu": {
+      "name": "Todos",
+      "module": "Phase 2 — Daily Bulletin",
+      "description": "Tasks across short, medium, and long horizons.",
+      "fields": {
+        "fldek27pDvP3YRd6p": { "name": "Task", "type": "singleLineText", "purpose": "What needs doing", "status": "active" },
+        "fld29ukSEP5JTz6Af": { "name": "Status", "type": "singleSelect", "purpose": "Current status", "status": "active", "choices": ["Not started", "In Progress", "Done"] },
+        "fldXOuxWmevRP1yVm": { "name": "Priority", "type": "singleSelect", "purpose": "How urgent", "status": "active", "choices": ["Low", "Medium", "High"] },
+        "fld7rr27yK3tQ5Vju": { "name": "Due Date", "type": "date", "purpose": "When it's due", "status": "active" },
+        "fldHMEN4UKP5lppWY": { "name": "Module", "type": "singleLineText", "purpose": "Which module this belongs to", "status": "active" },
+        "fldiJPxJstX777ixa": { "name": "Notes", "type": "multilineText", "purpose": "Additional notes", "status": "active" },
+        "fldYhzeXdJSBFQ7z6": { "name": "Completed Date", "type": "date", "purpose": "When it was completed", "status": "active" },
+        "fldKJvAtEPO8ynr5Q": { "name": "Linked Person", "type": "singleLineText", "purpose": "Person this task relates to (should be link)", "status": "active" },
+        "fldtvAMVWTbPilGA9": { "name": "Timeframe", "type": "singleSelect", "purpose": "Short/Mid/Long term", "status": "active", "choices": ["Short term", "Mid term", "Long term"] },
+        "fld80EBmfKioNxN8I": { "name": "Category", "type": "singleSelect", "purpose": "Personal/Work/Household/Health/Errand/Other", "status": "active", "choices": ["Personal", "Work", "Household", "Health", "Errand", "Other"] },
+        "fld8cYPhwxAdHgy4Y": { "name": "Source", "type": "singleSelect", "purpose": "How this task was created", "status": "active", "choices": ["Manual", "Slack", "Voice", "Goal auto-gen"] }
+      }
+    },
+    "tblUTCWleQD61Ti2v": {
+      "name": "Fact_of_the_Day",
+      "module": "Phase 2 — Daily Bulletin",
+      "description": "Daily interesting facts for the morning digest.",
+      "fields": {
+        "fldxgudl3b7aBvj5M": { "name": "Date", "type": "date", "purpose": "Date of the fact", "status": "active" },
+        "fld5UKmREuDi49WCE": { "name": "Category", "type": "singleSelect", "purpose": "Type of fact", "status": "active", "choices": ["Wikipedia", "Numbers", "Useless Fact"] },
+        "fldRlW3qmCMh4s5zl": { "name": "Fact", "type": "multilineText", "purpose": "The fact text", "status": "active" },
+        "fldSlvyqicfp0lQiB": { "name": "Source URL", "type": "url", "purpose": "Link to source", "status": "active" }
+      }
+    },
+    "tblFd4kAahIUozJsf": {
+      "name": "Weather_Data",
+      "module": "Phase 2 — Daily Bulletin",
+      "description": "Daily weather data for the morning digest.",
+      "fields": {
+        "fldpHczHBc65Ag10X": { "name": "Date", "type": "date", "purpose": "Date of reading", "status": "active" },
+        "fldMC6Z0SKlwCIrDV": { "name": "Location", "type": "singleLineText", "purpose": "Weather location", "status": "active" },
+        "fld9vekoqofmM4mnZ": { "name": "Temperature C", "type": "number", "purpose": "Current temperature", "status": "active" },
+        "fldgAqYxzwwdkmzGE": { "name": "Feels Like C", "type": "number", "purpose": "Feels-like temperature", "status": "active" },
+        "fldbwNctrmAKvEAKX": { "name": "Humidity Pct", "type": "number", "purpose": "Humidity percentage", "status": "active" },
+        "fldmXEQ2zBpgWRGhn": { "name": "Wind Speed KPH", "type": "number", "purpose": "Wind speed", "status": "active" },
+        "fldB0CEoCeezI4Qxy": { "name": "Condition", "type": "singleLineText", "purpose": "Weather condition text", "status": "active" },
+        "fld13fmZme9LLA4GV": { "name": "Description", "type": "multilineText", "purpose": "Detailed description", "status": "active" },
+        "fldThF60wuKK63kmw": { "name": "High C", "type": "number", "purpose": "Daily high temperature", "status": "active" },
+        "fldkPlavc4W8TcyCu": { "name": "Low C", "type": "number", "purpose": "Daily low temperature", "status": "active" },
+        "fldLSatMWVosI2wM7": { "name": "Daily Condition", "type": "singleLineText", "purpose": "Summary condition for the day", "status": "active" },
+        "fldOxN6RdfpWXLo5v": { "name": "Rain Expected", "type": "singleLineText", "purpose": "Whether rain is expected", "status": "active" },
+        "fldV2eLSAdh24gOi4": { "name": "Rain Times", "type": "multilineText", "purpose": "When rain is expected", "status": "active" },
+        "fldpYn0xWorEJNIID": { "name": "Precipitation MM", "type": "number", "purpose": "Precipitation in mm", "status": "active" }
+      }
+    },
+    "tblI1oXlNIFXrVm7f": {
+      "name": "Stock_Prices",
+      "module": "Phase 2 — Daily Bulletin",
+      "description": "Daily stock/ETF/crypto prices for the morning digest.",
+      "fields": {
+        "fldu4BXUlDsF1yFP5": { "name": "Date", "type": "date", "purpose": "Date of price", "status": "active" },
+        "fldG3q1kKmlizuGJE": { "name": "Ticker", "type": "singleLineText", "purpose": "Stock ticker symbol", "status": "active" },
+        "fldHmHRaaOhfRnMIz": { "name": "Price", "type": "number", "purpose": "Current price", "status": "active" },
+        "fld489NLMuERQU25K": { "name": "Currency", "type": "singleLineText", "purpose": "Currency code", "status": "active" },
+        "fldG2yWKonbx3qckH": { "name": "Change Pct", "type": "number", "purpose": "Percentage change", "status": "active" },
+        "fldOVWg8OaVhJV2IM": { "name": "Source", "type": "singleLineText", "purpose": "Data source", "status": "active" }
+      }
+    },
+    "tblqCpp3EB7wU2ZZ3": {
+      "name": "Films",
+      "module": "Films",
+      "description": "Master film diary (all films David has watched) + film club records. One table, filtered by Film Club = Yes/No. Discussion in thread supersedes reference doc.",
+      "fields": {
+        "fldyyQhFkGKN0AJR2": { "name": "Film Title", "type": "singleLineText", "purpose": "Title of the film", "status": "active" },
+        "fldLUGWIOoXiHl7F5": { "name": "Year", "type": "number", "purpose": "Release year (auto from OMDb)", "status": "active" },
+        "fldrHPdD3ZK7h9kc0": { "name": "Director", "type": "singleLineText", "purpose": "Director name (auto from OMDb)", "status": "active" },
+        "fldxo3VqZK6yQZr3s": { "name": "Genre", "type": "singleLineText", "purpose": "Film genre (auto from OMDb)", "status": "active" },
+        "fldrFLlvDo7yGJcP0": { "name": "IMDb Rating", "type": "number", "purpose": "IMDb rating (auto from OMDb)", "status": "active" },
+        "fldH2tckSChwPgIxq": { "name": "IMDb Votes", "type": "number", "purpose": "Number of IMDb votes (auto from OMDb)", "status": "active" },
+        "fldXXbiV8lXzmDFFW": { "name": "Metascore", "type": "number", "purpose": "Metacritic score (auto from OMDb)", "status": "active" },
+        "fldo35AAMn4EzjfG6": { "name": "IMDb URL", "type": "url", "purpose": "Link to IMDb page (auto from OMDb)", "status": "active" },
+        "fldR3iFuByE7HJymN": { "name": "My Rating", "type": "singleSelect", "purpose": "David's personal rating 1-10. All ratings use 1-10 scale.", "status": "active", "choices": ["1","2","3","4","5","6","7","8","9","10"] },
+        "fld8DL7NjW8XOGYkB": { "name": "Date Watched", "type": "date", "purpose": "When David watched it", "status": "active" },
+        "fldIYDUJ6QKa3038m": { "name": "Personal Notes", "type": "multilineText", "purpose": "David's personal review/notes", "status": "active" },
+        "fldk56EohxLfW8m8X": { "name": "Film Club", "type": "singleSelect", "purpose": "Whether this was a film club pick. Create Airtable view filtering this field.", "status": "active", "choices": ["Yes", "No"] },
+        "fldfpViwrjcbKsvtz": { "name": "Month Picked", "type": "singleLineText", "purpose": "Month the film was picked for club (e.g. 2026-06). Only for club picks.", "status": "active" },
+        "fldIViAo89HqQtM01": { "name": "Watched At", "type": "singleSelect", "purpose": "How/where the film was watched. Only for club picks.", "status": "active", "choices": ["Hosted (at someone's home)", "Remote (streamed remotely)", "Cinema", "N/A"] },
+        "fld14vNBDqHaUmo0x": { "name": "Club Discussion Notes", "type": "multilineText", "purpose": "Notes from club discussion. Only for club picks.", "status": "active" },
+        "fldtBV1k6VrlAZYSW": { "name": "Recommended By", "type": "multipleRecordLinks", "purpose": "Person who recommended the film for club. Links to People. Only for club picks.", "status": "active", "links_to": "tbl1WMPtQhWYW7bTI" },
+        "fldycrtlQyAkYTeAN": { "name": "Member 2 Name", "type": "multipleRecordLinks", "purpose": "Film club member 2. Links to People.", "status": "active", "links_to": "tbl1WMPtQhWYW7bTI" },
+        "flduPL8vNzT9QTWe0": { "name": "Member 2 Rating", "type": "singleSelect", "purpose": "Member 2's rating 1-10. Only for club picks.", "status": "active", "choices": ["1","2","3","4","5","6","7","8","9","10","Not rated"] },
+        "fldcr2B8HJd0Ecfoy": { "name": "Member 2 Notes", "type": "multilineText", "purpose": "Member 2's comments. Only for club picks.", "status": "active" },
+        "fldqwFdahGG7w1QDZ": { "name": "Member 3 Name", "type": "multipleRecordLinks", "purpose": "Film club member 3. Links to People.", "status": "active", "links_to": "tbl1WMPtQhWYW7bTI" },
+        "fldT9K4Nsf493Goxa": { "name": "Member 3 Rating", "type": "singleSelect", "purpose": "Member 3's rating 1-10. Only for club picks.", "status": "active", "choices": ["1","2","3","4","5","6","7","8","9","10","Not rated"] },
+        "fldPwn0U10iskjC55": { "name": "Member 3 Notes", "type": "multilineText", "purpose": "Member 3's comments. Only for club picks.", "status": "active" },
+        "fldpSIw2964VnEDQF": { "name": "Member 4 Name", "type": "multipleRecordLinks", "purpose": "David's wife. Rates films with David but is NOT in the film club. Links to People.", "status": "active", "links_to": "tbl1WMPtQhWYW7bTI" },
+        "fldLKmZnb3a05jl2g": { "name": "Member 4 Rating", "type": "singleSelect", "purpose": "Wife's rating 1-10. Filled when David and wife watch together, not just club.", "status": "active", "choices": ["1","2","3","4","5","6","7","8","9","10","Not rated"] },
+        "fldPlJiFY9W1QJEVk": { "name": "Member 4 Notes", "type": "multilineText", "purpose": "Wife's comments.", "status": "active" }
+      }
+    },
+    "tbl6hnxzXXmWFkVfh": {
+      "name": "Person Notes",
+      "module": "Phase 1 — Foundation",
+      "description": "Timestamped freeform notes about a person.",
+      "fields": {
+        "fldXM58B1J2KF2Fp8": { "name": "Note", "type": "multilineText", "purpose": "The note text", "status": "active" },
+        "fldXEHtYdHjcZI6bh": { "name": "Person", "type": "multipleRecordLinks", "purpose": "Link to the person", "status": "active", "links_to": "tbl1WMPtQhWYW7bTI" },
+        "fldlRo4loOtRcLB2o": { "name": "Source", "type": "singleSelect", "purpose": "How this note was captured", "status": "active", "choices": ["Manual", "Slack", "Voice"] },
+        "fldMYb03U8LgM1jqY": { "name": "Active", "type": "checkbox", "purpose": "Uncheck to retire without deleting", "status": "active" }
+      }
+    },
+    "tbl2dbgksA9XveLcx": {
+      "name": "Conversation Log",
+      "module": "Phase 1 — Foundation",
+      "description": "Debrief notes after seeing someone.",
+      "fields": {
+        "fldGcOEkxTLd5OfvB": { "name": "Summary", "type": "multilineText", "purpose": "What was discussed, their news", "status": "active" },
+        "fld6fKdVwWHsam0fe": { "name": "Person", "type": "multipleRecordLinks", "purpose": "Link to the person", "status": "active", "links_to": "tbl1WMPtQhWYW7bTI" },
+        "fldQugE12tzE2omd3": { "name": "Date", "type": "date", "purpose": "Date of the conversation", "status": "active" },
+        "fldypxt88n5slgsKA": { "name": "Key things to remember", "type": "multilineText", "purpose": "Promotions, moves, life events", "status": "active" },
+        "fldw0Z5qafaJLgQOl": { "name": "Source", "type": "singleSelect", "purpose": "How this was captured", "status": "active", "choices": ["Manual", "Slack", "Voice"] }
+      }
+    },
+    "tbl3EjtE3YW1ZUqEv": {
+      "name": "Token_Usage",
+      "module": "System",
+      "description": "Daily Hermes token usage tracking.",
+      "fields": {
+        "fldXDyJN1tpqAgnde": { "name": "Date", "type": "date", "purpose": "Date of tracking", "status": "active" },
+        "fldwki0qJcRr2b0DS": { "name": "Sessions", "type": "number", "purpose": "Number of sessions", "status": "active" },
+        "fldJ0hsCOIN3J7cHl": { "name": "Input Tokens", "type": "number", "purpose": "Input token count", "status": "active" },
+        "fldFt3usQWkAlbEQ9": { "name": "Output Tokens", "type": "number", "purpose": "Output token count", "status": "active" },
+        "fldaz3xR4jNsj0767": { "name": "Cache Read Tokens", "type": "number", "purpose": "Cache read tokens", "status": "active" },
+        "fldH4NM8uz1qv4JSa": { "name": "Total Active Tokens", "type": "number", "purpose": "Total active tokens", "status": "active" },
+        "fld1KYgDN0bVsI9aQ": { "name": "Estimated Cost USD", "type": "number", "purpose": "Estimated cost", "status": "active" },
+        "fld7RBYygNKNG7baM": { "name": "Top Model", "type": "singleLineText", "purpose": "Most used model", "status": "active" },
+        "fldzIsfTjQ91VBzQr": { "name": "Summary", "type": "multilineText", "purpose": "Daily summary", "status": "active" }
+      }
+    },
+    "tblzTM9AX3urzi2vP": {
+      "name": "News_Headlines",
+      "module": "Phase 2 — Daily Bulletin",
+      "description": "Daily UK news headlines from SerpApi Google News.",
+      "fields": {
+        "fld4ct6YQKVmQ7OoA": { "name": "Date", "type": "date", "purpose": "Date of headlines", "status": "active" },
+        "fldsQItbnzawzEtxm": { "name": "Headline Count", "type": "number", "purpose": "Number of headlines fetched", "status": "active" },
+        "fldlY0GZfU1z8LwmB": { "name": "Top Headline", "type": "singleLineText", "purpose": "Top headline of the day", "status": "active" },
+        "fldGi8hIAGPbRtheA": { "name": "Top Source", "type": "singleLineText", "purpose": "Source of top headline", "status": "active" },
+        "fldaZIv8IaTHc9t8j": { "name": "Summary", "type": "multilineText", "purpose": "Summary of headlines", "status": "active" }
+      }
+    },
+    "RECIPE_MODULE_PLACEHOLDERS": {
+      "note": "Table IDs filled in after creation via table_builder.py --recipe",
+      "tables": {
+        "Recipes":          { "id": "tblehBgzRMa2Xucjd", "module": "Phase 3 — Weekly Rhythm", "status": "active" },
+        "Ingredients":      { "id": "tblNsgbYHNK8xWnB7", "module": "Phase 3 — Weekly Rhythm", "status": "active" },
+        "Dinner_Parties":   { "id": "tblwbQrIu3nUWDz3G", "module": "Phase 3 — Weekly Rhythm", "status": "active" },
+        "Dinner_Planner":   { "id": "tblnts17CCckLJoUQ", "module": "Phase 3 — Weekly Rhythm", "status": "active" },
+        "Shopping_List":    { "id": "tbldvpIO91xi72a0K", "module": "Phase 3 — Weekly Rhythm", "status": "active" },
+        "Recipe_Context":   { "id": "tblJRsw77kbCFyoz9", "module": "Phase 3 — Weekly Rhythm", "status": "active" },
+        "Recipe_Output_Log":{ "id": "tblYaJTAZDZzBkcwH", "module": "Phase 3 — Weekly Rhythm", "status": "active" },
+        "Dining_Preferences":{ "id": "tblzzGIF7yPf37NG5", "module": "Shared — Cross-Module", "status": "active" }
+      }
+    }
+  }
+}

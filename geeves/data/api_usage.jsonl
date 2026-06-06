@@ -1,0 +1,1 @@
+{"timestamp": "2026-06-02T15:21:39.245288+00:00", "provider": "nvidia", "model": "meta/llama-3.1-70b-instruct", "tokens_in": 30, "tokens_out": 10, "tokens_total": 40, "cost_usd": 1.6e-05, "meta": {"note": "failover test \u2014 openrouter and groq were down"}}

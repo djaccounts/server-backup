@@ -1,0 +1,23 @@
+# Server Backup .gitignore
+
+# Secrets and credentials
+geeves/client_secret_*.json
+hermes/auth.json
+hermes/google_client_secret.json
+hermes/google_token.json
+ssh/server_backup
+*.pem
+*.key
+
+# Large/binary files that bloat the repo
+mealie/mealie_volume.tar.gz
+mealie/mealie.db
+*.pyc
+__pycache__/
+
+# Logs
+*.log
+backup.log
+
+# Temp files
+geeves/scripts/tmp/

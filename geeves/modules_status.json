@@ -1,0 +1,263 @@
+{
+  "last_updated": "2026-06-06T12:00:00Z",
+  "modules": {
+    "people_graph": {
+      "phase": 1,
+      "status": "active",
+      "skill": "people-agent (not yet created)",
+      "tables": ["People", "Person Notes", "Conversation Log"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Core tables exist. Google Contacts import pending. Skill not yet built."
+    },
+    "morning_digest": {
+      "phase": 2,
+      "status": "active",
+      "skill": "bulletin-agent",
+      "tables": ["Weather_Data", "Stock_Prices", "Fact_of_the_Day", "Star_Wars_Fact", "Token_Usage", "News_Headlines"],
+      "cron_jobs": ["813b03d1a3e1 (Geeves Morning Digest, 6am UTC)"],
+      "slack_capture": false,
+      "notes": "Full pipeline: fetch → HTML → PDF → email + Slack. Runs daily."
+    },
+    "evening_digest": {
+      "phase": 2,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Digest Log (shared)"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Uses shared Digest Log table. Reads from Todos, Dinner Planner."
+    },
+    "todos": {
+      "phase": 2,
+      "status": "active",
+      "skill": "todos-agent (not yet created)",
+      "tables": ["Todos"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Table exists. Slack capture works. Skill not yet built."
+    },
+    "sleep_habits": {
+      "phase": 2,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Sleep Log", "Habits", "Habit Log"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Not yet built."
+    },
+    "fitness": {
+      "phase": 2,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Workouts", "Exercise Log", "Fitness Goals"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Not yet built."
+    },
+    "meal_tracker": {
+      "phase": 2,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Meals", "Daily Nutrition Summary"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Not yet built. Depends on Recipes module."
+    },
+    "weekly_digest": {
+      "phase": 3,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Digest Log (shared)", "Intentions"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "recipes": {
+      "phase": 3,
+      "status": "built",
+      "skill": "recipes-agent",
+      "tables": ["Recipes", "Ingredients", "Dinner Parties", "Dinner Planner", "Shopping List", "Recipe Context", "Recipe Output Log", "Dining Preferences"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Tables created. Skill written. Mealie integration working. Airtable sync not yet active."
+    },
+    "film_club": {
+      "phase": "2+",
+      "status": "active",
+      "skill": "film-club-agent",
+      "tables": ["Films"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Films table exists. OMDb lookup works. Slack capture active. Legacy tables (FilmClub_Data, FilmClub_Log) need manual deletion in Airtable UI."
+    },
+    "travel_commute": {
+      "phase": 3,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Routes"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "relationships": {
+      "phase": 3,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Occasions", "Gift Ideas", "Gift History"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Not yet built. Depends on People graph."
+    },
+    "goals_skills": {
+      "phase": 3,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Goals", "Milestones"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "documents_subscriptions": {
+      "phase": 3,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Documents", "Subscriptions"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "wardrobe": {
+      "phase": 4,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Wardrobe Items", "Outfit Log", "Style Context"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "restaurants": {
+      "phase": 4,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Restaurants", "Restaurant Visits"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Not yet built. Depends on People graph."
+    },
+    "events_discovery": {
+      "phase": 4,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Event Sources", "Events", "Taste Profile"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "watching_reading": {
+      "phase": 4,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Watchlist", "Reading List"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Not yet built."
+    },
+    "property": {
+      "phase": 4,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Properties", "Property Criteria"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "london_travel": {
+      "phase": 4,
+      "status": "planned",
+      "skill": null,
+      "tables": ["London To-Do", "Holiday Ideas"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    },
+    "cross_module_intelligence": {
+      "phase": 5,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Insights"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built. Depends on data from multiple Phase 2-4 modules."
+    },
+    "unified_shopping": {
+      "phase": 5,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Shopping List (shared with Phase 3)"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built. Depends on Recipes, Gifts, Wardrobe modules."
+    },
+    "language_learning": {
+      "phase": 5,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Vocabulary", "Grammar Concepts", "Practice Log"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built. Extends daily word feature."
+    },
+    "communication_automation": {
+      "phase": 5,
+      "status": "planned",
+      "skill": null,
+      "tables": ["Clients", "Jobs", "Follow-ups"],
+      "cron_jobs": [],
+      "slack_capture": false,
+      "notes": "Not yet built."
+    }
+  },
+  "skills": {
+    "built": [
+      "public-apis (devops/public-apis)",
+      "bulletin-agent (devops/bulletin-agent)",
+      "film-club-agent (devops/film-club-agent)",
+      "recipes-agent (devops/recipes-agent)",
+      "geeves-airtable (devops/geeves-airtable)",
+      "geeves-steward (geeves/geeves-steward)"
+    ],
+    "needed": [
+      "people-agent",
+      "todos-agent",
+      "fitness-agent",
+      "meals-agent",
+      "sleep-agent",
+      "weekly-digest-agent",
+      "travel-agent",
+      "relationships-agent",
+      "goals-agent",
+      "documents-agent",
+      "wardrobe-agent",
+      "restaurants-agent",
+      "events-agent",
+      "watching-agent",
+      "property-agent",
+      "london-agent"
+    ]
+  },
+  "cron_jobs": {
+    "813b03d1a3e1": {
+      "name": "Geeves Morning Digest",
+      "schedule": "0 6 * * *",
+      "status": "active",
+      "skill": "bulletin-agent"
+    },
+    "66e8f0382f2f": {
+      "name": "Remove Nemotron Free Tier Fallback",
+      "schedule": "once at 2026-06-18 09:00",
+      "status": "scheduled",
+      "skill": null
+    }
+  }
+}
