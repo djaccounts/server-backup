@@ -155,14 +155,56 @@ def build_html():
         sessions = t.get("Sessions", 0)
         top = t.get("Top Model", "?")
         summary = t.get("Summary", "")
-        
+
         sections.append(f"""
         <div class="section">
             <h2>📊 Token Usage (Yesterday)</h2>
             <p><strong>{total:,.0f}</strong> active tokens across {sessions} sessions</p>
             <p class="source">Top model: {top}</p>
         </div>""")
-    
+
+    # === PROPERTY SEARCH ===
+    property_recs = fetch_latest("Properties", 50)
+    # Filter to new/interested properties seen in the last 3 days
+    recent_props = []
+    for r in property_recs:
+        f = r["fields"]
+        status = f.get("Status", "")
+        if status in ("New", "Interested"):
+            recent_props.append(f)
+
+    if recent_props:
+        # Sort by match score descending
+        recent_props.sort(key=lambda p: p.get("Match Score", 0), reverse=True)
+        prop_rows = ""
+        for p in recent_props[:5]:
+            address = p.get("Address", "")
+            price = p.get("Price", 0)
+            beds = p.get("Bedrooms", "?")
+            prop_type = p.get("Property Type", "")
+            score = p.get("Match Score", 0)
+            url = p.get("Rightmove URL", "#")
+            features = p.get("Key Features", "")
+            # Extract first 3 key features
+            feat_list = [l.strip() for l in features.split("\n") if l.strip()][:3]
+            feat_html = " · ".join(feat_list) if feat_list else ""
+            price_str = f"£{price:,}" if price else "Price TBC"
+
+            prop_rows += f"""
+            <div class="property-card">
+                <p><strong><a href="{url}">{address}</a></strong></p>
+                <p>{price_str} · {beds} bed {prop_type}</p>
+                <p class="source">{feat_html}</p>
+                <p class="source">⭐ Match score: {score}/10 · <a href="{url}">View on Rightmove →</a></p>
+            </div>"""
+
+        sections.append(f"""
+        <div class="section">
+            <h2>🏠 Property Picks</h2>
+            <p class="source">New listings matching your criteria (3+ beds, garden, north of Thames, £750k-£1m)</p>
+            {prop_rows}
+        </div>""")
+
     sections_html = "\n".join(sections)
     
     html = f"""<!DOCTYPE html>
@@ -183,6 +225,8 @@ def build_html():
   .stock-table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
   .stock-table th {{ text-align: left; padding: 4px 8px; border-bottom: 1px solid #e5e7eb; color: #6b7280; }}
   .stock-table td {{ padding: 4px 8px; }}
+  .property-card {{ margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }}
+  .property-card:last-child {{ border-bottom: none; }}
   .footer {{ margin-top: 32px; padding-top: 12px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 11px; }}
 </style>
 </head>

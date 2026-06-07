@@ -32,6 +32,9 @@ TABLES = {
     "Recipe_Context":   "tblJRsw77kbCFyoz9",
     "Recipe_Output_Log":"tblYaJTAZDZzBkcwH",
     "Dining_Preferences":"tblzzGIF7yPf37NG5",
+    # Restaurant module tables
+    "Restaurants":         "tblvpSxjeoCQvjotM",
+    "Restaurant_Visits":   "tblf2k6uAHLW7mA4b",
 }
 
 
@@ -113,7 +116,16 @@ CATEGORY_RULES = [
         # Pasting raw recipe text patterns
         r"\bINGREDIENTS\b", r"\bINSTRUCTIONS\b", r"\bPREP\s*TIME\b",
         r"\bcups?\s+(of\s+)?(flour|sugar|butter|milk|oil)\b",
-        r"\btablespoons?\s+(of\s+)?\w+", r"\bteaspoons?\s+(of\s+)?\w+",
+        r"\btablespoons?\s+(of\s+)?\w+\b", r"\bteaspoons?\s+(of\s+)?\w+\b",
+    ]),
+    ("Restaurant", [
+        r"\brestaurant\b", r"\bwent to\b", r"\bate at\b", r"\bdinner at\b",
+        r"\blunch at\b", r"\bfind me a restaurant\b", r"\brecommend a restaurant\b",
+        r"\brat(e|ing|ed) (the )?restaurant\b", r"\bscored (the )?restaurant\b",
+        r"\bbooking\b", r"\bbooked\b", r"\bmenu\b", r"\bfine dining\b",
+        r"\bwent out (for|to)\b", r"\bplace on\b", r"\bplace in\b",
+        r"\bwe ate\b", r"\bwe went\b", r"\btried\b.*\b(place|restaurant|cafe|pub)\b",
+        r"\b(place|restaurant|cafe|pub)\b.*\b(was|were)\b.*\b(great|good|amazing|terrible|bad|ok|nice)\b",
     ]),
     ("Module Request", [
         r"\bmovie\b", r"\bfilm\b", r"\bwatch\b",
@@ -252,7 +264,7 @@ def handle_todo(msg, dry_run=False):
     text = msg.get("text", "")
     task = extract_todo_task(text)
     due_date = extract_date(text)
-    fields = {"Task": task, "Status": "Todo", "Priority": "Medium", "Module": "General"}
+    fields = {"Task": task, "Status": "Not started", "Priority": "Medium", "Module": "General", "Source": "Slack"}
     if due_date:
         fields["Due Date"] = due_date
     if dry_run:
@@ -481,11 +493,26 @@ def handle_film_club(msg, dry_run=False):
     return ok
 
 
+def handle_restaurant(msg, dry_run=False):
+    """Handle restaurant-related messages — log to Output_Log for Hermes to process."""
+    text = msg.get("text", "")
+    if dry_run:
+        print(f"  [DRY RUN] Would log restaurant note to Output_Log (Module=Restaurant)")
+        return True
+    return airtable_post("Output_Log", {
+        "Item": text[:100],
+        "Module": "Restaurant",
+        "Generated At": datetime.date.today().isoformat(),
+        "Content": text,
+    })
+
+
 HANDLERS = {
     "Person Note": handle_person_note,
     "Todo": handle_todo,
     "Memory": handle_memory,
     "Recipe": handle_recipe,
+    "Restaurant": handle_restaurant,
     "Module Request": handle_module_request,
     "Film Club": handle_film_club,
 }

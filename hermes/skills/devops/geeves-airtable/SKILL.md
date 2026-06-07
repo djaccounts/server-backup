@@ -55,9 +55,11 @@ When adding new table groups, add a dict to `table_builder.py` (following `CORE_
 | `People` | tbl1WMPtQhWYW7bTI | The people graph — one record per person, links to Person Notes and Conversation Log |
 | `Person Notes` | tbl6hnxzXXmWFkVfh | Timestamped freeform notes about a person |
 | `Conversation Log` | tbl2dbgksA9XveLcx | Debriefs after seeing someone (Summary, Date, Key things to remember) |
-| `Todos` | tblTcdZQ9AIltQDfu | Tasks with Timeframe, Category, Source; Status: Not started/In progress/Done |
+|| `Todos` | tblTcdZQ9AIltQDfu | Tasks with Timeframe, Category, Source; Status: Not started/In progress/Done |
 | `Memory_Summaries` | tblXH4eCLwM8S30cn | Periodic long-term memory roll-ups |
 | `Output_Log` | tbldJT41dAAX1WTkC | What Hermes generated, when, and rating |
+| `Properties` | tblA0jfgqxhPFJU7S | Property search listings from Rightmove — address, price, score, status |
+| `Property Criteria` | tbl6oeRjhK3sds9TI | Search criteria — Must have/Nice to have/Dealbreaker/Budget |
 
 **People v2 fields (key changes):**
 - `Relationship type` (singleSelect) replaces old `Relationship` (text)
@@ -211,7 +213,8 @@ Some modules need domain-specific fields and external API integration rather tha
 | **Films** | `Films` | `tblqCpp3EB7wU2ZZ3` | OMDb (IMDb lookup, key in `/root/.hermes/.env`). **Full film club workflows, Slack capture, and CRUD: see `film-club-agent` skill.** |
 | **Social Events** | Uses `Todos` table | — | Category-routing from Slack captures ("dinner", "party", "social"). No dedicated table — events go into Todos with Module="Social" and Linked Person refs. |
 | **Recipe App** | `Recipes`, `Ingredients`, `Dinner Parties`, `Dinner Planner`, `Shopping List`, `Recipe Context`, `Recipe Output Log` | See below | Mealie (port 9925). Sync: Mealie → Airtable. **Full recipe workflows, Mealie API, and meal logging: see `recipes-agent` skill.** |
-| **Dining Preferences** | `Dining Preferences` | `tblzzGIF7yPf37NG5` | Auto-populated by Hermes from recipe ratings, meal frequency, ingredient patterns. Read by future Restaurant Finder. |
+|| **Dining Preferences** | `Dining Preferences` | `tblzzGIF7yPf37NG5` | Auto-populated by Hermes from recipe ratings, meal frequency, ingredient patterns. Read by Restaurant module for alignment scoring. |
+|| **Restaurants** | `Restaurants`, `Restaurant Visits` | See below | SerpApi Google Maps (free tier 250/mo). **Full restaurant workflows, visit logging, and recommendations: see `restaurants-agent` skill.** |
 
 **Recipe App table IDs:**
 
@@ -223,8 +226,15 @@ Some modules need domain-specific fields and external API integration rather tha
 | `Dinner Planner` | `tblnts17CCckLJoUQ` |
 | `Shopping List` | `tbldvpIO91xi72a0K` |
 | `Recipe Context` | `tblJRsw77kbCFyoz9` |
-| `Recipe Output Log` | `tblYaJTAZDZzBkcwH` |
-| `Dining Preferences` | `tblzzGIF7yPf37NG5` |
+|| `Recipe Output Log` | `tblYaJTAZDZzBkcwH` |
+|| `Dining Preferences` | `tblzzGIF7yPf37NG5` |
+
+**Restaurant module table IDs:**
+
+| Table | ID |
+|-------|----|
+| `Restaurants` | `tblvpSxjeoCQvjotM` |
+| `Restaurant Visits` | `tblf2k6uAHLW7mA4b` |
 
 **Film Club** is not a separate module — it's a view/filter on the Films table (`Film Club = Yes`).
 

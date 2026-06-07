@@ -714,6 +714,72 @@ The deal-breakers and preferences (the context table).
 
 ---
 
+# PHASE 4 — LIFESTYLE & DISCOVERY
+
+---
+
+## Module 22 — Restaurants
+
+Restaurant tracking and review module. Logs visits, captures detailed feedback (including separate ratings and notes for David and wife), and builds a taste profile over time via the shared `Dining Preferences` table. Recommendations are powered by comparing restaurant attributes against your dining preferences and visit history.
+
+### Table: `Restaurants`
+
+Master record for every restaurant visited or want to try.
+
+> **Name** · `single line text` — restaurant name (primary field)
+> **Cuisine** · `multiple select` — Italian / Indian / Thai / Chinese / Japanese / French / British / Mexican / Mediterranean / Korean / Vietnamese / Spanish / Turkish / Other
+> **Address** · `long text` — full address
+> **Postcode** · `single line text` — for map lookups
+> **Phone** · `single line text` — contact number
+> **Website** · `url` — restaurant website
+> **Maps URL** · `url` — Google search link for the restaurant
+> **Price Range** · `single select` — £ / ££ / £££ / ££££
+> **Food Type** · `multiple select` — Fine dining / Casual / Pub / Cafe / Street food / Takeaway / Brunch / Roast / Bistro / Gastropub
+> **Dietary Friendly** · `multiple select` — Vegetarian-friendly / Vegan-friendly / Gluten-free options / Halal / Kosher
+> **Ambience** · `multiple select` — Romantic / Family-friendly / Quiet / Lively / Outdoor seating / BYOB / Dog-friendly / Date night
+> **Google Rating** · `number` — rating from Google (1 decimal, e.g. 4.5)
+> **Google Review Count** · `number` — number of Google reviews
+> **Google Price Level** · `number` — 1–4 from Google
+> **Google Types** · `long text` — e.g. "fine_dining, restaurant, food"
+> **Review Summary** · `long text` — Hermes's summary of what reviewers say
+> **Alignment Score** · `single select` — Strong match / Moderate / Weak / Unknown
+> **Alignment Notes** · `long text` — why this does/doesn't match your preferences
+> **Source** · `single select` — We went / Recommended / Found online / Want to try
+> **Recommended By** · `link → People` — who recommended it
+> **Status** · `single select` — Want to go / Been — loved it / Been — liked it / Been — meh / Been — avoid
+> **Overall Rating** · `single select` — 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10
+> **Times Visited** · `number` — how many times you've been
+> **Last Visited** · `date` — most recent visit
+> **Photo** · `attachment` — photo of the place or a dish
+> **Notes** · `long text` — freeform notes
+
+### Table: `Restaurant Visits`
+
+Each visit to a restaurant. Detailed feedback lives here.
+
+> **Restaurant** · `link → Restaurants` — which restaurant
+> **Date** · `date` — when you went
+> **People** · `link → People` — who was there (you, wife, friends)
+> **Dishes Ordered** · `long text` — what was ordered
+> **Dish Ratings** · `long text` — "Pizza: 9/10, Garlic bread: 7/10"
+> **Service Rating** · `single select` — 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10
+> **Ambience Rating** · `single select` — 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10
+> **Value Rating** · `single select` — 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10
+> **Overall Rating** · `single select` — 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10
+> **Wife's Rating** · `single select` — 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10
+> **Wife's Notes** · `long text` — her separate detailed feedback
+> **Would Return** · `single select` — Definitely / Maybe / No
+> **Best Dish** · `single line text` — standout dish
+> **Worst Dish** · `single line text` — letdown dish
+> **Cost Total** · `currency` — total bill (£)
+> **Cost Per Head** · `currency` — per person
+> **Occasion** · `single select` — Date night / Family meal / Friends / Birthday / Casual / Business / Anniversary
+> **Photo** · `attachment` — photo of the meal
+> **Notes** · `long text` — detailed feedback
+> **Source** · `single select` — Slack / Manual
+
+---
+
 # PHASE 5 — INTELLIGENCE LAYER
 
 ---

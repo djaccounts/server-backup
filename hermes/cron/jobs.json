@@ -120,7 +120,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T15:56:27.457927+00:00",
-      "next_run_at": "2026-06-07T02:00:00+00:00",
+      "next_run_at": "2026-06-08T02:00:00+00:00",
       "last_run_at": null,
       "last_status": null,
       "last_error": null,
@@ -135,7 +135,55 @@
       "enabled_toolsets": null,
       "workdir": null,
       "profile": null
+    },
+    {
+      "id": "cea50fc34ab0",
+      "name": "Geeves Property Scan",
+      "prompt": "Run the Rightmove property scan to find new listings matching our search criteria.\n\nSteps:\n1. Run: python3 /root/Geeves/scripts/property_scan.py\n2. The script will search Rightmove for 3+ bed houses, \u00a3750k-\u00a31m, north of Thames, with gardens\n3. New listings are automatically stored in Airtable (Properties table)\n4. Report the results: how many new properties found, top 3 by match score with their Rightmove URLs\n\nIf the script fails or returns 0 new properties, report that too.",
+      "skills": [
+        "property-agent"
+      ],
+      "skill": "property-agent",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 5 * * *",
+        "display": "0 5 * * *"
+      },
+      "schedule_display": "0 5 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-06T19:43:45.740827+00:00",
+      "next_run_at": "2026-06-07T05:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7C89HKQ9",
+        "chat_name": "C0B7C89HKQ9",
+        "thread_id": "1780764506.637779"
+      },
+      "enabled_toolsets": [
+        "terminal",
+        "file"
+      ],
+      "workdir": null,
+      "profile": null
     }
   ],
-  "updated_at": "2026-06-06T15:56:27.458765+00:00"
+  "updated_at": "2026-06-07T02:00:39.197439+00:00"
 }

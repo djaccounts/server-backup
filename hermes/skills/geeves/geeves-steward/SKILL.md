@@ -80,6 +80,11 @@ When building a new module from the v2 Schema Reference:
 6. Update the registry with all new tables and fields
 7. Report back what was created
 
+## External Data Sources
+
+When a module needs to fetch data from external websites, check `references/` for scraping techniques:
+- **Rightmove property search** → `references/rightmove-scraping.md` — JSON extraction from search results, field reference, rate limiting rules
+
 ## Known Modules
 
 | Module | Tables | Table IDs | Status |
@@ -87,6 +92,9 @@ When building a new module from the v2 Schema Reference:
 | Films | `Films` | `tblqCpp3EB7wU2ZZ3` | ✅ Built |
 | Recipe App | `Recipes`, `Ingredients`, `Dinner Parties`, `Dinner Planner`, `Shopping List`, `Recipe Context`, `Recipe Output Log` | Recipes=`tblehBgzRMa2Xucjd`, Ingredients=`tblNsgbYHNK8xWnB7`, Dinner Parties=`tblwbQrIu3nUWDz3G`, Dinner Planner=`tblnts17CCckLJoUQ`, Shopping List=`tbldvpIO91xi72a0K`, Recipe Context=`tblJRsw77kbCFyoz9`, Recipe Output Log=`tblYaJTAZDZzBkcwH` | ✅ Built |
 | Dining Preferences | `Dining Preferences` | `tblzzGIF7yPf37NG5` | ✅ Built (shared cross-module) |
+|| Todos | `Todos` | `tblTcdZQ9AIltQDfu` | ✅ Built |
+| Property Search | `Properties`, `Property Criteria` | Properties=`tblA0jfgqxhPFJU7S`, Criteria=`tbl6oeRjhK3sds9TI` | ✅ Built |
+| Restaurants | `Restaurants`, `Restaurant Visits` | Restaurants=`tblvpSxjeoCQvjotM`, Visits=`tblf2k6uAHLW7mA4b` | ✅ Built |
 
 ## Planning Change Protocol
 

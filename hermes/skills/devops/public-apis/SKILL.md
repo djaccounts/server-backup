@@ -24,7 +24,7 @@ Curated free-tier APIs used across Geeves modules. All have free tiers; keys sto
 | Useless Facts | *(none)* | Unlimited | Bulletin fact |
 | icanhazdadjoke | *(none)* | Unlimited | Bulletin fact (fallback) |
 | World News API | `WORLD_NEWS_API_KEY` | 50/day | News/Search |
-| SerpApi | `SERPAPI_KEY` | 250/mo | Google Search |
+| SerpApi | `SERPAPI_KEY` | 250/mo | Google Search, Google Maps (restaurant lookup) |
 | PDFBolt | `PDFBOLT_API_KEY` | 100 PDFs/mo | Digest PDF, recipe PDF |
 | OMDb | `OMDB_API_KEY` | 1,000/day | Film Club IMDb lookup |
 | Alpha Vantage | `ALPHA_VANTAGE_KEY` | 25/day | Backup stocks |
@@ -61,10 +61,44 @@ def get_key(var_name):
 - **URL:** `https://serpapi.com/search`
 - **Auth:** `api_key` query param
 - **Key:** `SERPAPI_KEY`
-- **Engines:** `google`, `google_finance`, `google_news`
+- **Engines:** `google`, `google_finance`, `google_news`, `google_maps`
 - **Script:** `/root/Geeves/scripts/serpapi_search.py`
 - **Rate limit:** 250 searches/month
 - **⚠ `google_news` returns `source` as dict** (`{"name": "BBC", "icon": "..."}`) not a string — extract with `source.get("name", "")` after `isinstance(source, dict)` check.
+
+#### SerpApi Google Maps Engine (`engine=google_maps`)
+- **Use for:** Restaurant/place lookup, fetching Google ratings, reviews, hours, photos, and place_ids without the paid Google Places API.
+- **Search params:** `q={query}`, `type=search`, `hl=en`
+- **Key response fields (in `place_results`):**
+  - `title` — place name
+  - `rating` — Google star rating (e.g. 4.8)
+  - `reviews` — review count (e.g. 19501)
+  - `rating_summary` — distribution `[{stars: 5, amount: 16366}, ...]`
+  - `price` — price range string (e.g. "£20–60")
+  - `type` — array of types (e.g. `["Indian restaurant", "Breakfast restaurant"]`)
+  - `address` — full address string
+  - `phone` — phone number
+  - `website` — website URL
+  - `hours` — array of `{day: "hours"}` objects
+  - `gps_coordinates` — `{latitude, longitude}`
+  - `place_id` — Google Place ID (e.g. `ChIJqWL6gz0bdkgRL14qKTnAjXQ`)
+  - `data_id` — internal Google data ID (e.g. `0x48761b3d83fa62a9:0x748dc039292a5e2f`)
+  - `open_state` — e.g. "Open · Closes 11 PM"
+  - `extensions` — highlights, offerings, accessibility, dining_options, amenities
+  - `user_reviews` — review snippets with thumbnails
+- **⚠ Google Maps URL:** Use `https://maps.google.com/maps?q={place_id}` — this is the only reliable format that opens directly to a specific restaurant page. Do NOT use `maps.app.goo.gl/` short links (cannot be constructed from API data), do NOT use coordinate-based `/place/name/@lat,lon,zoom` URLs (don't always resolve to the correct place), and do NOT use `?api=1&query_place_id=` (redirects through consent). The `maps.google.com/maps?q=PLACE_ID` format bypasses consent and lands directly on the place page.
+- **⚠ `place_results` vs `local_results`:** For specific restaurant queries, data appears in `place_results`. For broader area searches, data appears in `local_results[]`. Check both.
+- **Cost:** 250 searches/month free. Each restaurant lookup = 1 search.
+- **⚠ Direct Google scraping does NOT work** — Google search/Maps are fully JS-rendered; `urllib` returns consent/captcha pages with no structured data. Always use SerpApi for Google data.
+
+#### SerpApi Google Maps Engine (`google_maps`)
+- **Use case:** Restaurant/place lookup — get Google ratings, reviews, hours, GPS, photos without paying for Google Places API.
+- **Params:** `engine=google_maps&q={query}&type=search&hl=en`
+- **Response:** `place_results` dict (single place) or `local_results` list (multiple).
+- **Key fields:** `title`, `rating`, `reviews`, `rating_summary`, `price`, `type`, `type_ids`, `address`, `phone`, `website`, `gps_coordinates`, `hours`, `open_state`, `extensions` (highlights/offerings/accessibility), `user_reviews`, `place_id`, `description`
+- **Google Maps URL from GPS:** `https://www.google.com/maps/place/{name}/@{lat},{lon},17z`
+- **Tips:** Use specific queries (`"Name, Area, London"`). Avoid apostrophes in names. Check `local_results` if `place_results` is empty. Each lookup = 1 search against 250/month free tier.
+- **Reference:** `references/serpapi-google-maps.md` for full response examples and tested queries.
 
 ### NewsAPI (backup)
 - **URL:** `https://newsapi.org/v2`
@@ -232,3 +266,5 @@ def get_key(var_name):
 5. **Quote Garden 503** — intermittent, have fallback ready
 6. **Open-Meteo timeouts** — can timeout on 15s limit; consider retry with backoff
 7. **OMDb title ambiguity** — "Matrix" → 1993 TV film, not 1999; use year or IMDb ID to disambiguate
+8. **Direct Google scraping blocked** — Google search and Maps pages are fully JS-rendered; `urllib`/requests return consent/captcha pages with zero structured data and no JSON-LD. Use SerpApi `google_maps` engine instead — it returns clean JSON and is already configured in Geeves.
+9. **SerpApi apostrophe issue** — Apostrophes in place names can cause empty `place_results` (e.g., `"England's Lane"` fails but `"Englands Lane"` works). Normalize query strings or fall back to `local_results`.

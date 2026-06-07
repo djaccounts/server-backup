@@ -1,40 +1,34 @@
-# Geeves Reference — User Preferences & Design Principles
+# Geeves Reference
 
-## Schema Design
+User preferences, design principles, module table IDs, and external data source pointers.
 
-- **Consolidated over normalized**: One wide table beats many linked tables. The Films table (personal diary + club + member ratings) is the canonical example.
-- **User approval required**: Always show the full field list and get explicit "yes" before creating any table or field. No exceptions.
-- **Thread > reference docs**: When a conversation changes a schema decision, update both `schema_registry.json` and the relevant `references/<module>.md` immediately.
-
-## Airtable Gotchas
-
-- API key: read via `subprocess grep` from `/root/.hermes/.env`, never `os.environ`
-- Auth: Bearer token in header, base ID `appzvmonQXs4x2AlL`
-- NEVER touch base `appk0DXJthirMxTZV` (Practice Management)
-- API can't: delete tables/fields, change field types, remove select options → needs web UI
-- Use `typecast=true` on batch PATCH to auto-create select options
-- Date fields need `{"dateFormat": {"name": "local"}}`, number fields need `{"precision": N}`
-
-## Key Files
-
-- Registry: `/root/Geeves/schema_registry.json` — single source of truth for what exists
-- Schema Reference: `/root/Geeves/Geeves_Schema_Reference_v2.md` — proposed fields per module
-- Table builder: `/root/Geeves/scripts/table_builder.py`
-- CRUD helper: `/root/Geeves/scripts/airtable_api.py`
-- Slack capture: `/root/Geeves/scripts/slack_capture.py`
+## User Preferences (David)
+- No raw log tables
+- No cron for chat
+- Modules on-demand
+- Simple consolidated designs
+- Explicit approval before any schema change
+- Wife rates films
+- Prefers step-by-step instructions for server tasks
+- Gets frustrated with complex cloud console setups
 
 ## Module Table IDs
 
 | Module | Table | ID |
 |--------|-------|----|
-| People | People | tbl1WMPtQhWYW7bTI |
-| Todos | Todos | tblTcdZQ9AIltQDfu |
-| Memory | Memory_Summaries | tblXH4eCLwM8S30cn |
-| Output | Output_Log | tbldJT41dAAX1WTkC |
-| Person Notes | Person Notes | tbl6hnxzXXmWFkVfh |
-| Conversation Log | Conversation Log | tbl2dbgksA9XveLcx |
-| Weather | Weather_Data | tblFd4kAahIUozJsf |
-| Stocks | Stock_Prices | tblI1oXlNIFXrVm7f |
-| Facts | Fact_of_the_Day | tblUTCWleQD61Ti2v |
-| Token Usage | Token_Usage | tbl3EjtE3YW1ZUqEv |
 | Films | Films | tblqCpp3EB7wU2ZZ3 |
+| Recipes | Recipes | tblehBgzRMa2Xucjd |
+| Recipes | Ingredients | tblNsgbYHNK8xWnB7 |
+| Recipes | Dinner Parties | tblwbQrIu3nUWDz3G |
+| Recipes | Dinner Planner | tblnts17CCckLJoUQ |
+| Recipes | Shopping List | tbldvpIO91xi72a0K |
+| Recipes | Recipe Context | tblJRsw77kbCFyoz9 |
+| Recipes | Recipe Output Log | tblYaJTAZDZzBkcwH |
+| Dining Prefs | Dining Preferences | tblzzGIF7yPf37NG5 |
+| Todos | Todos | tblTcdZQ9AIltQDfu |
+| Property | Properties | tblA0jfgqxhPFJU7S |
+| Property | Property Criteria | tbl6oeRjhK3sds9TI |
+
+## External Data Sources
+
+For scraping techniques and API details, see `references/external-data-sources.md`.

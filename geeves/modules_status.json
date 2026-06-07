@@ -31,11 +31,11 @@
     "todos": {
       "phase": 2,
       "status": "active",
-      "skill": "todos-agent (not yet created)",
+      "skill": "todos-agent",
       "tables": ["Todos"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Table exists. Slack capture works. Skill not yet built."
+      "notes": "Table exists. Slack capture works. Skill built v1.0.0."
     },
     "sleep_habits": {
       "phase": 2,
@@ -138,12 +138,12 @@
     },
     "restaurants": {
       "phase": 4,
-      "status": "planned",
-      "skill": null,
+      "status": "built",
+      "skill": "restaurants-agent",
       "tables": ["Restaurants", "Restaurant Visits"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Not yet built. Depends on People graph."
+      "notes": "Tables created. Skill written. SerpApi Google Maps lookup working. Google search links for Maps URLs. Depends on People graph and Dining Preferences."
     },
     "events_discovery": {
       "phase": 4,
@@ -165,12 +165,12 @@
     },
     "property": {
       "phase": 4,
-      "status": "planned",
-      "skill": null,
+      "status": "active",
+      "skill": "property-agent",
       "tables": ["Properties", "Property Criteria"],
-      "cron_jobs": [],
+      "cron_jobs": ["cea50fc34ab0 (Geeves Property Scan, 5am UTC)"],
       "slack_capture": false,
-      "notes": "Not yet built."
+      "notes": "Rightmove scan daily at 5am. Properties scored 0-10 against criteria. Top matches in morning digest with Rightmove links. Feedback loop from David/wife refines scoring."
     },
     "london_travel": {
       "phase": 4,
@@ -220,16 +220,18 @@
   },
   "skills": {
     "built": [
-      "public-apis (devops/public-apis)",
-      "bulletin-agent (devops/bulletin-agent)",
-      "film-club-agent (devops/film-club-agent)",
-      "recipes-agent (devops/recipes-agent)",
-      "geeves-airtable (devops/geeves-airtable)",
-      "geeves-steward (geeves/geeves-steward)"
+    "public-apis (devops/public-apis)",
+    "bulletin-agent (devops/bulletin-agent)",
+    "film-club-agent (devops/film-club-agent)",
+    "recipes-agent (devops/recipes-agent)",
+    "todos-agent (devops/todos-agent)",
+    "property-agent (devops/property-agent)",
+    "restaurants-agent (devops/restaurants-agent)",
+    "geeves-airtable (devops/geeves-airtable)",
+    "geeves-steward (geeves/geeves-steward)"
     ],
     "needed": [
       "people-agent",
-      "todos-agent",
       "fitness-agent",
       "meals-agent",
       "sleep-agent",
@@ -239,7 +241,6 @@
       "goals-agent",
       "documents-agent",
       "wardrobe-agent",
-      "restaurants-agent",
       "events-agent",
       "watching-agent",
       "property-agent",

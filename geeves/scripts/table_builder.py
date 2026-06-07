@@ -367,6 +367,163 @@ RECIPE_TABLES = {
 }
 
 
+RESTAURANT_TABLES = {
+    "Restaurants": {
+        "fields": [
+            {"name": "Name", "type": "text"},
+            {"name": "Cuisine", "type": "multiSelect", "options": [
+                "Italian", "Indian", "Thai", "Chinese", "Japanese", "French",
+                "British", "Mexican", "Mediterranean", "Korean", "Vietnamese",
+                "Spanish", "Turkish", "Other",
+            ]},
+            {"name": "Address", "type": "longText"},
+            {"name": "Postcode", "type": "text"},
+            {"name": "Phone", "type": "text"},
+            {"name": "Website", "type": "url"},
+            {"name": "Maps URL", "type": "url"},
+            {"name": "Price Range", "type": "select", "options": [
+                "£", "££", "£££", "££££",
+            ]},
+            {"name": "Food Type", "type": "multiSelect", "options": [
+                "Fine dining", "Casual", "Pub", "Cafe", "Street food",
+                "Takeaway", "Brunch", "Roast", "Bistro", "Gastropub",
+            ]},
+            {"name": "Dietary Friendly", "type": "multiSelect", "options": [
+                "Vegetarian-friendly", "Vegan-friendly", "Gluten-free options",
+                "Halal", "Kosher",
+            ]},
+            {"name": "Ambience", "type": "multiSelect", "options": [
+                "Romantic", "Family-friendly", "Quiet", "Lively",
+                "Outdoor seating", "BYOB", "Dog-friendly", "Date night",
+            ]},
+            {"name": "Google Rating", "type": "number", "precision": 1},
+            {"name": "Google Review Count", "type": "number", "precision": 0},
+            {"name": "Google Price Level", "type": "number", "precision": 0},
+            {"name": "Google Types", "type": "longText"},
+            {"name": "Review Summary", "type": "longText"},
+            {"name": "Alignment Score", "type": "select", "options": [
+                "Strong match", "Moderate", "Weak", "Unknown",
+            ]},
+            {"name": "Alignment Notes", "type": "longText"},
+            {"name": "Source", "type": "select", "options": [
+                "We went", "Recommended", "Found online", "Want to try",
+            ]},
+            {"name": "Status", "type": "select", "options": [
+                "Want to go", "Been — loved it", "Been — liked it",
+                "Been — meh", "Been — avoid",
+            ]},
+            {"name": "Overall Rating", "type": "select", "options": [
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            ]},
+            {"name": "Times Visited", "type": "number", "precision": 0},
+            {"name": "Last Visited", "type": "date"},
+            {"name": "Photo", "type": "attachment"},
+            {"name": "Notes", "type": "longText"},
+            # Recommended By = multipleRecordLinks → People (added after creation)
+        ],
+    },
+    "Restaurant Visits": {
+        "fields": [
+            {"name": "Date", "type": "date"},
+            {"name": "Dishes Ordered", "type": "longText"},
+            {"name": "Dish Ratings", "type": "longText"},
+            {"name": "Service Rating", "type": "select", "options": [
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            ]},
+            {"name": "Ambience Rating", "type": "select", "options": [
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            ]},
+            {"name": "Value Rating", "type": "select", "options": [
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            ]},
+            {"name": "Overall Rating", "type": "select", "options": [
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            ]},
+            {"name": "Wife's Rating", "type": "select", "options": [
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+            ]},
+            {"name": "Wife's Notes", "type": "longText"},
+            {"name": "Would Return", "type": "select", "options": [
+                "Definitely", "Maybe", "No",
+            ]},
+            {"name": "Best Dish", "type": "text"},
+            {"name": "Worst Dish", "type": "text"},
+            {"name": "Cost Total", "type": "number", "precision": 2},
+            {"name": "Cost Per Head", "type": "number", "precision": 2},
+            {"name": "Occasion", "type": "select", "options": [
+                "Date night", "Family meal", "Friends", "Birthday",
+                "Casual", "Business", "Anniversary",
+            ]},
+            {"name": "Photo", "type": "attachment"},
+            {"name": "Notes", "type": "longText"},
+            {"name": "Source", "type": "select", "options": ["Slack", "Manual"]},
+            # Restaurant = multipleRecordLinks → Restaurants (added after creation)
+            # People = multipleRecordLinks → People (added after creation)
+        ],
+    },
+}
+
+
+def create_restaurant_tables():
+    """Create all Restaurant module tables (Restaurants, Restaurant Visits)."""
+    print("\n🍽️  Creating Restaurant module tables via API...")
+    print()
+
+    tables = list_tables()
+    people_table = find_table(tables, "People")
+    people_table_id = people_table["id"] if people_table else None
+
+    # Phase 1: Create base tables (without link fields)
+    table_ids = {}
+    restaurant_table_order = ["Restaurant Visits", "Restaurants"]
+
+    for table_name in restaurant_table_order:
+        spec = RESTAURANT_TABLES[table_name]
+        existing = find_table(tables, table_name)
+        if existing:
+            print(f"  ℹ️  Table '{table_name}' already exists (id: {existing['id']})")
+            table_ids[table_name] = existing["id"]
+            continue
+
+        normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
+        result = create_table(table_name, normal_fields)
+        if result:
+            table_ids[table_name] = result["id"]
+            print(f"    ✅ Created '{table_name}' (id: {result['id']})")
+        print()
+
+    # Phase 2: Add link fields
+    restaurants_id = table_ids.get("Restaurants")
+    visits_id = table_ids.get("Restaurant Visits")
+
+    link_ops = [
+        # Restaurant Visits → Restaurants
+        (visits_id, "Restaurant", "multipleRecordLinks", restaurants_id),
+        # Restaurant Visits → People
+        (visits_id, "People", "multipleRecordLinks", people_table_id),
+        # Restaurants → People (Recommended By)
+        (restaurants_id, "Recommended By", "multipleRecordLinks", people_table_id),
+    ]
+
+    for table_id, field_name, field_type, linked_id in link_ops:
+        if table_id and linked_id:
+            add_field(table_id, {
+                "name": field_name,
+                "type": field_type,
+                "link_type": "recordLink",
+                "linked_table": linked_id,
+            })
+            print(f"    ✅ Added field '{field_name}' → linked table")
+        elif table_id:
+            print(f"    ⚠️  Skipping '{field_name}' — linked table not found")
+
+    print()
+    print("📊 Restaurant module table IDs:")
+    for name, tid in table_ids.items():
+        print(f"   {name:25s} {tid}")
+    print()
+
+
 def create_films_table():
     """Create the Films table (master film diary + film club)."""
     print("🎬 Creating Films table via API...")
