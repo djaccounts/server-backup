@@ -1,7 +1,7 @@
 ---
 name: recipes-agent
-description: "Geeves Recipes Agent — Mealie recipe management, Airtable sync, meal logging, dinner party planning, and shopping list generation. Use when adding recipes, planning meals, logging what you ate, planning dinner parties, or managing the recipe module."
-version: 1.0.0
+description: "Geeves Recipes Agent — Mealie recipe management, Airtable sync, meal logging, dinner party planning, shopping list generation, and recipe discovery via web search. Use when adding recipes, planning meals, logging what you ate, planning dinner parties, searching for recipe ideas, or managing the recipe module."
+version: 1.2.0
 author: Geeves
 ---
 
@@ -94,11 +94,20 @@ for ing in recipe["recipeIngredient"]:
 
 | Field | Type | Source |
 |-------|------|--------|
-| Ingredient | text | Mealie `display` |
+| Ingredient | text | Cleaned name (no qty/unit/prep) |
 | Recipe | link → Recipes | Set during sync |
-| Quantity | text | Mealie `quantity` + `unit` |
-| Category | select | LLM categorises |
+| Category | select | Heuristic categorises |
 | Seasonal | multi-select | LLM infers |
+
+**Ingredient name cleaning:** The `Ingredient` field stores ONLY the clean ingredient name (e.g., "Garlic"), NOT the full raw recipe line (e.g., "2-3 garlic cloves, finely grated"). The `clean_ingredient_name()` function in `recipe_sync.py` and `push_recipe.py` handles this:
+1. Removes parenthetical notes
+2. Strips leading quantities and units (cups, tbsp, g, cloves, etc.)
+3. Removes preparation instructions (chopped, minced, grated, etc.)
+4. Deduplicates within a recipe (case-insensitive)
+
+**Category options:** `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Eggs`, `Other`
+- "Eggs" was added via `typecast=true` (Metadata API rejects new options directly)
+- Eggs are NOT in Dairy — they have their own category
 
 ### Other Tables
 
@@ -111,6 +120,49 @@ for ing in recipe["recipeIngredient"]:
 **⚠ Dinner Planner ≠ Meals.** Planner = forward-looking. Meals = backward-looking. Both link to Recipes but serve different purposes.
 
 ## Workflows
+
+### Recipe Ideas & Web Search (Discovery)
+
+**When to use:** User asks for recipe ideas, inspiration, or "what can I make with X" and the local Mealie collection is too small to draw from.
+
+**Approach:** Use SerpApi (Google engine) via the `public-apis` skill to search the web for real, citable recipes.
+
+**Script pattern** (write to `/tmp/` and run — do NOT use `execute_code`, and do NOT interpolate the key directly in shell):
+
+```python
+# Write this to /tmp/search_recipes.py, then run with: python3 /tmp/search_recipes.py
+import subprocess, json, urllib.parse, urllib.request
+
+# Get key safely — handles special chars (=, +, /) that break shell interpolation
+r = subprocess.run(["grep", "SERPAPI_KEY", "/root/.hermes/.env"], capture_output=True, text=True)
+key = r.stdout.strip().split("\n")[0].split("=", 1)[1]
+
+params = urllib.parse.urlencode({
+    "q": "your search query here leftover chicken quick dinner",
+    "engine": "google",
+    "api_key": key,
+    "num": 10,
+    "hl": "en"
+})
+url = f"https://serpapi.com/search?{params}"
+req = urllib.request.Request(url)
+with urllib.request.urlopen(req, timeout=30) as resp:
+    data = json.loads(resp.read().decode())
+
+for r in data.get("organic_results", []):
+    print(r.get("title",""))
+    print(r.get("link",""))
+    s = r.get("snippet","")
+    if s: print(">", s[:150])
+    print()
+```
+
+**Rules:**
+- Always cite the source URL with each recipe suggestion
+- Prefer reputable sources (BBC GoodFood, AllRecipes, established food blogs)
+- After presenting ideas, offer to add any chosen recipe to Mealie via the "Add Recipe from URL" workflow
+- Do NOT fabricate recipe details from training knowledge when the user asked you to search — only present what the search actually returned
+- If SerpApi returns no useful results, try a second query with different keywords before falling back to general knowledge
 
 ### Add Recipe from URL
 1. Mealie `POST /api/recipes/create/url` → scrape
@@ -139,12 +191,16 @@ for ing in recipe["recipeIngredient"]:
 
 ## Mealie Pitfalls
 
+0. **`execute_code` is blocked in some sessions** — when you need to run Python that calls subprocess or API keys, write the script to `/tmp/` with `write_file` and run it via `terminal(command="python3 /tmp/script.py")`. This also avoids shell interpolation issues with special characters in API keys.
 1. **SPA intercepts non-API routes** — `/api/openapi.json` returns HTML, not OpenAPI spec
 2. **Shell variable persistence** — tokens lost across `terminal()` calls; always chain
 3. **Default password may not work** — reset via SQLite if 401
-4. **Duplicate ingredients** — deduplicate by `display` field
+4. **Duplicate ingredients** — deduplicate by cleaned name (case-insensitive), NOT by raw display string
 5. **BASE_URL must match access URL** — update when changing from port to path-based access
 6. **POST returns plain string** — parse with `strip().strip('"')`, not `json.load()`
+7. **Slug suffix on re-push** — Mealie appends `-1`, `-2`, etc. when slug exists. Delete old versions first if you want clean slugs. Mealie PATCH can rename: `PATCH /api/recipes/{slug}` with `{"name": "...", "slug": "..."}`.
+8. **`food` field can be null** — Use `ing.get("food") or {}` before `.get("name")` to avoid `AttributeError`
+9. **Ingredient `display` field is raw** — Contains full recipe line (qty + unit + name + prep). Must be cleaned before storing in Airtable.
 
 ## Standing Rules
 

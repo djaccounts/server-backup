@@ -11,9 +11,11 @@ The Airtable Metadata API rejects table creation if these field types don't incl
 | `checkbox` | `options.icon` + `options.color` | `{"icon": "check", "color": "greenBright"}` |
 | `date` | `options.dateFormat` | `{"dateFormat": {"name": "local"}}` |
 | `number` | `options.precision` | `{"precision": 0}` for integers, `{"precision": 1}` for 1 decimal |
-| `multipleRecordLinks` | `options.linkedTableId` | `{"linkedTableId": "tblXXXXX"}` |
+| `multipleRecordLinks` | `options.linkedTableId` | `{"linkedTableId": "tblXXXXX"}` — can be included in table creation OR added via `add_field()` after both tables exist. If creation fails, fall back to add_field(). |
 
 **Error without options:** `INVALID_FIELD_TYPE_OPTIONS_FOR_CREATE` (422)
+
+**⚠ `longText` is NOT a valid API field type.** The Airtable UI shows "Long text" but the API requires `multilineText`. Using `longText` in API calls causes 422 INVALID_REQUEST_UNKNOWN. Always use `multilineText` in table_builder.py and direct API calls.
 
 ## Implementation in table_builder.py
 

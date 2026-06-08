@@ -142,7 +142,11 @@ def slack_post(text):
 4. **Weather timeouts** — Open-Meteo can timeout on 15s limit. Digest still sends with section skipped.
 5. **Select field 422** — Writing undefined choice to singleSelect fails. Reuse existing labels.
 6. **agentmail_helper.py does NOT support attachments** — Use AgentMail REST API directly.
-7. **Digest section order** is defined in `build_digest_html.py` only. Current order: Weather → Star Wars → Fact → Markets → Token Usage → Property Search.
+7. **Digest section order** is defined in `build_digest_html.py` only. Current order: Weather → Star Wars → Fact → Property Search → Markets → Token Usage.
+
+## Related Pipelines
+
+- **Weekly Digest + Intentions** — Sunday 8pm UTC cron. Reflective weekly summary + intentions review. Skill: `weekly-digest-agent`. Scripts: `weekly_digest_fetch.py` + `build_weekly_digest_html.py`. Same HTML→PDF→email+Slack pattern.
 
 ## Reference
 

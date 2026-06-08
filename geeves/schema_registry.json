@@ -1,150 +1,204 @@
 {
   "base_id": "appzvmonQXs4x2AlL",
   "base_name": "Geeves",
-  "last_synced": "2026-06-06T21:00:00Z",
+  "last_synced": "2026-06-08T12:00:00Z",
   "schema_version": "v2",
   "tables": {
     "tbl1WMPtQhWYW7bTI": {
       "name": "People",
       "module": "Phase 1 \u2014 Foundation",
-      "description": "The people graph spine. One record per person David knows.",
+      "description": "People table.",
       "fields": {
         "fldQphROBOyCuNjOv": {
           "name": "Name",
           "type": "singleLineText",
-          "purpose": "Full name of the person",
+          "purpose": "Name",
           "status": "active"
         },
         "fldb7cEOHEZLAe5yd": {
           "name": "Birthday",
           "type": "date",
-          "purpose": "Birthday, no year required if unknown",
+          "purpose": "Birthday",
           "status": "active"
         },
         "fldLDoG3tVW1vWF6M": {
           "name": "Phone",
           "type": "phoneNumber",
-          "purpose": "Phone number for contact matching",
+          "purpose": "Phone",
           "status": "active"
         },
         "fldhPsRJjshQiSylF": {
           "name": "Email",
           "type": "email",
-          "purpose": "Email address",
+          "purpose": "Email",
           "status": "active"
         },
         "fldb56Sqw8FLbbKeK": {
           "name": "How I know them",
           "type": "singleLineText",
-          "purpose": "Origin of the relationship",
+          "purpose": "How I know them",
           "status": "active"
         },
         "fldsGil2KUvsvTMoc": {
           "name": "Food dislikes",
           "type": "multilineText",
-          "purpose": "Foods they dislike (free text)",
+          "purpose": "Food dislikes",
           "status": "active"
         },
         "fldgcubbsQijhgmAj": {
           "name": "Portion Notes",
           "type": "singleLineText",
-          "purpose": "e.g. small eater, big appetite",
+          "purpose": "Portion Notes",
           "status": "active"
         },
         "fldLPqjIO5d7gwqAH": {
           "name": "Hobbies & interests",
           "type": "multilineText",
-          "purpose": "What they're into",
+          "purpose": "Hobbies & interests",
           "status": "active"
         },
         "fldGWXFngCdVqnsKm": {
           "name": "Topics They Love",
           "type": "multilineText",
-          "purpose": "Good conversation territory",
+          "purpose": "Topics They Love",
           "status": "active"
         },
         "flddmdJi3jQmtYDs9": {
           "name": "Topics to Avoid",
           "type": "multilineText",
-          "purpose": "Sensitive subjects",
+          "purpose": "Topics to Avoid",
           "status": "active"
         },
         "fldAKXP2nGsKiyQG0": {
           "name": "Gift interests",
           "type": "multilineText",
-          "purpose": "What to consider for presents",
+          "purpose": "Gift interests",
           "status": "active"
         },
         "fldgVtVMAdHRwS8Eq": {
           "name": "Social Style",
           "type": "singleLineText",
-          "purpose": "How they like to socialise",
+          "purpose": "Social Style",
           "status": "active"
         },
         "fldgL8kdBSeOE91mp": {
           "name": "Venue Preferences",
           "type": "multilineText",
-          "purpose": "e.g. hates loud places",
+          "purpose": "Venue Preferences",
           "status": "active"
         },
         "fld42wo2qrztgBSKD": {
           "name": "Anniversaries",
           "type": "multilineText",
-          "purpose": "Wedding, other recurring dates",
+          "purpose": "Anniversaries",
           "status": "active"
         },
         "fldCasBkw7MP9iRy9": {
           "name": "Last Seen",
           "type": "date",
-          "purpose": "Updated after each interaction",
+          "purpose": "Last Seen",
           "status": "active"
         },
         "fldjfZQEC05jfaFZ9": {
           "name": "Relationship Notes",
           "type": "multilineText",
-          "purpose": "Timestamped freeform relationship notes",
+          "purpose": "Relationship Notes",
           "status": "active"
         },
         "fldU04RSVVKHKC5ig": {
           "name": "Tier",
           "type": "singleSelect",
-          "purpose": "Data richness tier: Tier 1-4",
+          "purpose": "Tier",
           "status": "active",
           "choices": [
+            "Tier 4",
             "Tier 1",
             "Tier 2",
-            "Tier 3",
-            "Tier 4"
+            "Tier 3"
           ]
         },
         "fld09aTwNwRriFBuF": {
           "name": "Created",
           "type": "createdTime",
-          "purpose": "Auto timestamp",
-          "status": "system"
+          "purpose": "Created",
+          "status": "active"
         },
         "fldHtnrSsaXy7MygY": {
           "name": "Last Modified",
           "type": "lastModifiedTime",
-          "purpose": "Auto timestamp",
-          "status": "system"
+          "purpose": "Last Modified",
+          "status": "active"
+        },
+        "fldzCBmmkSoL7BCnG": {
+          "name": "FilmClub_Data",
+          "type": "singleLineText",
+          "purpose": "FilmClub_Data",
+          "status": "active"
+        },
+        "fld46iZd1EesSGZNX": {
+          "name": "FilmClub_Log",
+          "type": "singleLineText",
+          "purpose": "FilmClub_Log",
+          "status": "active"
+        },
+        "fldn4tjSGRSBYHrEe": {
+          "name": "Films",
+          "type": "multipleRecordLinks",
+          "purpose": "Films",
+          "status": "active",
+          "links_to": "tblqCpp3EB7wU2ZZ3"
+        },
+        "fldrtOEZteAbnhWMq": {
+          "name": "Films 2",
+          "type": "multipleRecordLinks",
+          "purpose": "Films 2",
+          "status": "active",
+          "links_to": "tblqCpp3EB7wU2ZZ3"
+        },
+        "fldPdM4o4BVUR8iTF": {
+          "name": "Films 3",
+          "type": "multipleRecordLinks",
+          "purpose": "Films 3",
+          "status": "active",
+          "links_to": "tblqCpp3EB7wU2ZZ3"
+        },
+        "fldl09k4siRf13j0P": {
+          "name": "Films 4",
+          "type": "multipleRecordLinks",
+          "purpose": "Films 4",
+          "status": "active",
+          "links_to": "tblqCpp3EB7wU2ZZ3"
+        },
+        "fldTa20XVZOhPSASI": {
+          "name": "Person Notes",
+          "type": "multipleRecordLinks",
+          "purpose": "Person Notes",
+          "status": "active",
+          "links_to": "tbl6hnxzXXmWFkVfh"
+        },
+        "fldqFoASgwHuhA0NZ": {
+          "name": "Conversation Log",
+          "type": "multipleRecordLinks",
+          "purpose": "Conversation Log",
+          "status": "active",
+          "links_to": "tbl2dbgksA9XveLcx"
         },
         "fldg02n9AkwgYGE4o": {
           "name": "Photo",
           "type": "multipleAttachments",
-          "purpose": "Photo for guest briefings",
+          "purpose": "Photo",
           "status": "active"
         },
         "fldu3ULkIdfKLvn7J": {
           "name": "Food preferences",
           "type": "multilineText",
-          "purpose": "Foods they love (separate from dislikes)",
+          "purpose": "Food preferences",
           "status": "active"
         },
         "fldkUtDsuF1GLVAod": {
           "name": "Relationship type",
           "type": "singleSelect",
-          "purpose": "Me/Spouse/Family/Close friend/Friend/Colleague/Acquaintance/Other",
+          "purpose": "Relationship type",
           "status": "active",
           "choices": [
             "Me",
@@ -160,7 +214,7 @@
         "fldgH8T2udcQqpArX": {
           "name": "Dietary reqs",
           "type": "multipleSelects",
-          "purpose": "Dietary requirements as fixed options",
+          "purpose": "Dietary reqs",
           "status": "active",
           "choices": [
             "Vegetarian",
@@ -176,7 +230,7 @@
         "flde7vOm8jKPSBvDT": {
           "name": "Allergy list",
           "type": "multipleSelects",
-          "purpose": "Allergies as fixed options",
+          "purpose": "Allergy list",
           "status": "active",
           "choices": [
             "Nuts",
@@ -191,7 +245,7 @@
         "fldJj1Av215vY3NCi": {
           "name": "Gift budget range",
           "type": "singleSelect",
-          "purpose": "Budget range for gifts",
+          "purpose": "Gift budget range",
           "status": "active",
           "choices": [
             "Under \u00a320",
@@ -203,7 +257,7 @@
         "fldQ6uM96gqbloq5L": {
           "name": "Typical contact frequency",
           "type": "singleSelect",
-          "purpose": "How often David typically contacts them",
+          "purpose": "Typical contact frequency",
           "status": "active",
           "choices": [
             "Weekly",
@@ -213,89 +267,70 @@
             "Rarely"
           ]
         },
-        "fldTa20XVZOhPSASI": {
-          "name": "Person Notes",
+        "fldqq0LBV604Pim0J": {
+          "name": "Dinner Parties",
           "type": "multipleRecordLinks",
-          "purpose": "Link to Person Notes table",
+          "purpose": "Dinner Parties",
           "status": "active",
-          "links_to": "tbl6hnxzXXmWFkVfh"
+          "links_to": "tblwbQrIu3nUWDz3G"
         },
-        "fldqFoASgwHuhA0NZ": {
-          "name": "Conversation Log",
+        "fldXwBF7kuGZJ6M8O": {
+          "name": "Restaurant Visits",
           "type": "multipleRecordLinks",
-          "purpose": "Link to Conversation Log table",
+          "purpose": "Restaurant Visits",
           "status": "active",
-          "links_to": "tbl2dbgksA9XveLcx"
+          "links_to": "tblf2k6uAHLW7mA4b"
         },
-        "fldzCBmmkSoL7BCnG": {
-          "name": "FilmClub_Data",
-          "type": "singleLineText",
-          "purpose": "JUNK \u2014 leftover from subagent, safe to delete",
-          "status": "junk"
-        },
-        "fld46iZd1EesSGZNX": {
-          "name": "FilmClub_Log",
-          "type": "singleLineText",
-          "purpose": "JUNK \u2014 leftover from subagent, safe to delete",
-          "status": "junk"
-        },
-        "fldn4tjSGRSBYHrEe": {
-          "name": "Films",
+        "fldpXD7kU33ubf2EF": {
+          "name": "Restaurants",
           "type": "multipleRecordLinks",
-          "purpose": "JUNK \u2014 duplicate Films link, safe to delete",
-          "status": "junk",
-          "links_to": "tblqCpp3EB7wU2ZZ3"
+          "purpose": "Restaurants",
+          "status": "active",
+          "links_to": "tblvpSxjeoCQvjotM"
         },
-        "fldrtOEZteAbnhWMq": {
-          "name": "Films 2",
+        "fld0o04HygQAlt1DD": {
+          "name": "Workouts",
           "type": "multipleRecordLinks",
-          "purpose": "JUNK \u2014 duplicate Films link, safe to delete",
-          "status": "junk",
-          "links_to": "tblqCpp3EB7wU2ZZ3"
+          "purpose": "Workouts",
+          "status": "active",
+          "links_to": "tblMDYF8Lkl5A15CW"
         },
-        "fldPdM4o4BVUR8iTF": {
-          "name": "Films 3",
+        "fldUUc8igt4LfNXXV": {
+          "name": "Cycling",
           "type": "multipleRecordLinks",
-          "purpose": "JUNK \u2014 duplicate Films link, safe to delete",
-          "status": "junk",
-          "links_to": "tblqCpp3EB7wU2ZZ3"
-        },
-        "fldl09k4siRf13j0P": {
-          "name": "Films 4",
-          "type": "multipleRecordLinks",
-          "purpose": "JUNK \u2014 duplicate Films link, safe to delete",
-          "status": "junk",
-          "links_to": "tblqCpp3EB7wU2ZZ3"
+          "purpose": "Cycling",
+          "status": "active",
+          "links_to": "tblZ7hkoE68IRnQwV"
         }
       }
     },
     "tblXH4eCLwM8S30cn": {
       "name": "Memory_Summaries",
       "module": "Core",
-      "description": "Periodic long-term memory summaries generated by Hermes.",
+      "description": "Memory_Summaries table.",
       "fields": {
         "fldXGYUKTsXZQQZFQ": {
           "name": "Period",
           "type": "singleLineText",
-          "purpose": "Time period this summary covers",
+          "purpose": "Period",
           "status": "active"
         },
         "fldEkQra1F0zh8sy9": {
           "name": "Summary",
           "type": "multilineText",
-          "purpose": "The summary text",
+          "purpose": "Summary",
           "status": "active"
         },
         "fldQeVIimjp48YDNL": {
           "name": "Source Entries",
           "type": "multilineText",
-          "purpose": "Raw entries that were summarised",
+          "purpose": "Source Entries",
           "status": "active"
         },
         "fldOdk6WVlQZUBT5h": {
           "name": "Created",
           "type": "date",
-          "purpose": "When the summary was created",
+          "purpose": "Created",
           "status": "active"
         }
       }
@@ -303,36 +338,36 @@
     "tbldJT41dAAX1WTkC": {
       "name": "Output_Log",
       "module": "Core",
-      "description": "Log of what Geeves generated, when, and how it was rated.",
+      "description": "Output_Log table.",
       "fields": {
         "fldab4bfNUl1V5ngl": {
           "name": "Item",
           "type": "singleLineText",
-          "purpose": "What was generated",
+          "purpose": "Item",
           "status": "active"
         },
         "fldFKls8VJ2fPOZZ6": {
           "name": "Module",
           "type": "singleLineText",
-          "purpose": "Which module produced this",
+          "purpose": "Module",
           "status": "active"
         },
         "fldmBNcjjlxvlADz7": {
           "name": "Generated At",
           "type": "date",
-          "purpose": "When it was created",
+          "purpose": "Generated At",
           "status": "active"
         },
         "fldQFpvS40Wj5YSoE": {
           "name": "Content",
           "type": "multilineText",
-          "purpose": "The generated output",
+          "purpose": "Content",
           "status": "active"
         },
         "fldrC7kiN1tGzAcrI": {
           "name": "Rating",
           "type": "singleSelect",
-          "purpose": "How David rated it",
+          "purpose": "Rating",
           "status": "active",
           "choices": [
             "\u2605\u2605\u2605 Great",
@@ -343,13 +378,13 @@
         "fldFnImp2aevtB2az": {
           "name": "Feedback",
           "type": "multilineText",
-          "purpose": "David's feedback notes",
+          "purpose": "Feedback",
           "status": "active"
         },
         "flddcds6EenssxxnQ": {
           "name": "Prompt Used",
           "type": "multilineText",
-          "purpose": "The prompt that generated this",
+          "purpose": "Prompt Used",
           "status": "active"
         }
       }
@@ -357,29 +392,31 @@
     "tblTcdZQ9AIltQDfu": {
       "name": "Todos",
       "module": "Phase 2 \u2014 Daily Bulletin",
-      "description": "Tasks across short, medium, and long horizons.",
+      "description": "Todos table.",
       "fields": {
         "fldek27pDvP3YRd6p": {
           "name": "Task",
           "type": "singleLineText",
-          "purpose": "What needs doing",
+          "purpose": "Task",
           "status": "active"
         },
         "fld29ukSEP5JTz6Af": {
           "name": "Status",
           "type": "singleSelect",
-          "purpose": "Current status",
+          "purpose": "Status",
           "status": "active",
           "choices": [
-            "Not started",
+            "Todo",
             "In Progress",
-            "Done"
+            "Done",
+            "Cancelled",
+            "Not started"
           ]
         },
         "fldXOuxWmevRP1yVm": {
           "name": "Priority",
           "type": "singleSelect",
-          "purpose": "How urgent",
+          "purpose": "Priority",
           "status": "active",
           "choices": [
             "Low",
@@ -390,37 +427,37 @@
         "fld7rr27yK3tQ5Vju": {
           "name": "Due Date",
           "type": "date",
-          "purpose": "When it's due",
+          "purpose": "Due Date",
           "status": "active"
         },
         "fldHMEN4UKP5lppWY": {
           "name": "Module",
           "type": "singleLineText",
-          "purpose": "Which module this belongs to",
+          "purpose": "Module",
           "status": "active"
         },
         "fldiJPxJstX777ixa": {
           "name": "Notes",
           "type": "multilineText",
-          "purpose": "Additional notes",
+          "purpose": "Notes",
           "status": "active"
         },
         "fldYhzeXdJSBFQ7z6": {
           "name": "Completed Date",
           "type": "date",
-          "purpose": "When it was completed",
+          "purpose": "Completed Date",
           "status": "active"
         },
         "fldKJvAtEPO8ynr5Q": {
           "name": "Linked Person",
           "type": "singleLineText",
-          "purpose": "Person this task relates to (should be link)",
+          "purpose": "Linked Person",
           "status": "active"
         },
         "fldtvAMVWTbPilGA9": {
           "name": "Timeframe",
           "type": "singleSelect",
-          "purpose": "Short/Mid/Long term",
+          "purpose": "Timeframe",
           "status": "active",
           "choices": [
             "Short term",
@@ -431,7 +468,7 @@
         "fld80EBmfKioNxN8I": {
           "name": "Category",
           "type": "singleSelect",
-          "purpose": "Personal/Work/Household/Health/Errand/Other",
+          "purpose": "Category",
           "status": "active",
           "choices": [
             "Personal",
@@ -445,7 +482,7 @@
         "fld8cYPhwxAdHgy4Y": {
           "name": "Source",
           "type": "singleSelect",
-          "purpose": "How this task was created",
+          "purpose": "Source",
           "status": "active",
           "choices": [
             "Manual",
@@ -459,18 +496,18 @@
     "tblUTCWleQD61Ti2v": {
       "name": "Fact_of_the_Day",
       "module": "Phase 2 \u2014 Daily Bulletin",
-      "description": "Daily interesting facts for the morning digest.",
+      "description": "Fact_of_the_Day table.",
       "fields": {
         "fldxgudl3b7aBvj5M": {
           "name": "Date",
           "type": "date",
-          "purpose": "Date of the fact",
+          "purpose": "Date",
           "status": "active"
         },
         "fld5UKmREuDi49WCE": {
           "name": "Category",
           "type": "singleSelect",
-          "purpose": "Type of fact",
+          "purpose": "Category",
           "status": "active",
           "choices": [
             "Wikipedia",
@@ -481,13 +518,13 @@
         "fldRlW3qmCMh4s5zl": {
           "name": "Fact",
           "type": "multilineText",
-          "purpose": "The fact text",
+          "purpose": "Fact",
           "status": "active"
         },
         "fldSlvyqicfp0lQiB": {
           "name": "Source URL",
           "type": "url",
-          "purpose": "Link to source",
+          "purpose": "Source URL",
           "status": "active"
         }
       }
@@ -495,90 +532,144 @@
     "tblFd4kAahIUozJsf": {
       "name": "Weather_Data",
       "module": "Phase 2 \u2014 Daily Bulletin",
-      "description": "Daily weather data for the morning digest.",
+      "description": "Weather_Data table.",
       "fields": {
         "fldpHczHBc65Ag10X": {
           "name": "Date",
           "type": "date",
-          "purpose": "Date of reading",
+          "purpose": "Date",
           "status": "active"
         },
         "fldMC6Z0SKlwCIrDV": {
           "name": "Location",
           "type": "singleLineText",
-          "purpose": "Weather location",
+          "purpose": "Location",
           "status": "active"
         },
         "fld9vekoqofmM4mnZ": {
           "name": "Temperature C",
           "type": "number",
-          "purpose": "Current temperature",
+          "purpose": "Temperature C",
           "status": "active"
         },
         "fldgAqYxzwwdkmzGE": {
           "name": "Feels Like C",
           "type": "number",
-          "purpose": "Feels-like temperature",
+          "purpose": "Feels Like C",
           "status": "active"
         },
         "fldbwNctrmAKvEAKX": {
           "name": "Humidity Pct",
           "type": "number",
-          "purpose": "Humidity percentage",
+          "purpose": "Humidity Pct",
           "status": "active"
         },
         "fldmXEQ2zBpgWRGhn": {
           "name": "Wind Speed KPH",
           "type": "number",
-          "purpose": "Wind speed",
+          "purpose": "Wind Speed KPH",
           "status": "active"
         },
         "fldB0CEoCeezI4Qxy": {
           "name": "Condition",
           "type": "singleLineText",
-          "purpose": "Weather condition text",
+          "purpose": "Condition",
           "status": "active"
         },
         "fld13fmZme9LLA4GV": {
           "name": "Description",
           "type": "multilineText",
-          "purpose": "Detailed description",
+          "purpose": "Description",
           "status": "active"
         },
         "fldThF60wuKK63kmw": {
           "name": "High C",
           "type": "number",
-          "purpose": "Daily high temperature",
+          "purpose": "High C",
           "status": "active"
         },
         "fldkPlavc4W8TcyCu": {
           "name": "Low C",
           "type": "number",
-          "purpose": "Daily low temperature",
+          "purpose": "Low C",
           "status": "active"
         },
         "fldLSatMWVosI2wM7": {
           "name": "Daily Condition",
           "type": "singleLineText",
-          "purpose": "Summary condition for the day",
+          "purpose": "Daily Condition",
           "status": "active"
         },
         "fldOxN6RdfpWXLo5v": {
           "name": "Rain Expected",
           "type": "singleLineText",
-          "purpose": "Whether rain is expected",
+          "purpose": "Rain Expected",
           "status": "active"
         },
         "fldV2eLSAdh24gOi4": {
           "name": "Rain Times",
           "type": "multilineText",
-          "purpose": "When rain is expected",
+          "purpose": "Rain Times",
           "status": "active"
         },
         "fldpYn0xWorEJNIID": {
           "name": "Precipitation MM",
           "type": "number",
-          "purpose": "Precipitation in mm",
+          "purpose": "Precipitation MM",
+          "status": "active"
+        },
+        "fldittjGQ3uc5vJaV": {
+          "name": "Morning Temp C",
+          "type": "number",
+          "purpose": "Morning Temp C",
+          "status": "active"
+        },
+        "flderHrvgFHSETJuK": {
+          "name": "Morning Condition",
+          "type": "singleLineText",
+          "purpose": "Morning Condition",
+          "status": "active"
+        },
+        "fldT790IASDCYu2Id": {
+          "name": "Morning Rain Prob",
+          "type": "number",
+          "purpose": "Morning Rain Prob",
+          "status": "active"
+        },
+        "fldXv8tW3PKU55uXz": {
+          "name": "Afternoon Temp C",
+          "type": "number",
+          "purpose": "Afternoon Temp C",
+          "status": "active"
+        },
+        "fldZ6FnX6ONN4qAjg": {
+          "name": "Afternoon Condition",
+          "type": "singleLineText",
+          "purpose": "Afternoon Condition",
+          "status": "active"
+        },
+        "fldX8QnjYXRQGMYCE": {
+          "name": "Afternoon Rain Prob",
+          "type": "number",
+          "purpose": "Afternoon Rain Prob",
+          "status": "active"
+        },
+        "fld3HC8sbyUQTM8hj": {
+          "name": "Evening Temp C",
+          "type": "number",
+          "purpose": "Evening Temp C",
+          "status": "active"
+        },
+        "fldkDuCJL47iJtQrC": {
+          "name": "Evening Condition",
+          "type": "singleLineText",
+          "purpose": "Evening Condition",
+          "status": "active"
+        },
+        "fldf3Q6k8dAVyOeIH": {
+          "name": "Evening Rain Prob",
+          "type": "number",
+          "purpose": "Evening Rain Prob",
           "status": "active"
         }
       }
@@ -586,42 +677,42 @@
     "tblI1oXlNIFXrVm7f": {
       "name": "Stock_Prices",
       "module": "Phase 2 \u2014 Daily Bulletin",
-      "description": "Daily stock/ETF/crypto prices for the morning digest.",
+      "description": "Stock_Prices table.",
       "fields": {
         "fldu4BXUlDsF1yFP5": {
           "name": "Date",
           "type": "date",
-          "purpose": "Date of price",
+          "purpose": "Date",
           "status": "active"
         },
         "fldG3q1kKmlizuGJE": {
           "name": "Ticker",
           "type": "singleLineText",
-          "purpose": "Stock ticker symbol",
+          "purpose": "Ticker",
           "status": "active"
         },
         "fldHmHRaaOhfRnMIz": {
           "name": "Price",
           "type": "number",
-          "purpose": "Current price",
+          "purpose": "Price",
           "status": "active"
         },
         "fld489NLMuERQU25K": {
           "name": "Currency",
           "type": "singleLineText",
-          "purpose": "Currency code",
+          "purpose": "Currency",
           "status": "active"
         },
         "fldG2yWKonbx3qckH": {
           "name": "Change Pct",
           "type": "number",
-          "purpose": "Percentage change",
+          "purpose": "Change Pct",
           "status": "active"
         },
         "fldOVWg8OaVhJV2IM": {
           "name": "Source",
           "type": "singleLineText",
-          "purpose": "Data source",
+          "purpose": "Source",
           "status": "active"
         }
       }
@@ -629,60 +720,60 @@
     "tblqCpp3EB7wU2ZZ3": {
       "name": "Films",
       "module": "Films",
-      "description": "Master film diary (all films David has watched) + film club records. One table, filtered by Film Club = Yes/No. Discussion in thread supersedes reference doc.",
+      "description": "Films table.",
       "fields": {
         "fldyyQhFkGKN0AJR2": {
           "name": "Film Title",
           "type": "singleLineText",
-          "purpose": "Title of the film",
+          "purpose": "Film Title",
           "status": "active"
         },
         "fldLUGWIOoXiHl7F5": {
           "name": "Year",
           "type": "number",
-          "purpose": "Release year (auto from OMDb)",
+          "purpose": "Year",
           "status": "active"
         },
         "fldrHPdD3ZK7h9kc0": {
           "name": "Director",
           "type": "singleLineText",
-          "purpose": "Director name (auto from OMDb)",
+          "purpose": "Director",
           "status": "active"
         },
         "fldxo3VqZK6yQZr3s": {
           "name": "Genre",
           "type": "singleLineText",
-          "purpose": "Film genre (auto from OMDb)",
+          "purpose": "Genre",
           "status": "active"
         },
         "fldrFLlvDo7yGJcP0": {
           "name": "IMDb Rating",
           "type": "number",
-          "purpose": "IMDb rating (auto from OMDb)",
+          "purpose": "IMDb Rating",
           "status": "active"
         },
         "fldH2tckSChwPgIxq": {
           "name": "IMDb Votes",
           "type": "number",
-          "purpose": "Number of IMDb votes (auto from OMDb)",
+          "purpose": "IMDb Votes",
           "status": "active"
         },
         "fldXXbiV8lXzmDFFW": {
           "name": "Metascore",
           "type": "number",
-          "purpose": "Metacritic score (auto from OMDb)",
+          "purpose": "Metascore",
           "status": "active"
         },
         "fldo35AAMn4EzjfG6": {
           "name": "IMDb URL",
           "type": "url",
-          "purpose": "Link to IMDb page (auto from OMDb)",
+          "purpose": "IMDb URL",
           "status": "active"
         },
         "fldR3iFuByE7HJymN": {
           "name": "My Rating",
           "type": "singleSelect",
-          "purpose": "David's personal rating 1-10. All ratings use 1-10 scale.",
+          "purpose": "My Rating",
           "status": "active",
           "choices": [
             "1",
@@ -700,19 +791,19 @@
         "fld8DL7NjW8XOGYkB": {
           "name": "Date Watched",
           "type": "date",
-          "purpose": "When David watched it",
+          "purpose": "Date Watched",
           "status": "active"
         },
         "fldIYDUJ6QKa3038m": {
           "name": "Personal Notes",
           "type": "multilineText",
-          "purpose": "David's personal review/notes",
+          "purpose": "Personal Notes",
           "status": "active"
         },
         "fldk56EohxLfW8m8X": {
           "name": "Film Club",
           "type": "singleSelect",
-          "purpose": "Whether this was a film club pick. Create Airtable view filtering this field.",
+          "purpose": "Film Club",
           "status": "active",
           "choices": [
             "Yes",
@@ -722,13 +813,13 @@
         "fldfpViwrjcbKsvtz": {
           "name": "Month Picked",
           "type": "singleLineText",
-          "purpose": "Month the film was picked for club (e.g. 2026-06). Only for club picks.",
+          "purpose": "Month Picked",
           "status": "active"
         },
         "fldIViAo89HqQtM01": {
           "name": "Watched At",
           "type": "singleSelect",
-          "purpose": "How/where the film was watched. Only for club picks.",
+          "purpose": "Watched At",
           "status": "active",
           "choices": [
             "Hosted (at someone's home)",
@@ -740,27 +831,13 @@
         "fld14vNBDqHaUmo0x": {
           "name": "Club Discussion Notes",
           "type": "multilineText",
-          "purpose": "Notes from club discussion. Only for club picks.",
+          "purpose": "Club Discussion Notes",
           "status": "active"
-        },
-        "fldtBV1k6VrlAZYSW": {
-          "name": "Recommended By",
-          "type": "multipleRecordLinks",
-          "purpose": "Person who recommended the film for club. Links to People. Only for club picks.",
-          "status": "active",
-          "links_to": "tbl1WMPtQhWYW7bTI"
-        },
-        "fldycrtlQyAkYTeAN": {
-          "name": "Member 2 Name",
-          "type": "multipleRecordLinks",
-          "purpose": "Film club member 2. Links to People.",
-          "status": "active",
-          "links_to": "tbl1WMPtQhWYW7bTI"
         },
         "flduPL8vNzT9QTWe0": {
           "name": "Member 2 Rating",
           "type": "singleSelect",
-          "purpose": "Member 2's rating 1-10. Only for club picks.",
+          "purpose": "Member 2 Rating",
           "status": "active",
           "choices": [
             "1",
@@ -779,20 +856,13 @@
         "fldcr2B8HJd0Ecfoy": {
           "name": "Member 2 Notes",
           "type": "multilineText",
-          "purpose": "Member 2's comments. Only for club picks.",
+          "purpose": "Member 2 Notes",
           "status": "active"
-        },
-        "fldqwFdahGG7w1QDZ": {
-          "name": "Member 3 Name",
-          "type": "multipleRecordLinks",
-          "purpose": "Film club member 3. Links to People.",
-          "status": "active",
-          "links_to": "tbl1WMPtQhWYW7bTI"
         },
         "fldT9K4Nsf493Goxa": {
           "name": "Member 3 Rating",
           "type": "singleSelect",
-          "purpose": "Member 3's rating 1-10. Only for club picks.",
+          "purpose": "Member 3 Rating",
           "status": "active",
           "choices": [
             "1",
@@ -811,20 +881,13 @@
         "fldPwn0U10iskjC55": {
           "name": "Member 3 Notes",
           "type": "multilineText",
-          "purpose": "Member 3's comments. Only for club picks.",
+          "purpose": "Member 3 Notes",
           "status": "active"
-        },
-        "fldpSIw2964VnEDQF": {
-          "name": "Member 4 Name",
-          "type": "multipleRecordLinks",
-          "purpose": "David's wife. Rates films with David but is NOT in the film club. Links to People.",
-          "status": "active",
-          "links_to": "tbl1WMPtQhWYW7bTI"
         },
         "fldLKmZnb3a05jl2g": {
           "name": "Member 4 Rating",
           "type": "singleSelect",
-          "purpose": "Wife's rating 1-10. Filled when David and wife watch together, not just club.",
+          "purpose": "Member 4 Rating",
           "status": "active",
           "choices": [
             "1",
@@ -843,7 +906,96 @@
         "fldPlJiFY9W1QJEVk": {
           "name": "Member 4 Notes",
           "type": "multilineText",
-          "purpose": "Wife's comments.",
+          "purpose": "Member 4 Notes",
+          "status": "active"
+        },
+        "fldtBV1k6VrlAZYSW": {
+          "name": "Recommended By",
+          "type": "multipleRecordLinks",
+          "purpose": "Recommended By",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        },
+        "fldycrtlQyAkYTeAN": {
+          "name": "Member 2 Name",
+          "type": "multipleRecordLinks",
+          "purpose": "Member 2 Name",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        },
+        "fldqwFdahGG7w1QDZ": {
+          "name": "Member 3 Name",
+          "type": "multipleRecordLinks",
+          "purpose": "Member 3 Name",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        },
+        "fldpSIw2964VnEDQF": {
+          "name": "Member 4 Name",
+          "type": "multipleRecordLinks",
+          "purpose": "Member 4 Name",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        }
+      }
+    },
+    "tbl3EjtE3YW1ZUqEv": {
+      "name": "Token_Usage",
+      "module": "System",
+      "description": "Token_Usage table.",
+      "fields": {
+        "fldXDyJN1tpqAgnde": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldwki0qJcRr2b0DS": {
+          "name": "Sessions",
+          "type": "number",
+          "purpose": "Sessions",
+          "status": "active"
+        },
+        "fldJ0hsCOIN3J7cHl": {
+          "name": "Input Tokens",
+          "type": "number",
+          "purpose": "Input Tokens",
+          "status": "active"
+        },
+        "fldFt3usQWkAlbEQ9": {
+          "name": "Output Tokens",
+          "type": "number",
+          "purpose": "Output Tokens",
+          "status": "active"
+        },
+        "fldaz3xR4jNsj0767": {
+          "name": "Cache Read Tokens",
+          "type": "number",
+          "purpose": "Cache Read Tokens",
+          "status": "active"
+        },
+        "fldH4NM8uz1qv4JSa": {
+          "name": "Total Active Tokens",
+          "type": "number",
+          "purpose": "Total Active Tokens",
+          "status": "active"
+        },
+        "fld1KYgDN0bVsI9aQ": {
+          "name": "Estimated Cost USD",
+          "type": "number",
+          "purpose": "Estimated Cost USD",
+          "status": "active"
+        },
+        "fld7RBYygNKNG7baM": {
+          "name": "Top Model",
+          "type": "singleLineText",
+          "purpose": "Top Model",
+          "status": "active"
+        },
+        "fldzIsfTjQ91VBzQr": {
+          "name": "Summary",
+          "type": "multilineText",
+          "purpose": "Summary",
           "status": "active"
         }
       }
@@ -851,25 +1003,25 @@
     "tbl6hnxzXXmWFkVfh": {
       "name": "Person Notes",
       "module": "Phase 1 \u2014 Foundation",
-      "description": "Timestamped freeform notes about a person.",
+      "description": "Person Notes table.",
       "fields": {
         "fldXM58B1J2KF2Fp8": {
           "name": "Note",
           "type": "multilineText",
-          "purpose": "The note text",
+          "purpose": "Note",
           "status": "active"
         },
         "fldXEHtYdHjcZI6bh": {
           "name": "Person",
           "type": "multipleRecordLinks",
-          "purpose": "Link to the person",
+          "purpose": "Person",
           "status": "active",
           "links_to": "tbl1WMPtQhWYW7bTI"
         },
         "fldlRo4loOtRcLB2o": {
           "name": "Source",
           "type": "singleSelect",
-          "purpose": "How this note was captured",
+          "purpose": "Source",
           "status": "active",
           "choices": [
             "Manual",
@@ -880,7 +1032,7 @@
         "fldMYb03U8LgM1jqY": {
           "name": "Active",
           "type": "checkbox",
-          "purpose": "Uncheck to retire without deleting",
+          "purpose": "Active",
           "status": "active"
         }
       }
@@ -888,37 +1040,37 @@
     "tbl2dbgksA9XveLcx": {
       "name": "Conversation Log",
       "module": "Phase 1 \u2014 Foundation",
-      "description": "Debrief notes after seeing someone.",
+      "description": "Conversation Log table.",
       "fields": {
         "fldGcOEkxTLd5OfvB": {
           "name": "Summary",
           "type": "multilineText",
-          "purpose": "What was discussed, their news",
+          "purpose": "Summary",
           "status": "active"
         },
         "fld6fKdVwWHsam0fe": {
           "name": "Person",
           "type": "multipleRecordLinks",
-          "purpose": "Link to the person",
+          "purpose": "Person",
           "status": "active",
           "links_to": "tbl1WMPtQhWYW7bTI"
         },
         "fldQugE12tzE2omd3": {
           "name": "Date",
           "type": "date",
-          "purpose": "Date of the conversation",
+          "purpose": "Date",
           "status": "active"
         },
         "fldypxt88n5slgsKA": {
           "name": "Key things to remember",
           "type": "multilineText",
-          "purpose": "Promotions, moves, life events",
+          "purpose": "Key things to remember",
           "status": "active"
         },
         "fldw0Z5qafaJLgQOl": {
           "name": "Source",
           "type": "singleSelect",
-          "purpose": "How this was captured",
+          "purpose": "Source",
           "status": "active",
           "choices": [
             "Manual",
@@ -928,145 +1080,262 @@
         }
       }
     },
-    "tbl3EjtE3YW1ZUqEv": {
-      "name": "Token_Usage",
-      "module": "System",
-      "description": "Daily Hermes token usage tracking.",
-      "fields": {
-        "fldXDyJN1tpqAgnde": {
-          "name": "Date",
-          "type": "date",
-          "purpose": "Date of tracking",
-          "status": "active"
-        },
-        "fldwki0qJcRr2b0DS": {
-          "name": "Sessions",
-          "type": "number",
-          "purpose": "Number of sessions",
-          "status": "active"
-        },
-        "fldJ0hsCOIN3J7cHl": {
-          "name": "Input Tokens",
-          "type": "number",
-          "purpose": "Input token count",
-          "status": "active"
-        },
-        "fldFt3usQWkAlbEQ9": {
-          "name": "Output Tokens",
-          "type": "number",
-          "purpose": "Output token count",
-          "status": "active"
-        },
-        "fldaz3xR4jNsj0767": {
-          "name": "Cache Read Tokens",
-          "type": "number",
-          "purpose": "Cache read tokens",
-          "status": "active"
-        },
-        "fldH4NM8uz1qv4JSa": {
-          "name": "Total Active Tokens",
-          "type": "number",
-          "purpose": "Total active tokens",
-          "status": "active"
-        },
-        "fld1KYgDN0bVsI9aQ": {
-          "name": "Estimated Cost USD",
-          "type": "number",
-          "purpose": "Estimated cost",
-          "status": "active"
-        },
-        "fld7RBYygNKNG7baM": {
-          "name": "Top Model",
-          "type": "singleLineText",
-          "purpose": "Most used model",
-          "status": "active"
-        },
-        "fldzIsfTjQ91VBzQr": {
-          "name": "Summary",
-          "type": "multilineText",
-          "purpose": "Daily summary",
-          "status": "active"
-        }
-      }
-    },
     "tblzTM9AX3urzi2vP": {
       "name": "News_Headlines",
       "module": "Phase 2 \u2014 Daily Bulletin",
-      "description": "Daily UK news headlines from SerpApi Google News.",
+      "description": "News_Headlines table.",
       "fields": {
         "fld4ct6YQKVmQ7OoA": {
           "name": "Date",
           "type": "date",
-          "purpose": "Date of headlines",
+          "purpose": "Date",
           "status": "active"
         },
         "fldsQItbnzawzEtxm": {
           "name": "Headline Count",
           "type": "number",
-          "purpose": "Number of headlines fetched",
+          "purpose": "Headline Count",
           "status": "active"
         },
         "fldlY0GZfU1z8LwmB": {
           "name": "Top Headline",
           "type": "singleLineText",
-          "purpose": "Top headline of the day",
+          "purpose": "Top Headline",
           "status": "active"
         },
         "fldGi8hIAGPbRtheA": {
           "name": "Top Source",
           "type": "singleLineText",
-          "purpose": "Source of top headline",
+          "purpose": "Top Source",
           "status": "active"
         },
         "fldaZIv8IaTHc9t8j": {
           "name": "Summary",
           "type": "multilineText",
-          "purpose": "Summary of headlines",
+          "purpose": "Summary",
           "status": "active"
         }
       }
     },
-    "Recipes": {
-      "id": "tblehBgzRMa2Xucjd",
-      "module": "Phase 3 \u2014 Weekly Rhythm",
-      "status": "active",
+    "tblAvJ4PG6HbAXruj": {
+      "name": "Star_Wars_Fact",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Star_Wars_Fact table.",
       "fields": {
-        "fldName": {
+        "fldxZ6VWivJPpYqVQ": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldnLr8pfovUepcho": {
           "name": "Name",
           "type": "singleLineText",
+          "purpose": "Name",
           "status": "active"
         },
-        "fldMealieSlug": {
-          "name": "Mealie Slug",
+        "fld2lfbesrAZYvwYh": {
+          "name": "Height",
           "type": "singleLineText",
+          "purpose": "Height",
           "status": "active"
         },
-        "fldNotes": {
-          "name": "Notes",
+        "fldUSJ5kJ7CMk1eKY": {
+          "name": "Mass",
+          "type": "singleLineText",
+          "purpose": "Mass",
+          "status": "active"
+        },
+        "fldYDuClabhmR7z5r": {
+          "name": "Hair Color",
+          "type": "singleLineText",
+          "purpose": "Hair Color",
+          "status": "active"
+        },
+        "fldTgRP4d1RpMpiSq": {
+          "name": "Eye Color",
+          "type": "singleLineText",
+          "purpose": "Eye Color",
+          "status": "active"
+        },
+        "fld88tWYbc8pltJJP": {
+          "name": "Gender",
+          "type": "singleLineText",
+          "purpose": "Gender",
+          "status": "active"
+        },
+        "fldtDAWOt15QrCIhf": {
+          "name": "Birth Year",
+          "type": "singleLineText",
+          "purpose": "Birth Year",
+          "status": "active"
+        },
+        "fldcw2AMyqoNVqN2l": {
+          "name": "Homeworld",
+          "type": "singleLineText",
+          "purpose": "Homeworld",
+          "status": "active"
+        },
+        "fldCLOukovFSWgDXx": {
+          "name": "Films Count",
+          "type": "number",
+          "purpose": "Films Count",
+          "status": "active"
+        },
+        "fldJ8VMLB7cKussuz": {
+          "name": "Fact",
           "type": "multilineText",
+          "purpose": "Fact",
           "status": "active"
         },
-        "fldIngredients": {
-          "name": "Ingredients",
-          "type": "multipleRecordLinks",
-          "links_to": "tblNsgbYHNK8xWnB7",
+        "fldmIYxe4LqGBFGaa": {
+          "name": "Source URL",
+          "type": "url",
+          "purpose": "Source URL",
           "status": "active"
         }
       }
     },
-    "Ingredients": {
-      "id": "tblNsgbYHNK8xWnB7",
+    "tblJRsw77kbCFyoz9": {
+      "name": "Recipe Context",
       "module": "Phase 3 \u2014 Weekly Rhythm",
-      "status": "active",
+      "description": "Recipe Context table.",
       "fields": {
-        "fldIngredient": {
-          "name": "Ingredient",
+        "fldRxk7D0b35mAeyD": {
+          "name": "Preference",
           "type": "singleLineText",
+          "purpose": "Preference",
           "status": "active"
         },
-        "fldCategory": {
+        "fldBvVQI5P1HNlmkJ": {
+          "name": "Detail",
+          "type": "multilineText",
+          "purpose": "Detail",
+          "status": "active"
+        },
+        "fldKmQTC2qMBKKyNc": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "Inferred",
+            "Manual"
+          ]
+        }
+      }
+    },
+    "tblYaJTAZDZzBkcwH": {
+      "name": "Recipe Output Log",
+      "module": "Phase 3 \u2014 Weekly Rhythm",
+      "description": "Recipe Output Log table.",
+      "fields": {
+        "fldMoBe44GoLx2ivH": {
+          "name": "Output",
+          "type": "multilineText",
+          "purpose": "Output",
+          "status": "active"
+        },
+        "fldoS4Ht5mRQQzzgQ": {
+          "name": "Type",
+          "type": "singleSelect",
+          "purpose": "Type",
+          "status": "active",
+          "choices": [
+            "Suggestion",
+            "Shopping List",
+            "Meal Plan",
+            "Dinner Party Plan",
+            "Email",
+            "PDF"
+          ]
+        },
+        "fldYUAiTT18Zi2j9q": {
+          "name": "Rating",
+          "type": "number",
+          "purpose": "Rating",
+          "status": "active"
+        },
+        "fldYWtI4yaUbcLNLl": {
+          "name": "Feedback",
+          "type": "multilineText",
+          "purpose": "Feedback",
+          "status": "active"
+        },
+        "fldig1lGmTrZzGL7y": {
+          "name": "Recipe(s)",
+          "type": "multipleRecordLinks",
+          "purpose": "Recipe(s)",
+          "status": "active",
+          "links_to": "tblehBgzRMa2Xucjd"
+        }
+      }
+    },
+    "tblnts17CCckLJoUQ": {
+      "name": "Dinner Planner",
+      "module": "Phase 3 \u2014 Weekly Rhythm",
+      "description": "Dinner Planner table.",
+      "fields": {
+        "fldQUEI8bSYSlP5QH": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldyxelzJwLG1o1ps": {
+          "name": "Meal",
+          "type": "singleLineText",
+          "purpose": "Meal",
+          "status": "active"
+        },
+        "fldWSlXwtFTWz2U5o": {
+          "name": "Prep notes",
+          "type": "multilineText",
+          "purpose": "Prep notes",
+          "status": "active"
+        },
+        "fldGtIdexZEEbtEiP": {
+          "name": "Status",
+          "type": "singleSelect",
+          "purpose": "Status",
+          "status": "active",
+          "choices": [
+            "Planned",
+            "Shopping",
+            "Cooking",
+            "Done"
+          ]
+        },
+        "fldQ5Il0i63pHJC9F": {
+          "name": "Recipe",
+          "type": "multipleRecordLinks",
+          "purpose": "Recipe",
+          "status": "active",
+          "links_to": "tblehBgzRMa2Xucjd"
+        }
+      }
+    },
+    "tblNsgbYHNK8xWnB7": {
+      "name": "Ingredients",
+      "module": "Phase 3 \u2014 Weekly Rhythm",
+      "description": "Ingredients table.",
+      "fields": {
+        "fldbRoFA6eyucYq9t": {
+          "name": "Ingredient",
+          "type": "singleLineText",
+          "purpose": "Ingredient",
+          "status": "active"
+        },
+        "fldMh0oKb4ohIo1qX": {
+          "name": "Quantity",
+          "type": "singleLineText",
+          "purpose": "Quantity",
+          "status": "active"
+        },
+        "flddcuAluUaYA8ixC": {
           "name": "Category",
           "type": "singleSelect",
+          "purpose": "Category",
           "status": "active",
           "choices": [
             "Meat",
@@ -1077,181 +1346,530 @@
             "Grain",
             "Spice",
             "Pantry",
+            "Other",
+            "Eggs"
+          ]
+        },
+        "fld5QAif5coZ43u1s": {
+          "name": "Seasonal",
+          "type": "multipleSelects",
+          "purpose": "Seasonal",
+          "status": "active",
+          "choices": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+          ]
+        },
+        "fldRy5YFdYgo7EOG8": {
+          "name": "Recipe",
+          "type": "multipleRecordLinks",
+          "purpose": "Recipe",
+          "status": "active",
+          "links_to": "tblehBgzRMa2Xucjd"
+        }
+      }
+    },
+    "tblwbQrIu3nUWDz3G": {
+      "name": "Dinner Parties",
+      "module": "Phase 3 \u2014 Weekly Rhythm",
+      "description": "Dinner Parties table.",
+      "fields": {
+        "fldlNdoL1drr771BN": {
+          "name": "Event name",
+          "type": "singleLineText",
+          "purpose": "Event name",
+          "status": "active"
+        },
+        "fldSkW5Ysw5xT6iFe": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldVLPh7JkyM07jgr": {
+          "name": "Dietary constraints (auto)",
+          "type": "multilineText",
+          "purpose": "Dietary constraints (auto)",
+          "status": "active"
+        },
+        "fldnLJ99Zn6soYDMz": {
+          "name": "Menu notes",
+          "type": "multilineText",
+          "purpose": "Menu notes",
+          "status": "active"
+        },
+        "fldh8kFvBhrVEfNB2": {
+          "name": "Shopping list generated",
+          "type": "checkbox",
+          "purpose": "Shopping list generated",
+          "status": "active"
+        },
+        "fldZAYYAP04tdZTjR": {
+          "name": "Status",
+          "type": "singleSelect",
+          "purpose": "Status",
+          "status": "active",
+          "choices": [
+            "Planning",
+            "Confirmed",
+            "Done"
+          ]
+        },
+        "fldUClsJzvDK21ueq": {
+          "name": "Guests",
+          "type": "multipleRecordLinks",
+          "purpose": "Guests",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        },
+        "fld74roOmS1WpC5VB": {
+          "name": "Chosen recipes",
+          "type": "multipleRecordLinks",
+          "purpose": "Chosen recipes",
+          "status": "active",
+          "links_to": "tblehBgzRMa2Xucjd"
+        }
+      }
+    },
+    "tbldvpIO91xi72a0K": {
+      "name": "Shopping List",
+      "module": "Phase 3 \u2014 Weekly Rhythm",
+      "description": "Shopping List table.",
+      "fields": {
+        "fldKT6sCbwaHxMLV6": {
+          "name": "Item",
+          "type": "singleLineText",
+          "purpose": "Item",
+          "status": "active"
+        },
+        "fldSgXMYoCmvZaHjJ": {
+          "name": "Category",
+          "type": "singleSelect",
+          "purpose": "Category",
+          "status": "active",
+          "choices": [
+            "Meat",
+            "Fish",
+            "Veg",
+            "Fruit",
+            "Dairy",
+            "Grain",
+            "Spice",
+            "Pantry",
+            "Household",
             "Other"
           ]
         },
-        "fldRecipe": {
-          "name": "Recipe",
-          "type": "multipleRecordLinks",
-          "links_to": "tblehBgzRMa2Xucjd",
-          "status": "active"
-        },
-        "fldQuantity": {
+        "fldM5I5NCc4gPCCWV": {
           "name": "Quantity",
           "type": "singleLineText",
+          "purpose": "Quantity",
+          "status": "active"
+        },
+        "fldwRYT88MVtDbdUE": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "Recipe",
+            "Dinner Party",
+            "Manual"
+          ]
+        },
+        "fldebwYJlodwKUJl4": {
+          "name": "Purchased",
+          "type": "checkbox",
+          "purpose": "Purchased",
+          "status": "active"
+        },
+        "fldyBfy2sLRmkf1Bs": {
+          "name": "Recipe",
+          "type": "multipleRecordLinks",
+          "purpose": "Recipe",
+          "status": "active",
+          "links_to": "tblehBgzRMa2Xucjd"
+        }
+      }
+    },
+    "tblzzGIF7yPf37NG5": {
+      "name": "Dining Preferences",
+      "module": "Phase 3 \u2014 Weekly Rhythm",
+      "description": "Dining Preferences table.",
+      "fields": {
+        "fldyl0wfYQ7g0OIgF": {
+          "name": "Preference",
+          "type": "singleLineText",
+          "purpose": "Preference",
+          "status": "active"
+        },
+        "fldTkyr7YMmyraSpy": {
+          "name": "Category",
+          "type": "singleSelect",
+          "purpose": "Category",
+          "status": "active",
+          "choices": [
+            "Cuisine",
+            "Dish",
+            "Style",
+            "Avoid",
+            "Dietary"
+          ]
+        },
+        "fldPSChz035Uw8kcM": {
+          "name": "Confidence",
+          "type": "singleSelect",
+          "purpose": "Confidence",
+          "status": "active",
+          "choices": [
+            "Strong",
+            "Moderate",
+            "Emerging"
+          ]
+        },
+        "fldvpfMj524uLiQIi": {
+          "name": "Evidence",
+          "type": "multilineText",
+          "purpose": "Evidence",
+          "status": "active"
+        },
+        "fldIX5sbUhOJBC3Ak": {
+          "name": "Source modules",
+          "type": "multipleSelects",
+          "purpose": "Source modules",
+          "status": "active",
+          "choices": [
+            "Recipes",
+            "Meals",
+            "People Graph"
+          ]
+        },
+        "fldm6nJkKRofMxY90": {
+          "name": "Last updated",
+          "type": "date",
+          "purpose": "Last updated",
           "status": "active"
         }
       }
     },
-    "Dinner_Parties": {
-      "id": "tblwbQrIu3nUWDz3G",
+    "tblehBgzRMa2Xucjd": {
+      "name": "Recipes",
       "module": "Phase 3 \u2014 Weekly Rhythm",
-      "status": "active"
-    },
-    "Dinner_Planner": {
-      "id": "tblnts17CCckLJoUQ",
-      "module": "Phase 3 \u2014 Weekly Rhythm",
-      "status": "active"
-    },
-    "Shopping_List": {
-      "id": "tbldvpIO91xi72a0K",
-      "module": "Phase 3 \u2014 Weekly Rhythm",
-      "status": "active"
-    },
-    "Recipe_Context": {
-      "id": "tblJRsw77kbCFyoz9",
-      "module": "Phase 3 \u2014 Weekly Rhythm",
-      "status": "active"
-    },
-    "Recipe_Output_Log": {
-      "id": "tblYaJTAZDZzBkcwH",
-      "module": "Phase 3 \u2014 Weekly Rhythm",
-      "status": "active"
-    },
-    "Dining_Preferences": {
-      "id": "tblzzGIF7yPf37NG5",
-      "module": "Shared \u2014 Cross-Module",
-      "status": "active"
+      "description": "Recipes table.",
+      "fields": {
+        "fldxOC39CS4zTQmv1": {
+          "name": "Name",
+          "type": "singleLineText",
+          "purpose": "Name",
+          "status": "active"
+        },
+        "fldypwL9qnynfML83": {
+          "name": "Mealie Slug",
+          "type": "singleLineText",
+          "purpose": "Mealie Slug",
+          "status": "active"
+        },
+        "fldYVqlGvq4OxlgGA": {
+          "name": "Source URL",
+          "type": "singleLineText",
+          "purpose": "Source URL",
+          "status": "active"
+        },
+        "fld1ReN8daOYvD54i": {
+          "name": "Cuisine",
+          "type": "singleSelect",
+          "purpose": "Cuisine",
+          "status": "active",
+          "choices": [
+            "Italian",
+            "Indian",
+            "Thai",
+            "British",
+            "Mexican",
+            "Chinese",
+            "French",
+            "Japanese",
+            "Korean",
+            "Other"
+          ]
+        },
+        "fld5N0usewjwTqGpg": {
+          "name": "Meal type",
+          "type": "multipleSelects",
+          "purpose": "Meal type",
+          "status": "active",
+          "choices": [
+            "Breakfast",
+            "Lunch",
+            "Dinner",
+            "Side",
+            "Dessert",
+            "Snack"
+          ]
+        },
+        "fldk44Rz87ZkGrCE0": {
+          "name": "Quality rating",
+          "type": "number",
+          "purpose": "Quality rating",
+          "status": "active"
+        },
+        "fldPitebDryDXok98": {
+          "name": "Will do again",
+          "type": "singleSelect",
+          "purpose": "Will do again",
+          "status": "active",
+          "choices": [
+            "Never",
+            "Rarely",
+            "Sometimes",
+            "Often",
+            "Staple"
+          ]
+        },
+        "fldWyeH0jf0amOXS9": {
+          "name": "Favourite",
+          "type": "checkbox",
+          "purpose": "Favourite",
+          "status": "active"
+        },
+        "fldrPSQTGKwlrPOMz": {
+          "name": "Photo",
+          "type": "multipleAttachments",
+          "purpose": "Photo",
+          "status": "active"
+        },
+        "fldb9WSmJLka7IV76": {
+          "name": "Notes",
+          "type": "multilineText",
+          "purpose": "Notes",
+          "status": "active"
+        },
+        "fldvmLqRHXsDt4zz7": {
+          "name": "Last cooked",
+          "type": "date",
+          "purpose": "Last cooked",
+          "status": "active"
+        },
+        "fldgirtg55Qzde59t": {
+          "name": "Ingredients",
+          "type": "multipleRecordLinks",
+          "purpose": "Ingredients",
+          "status": "active",
+          "links_to": "tblNsgbYHNK8xWnB7"
+        },
+        "fld4lghtUjR5F1EqO": {
+          "name": "Dinner Parties",
+          "type": "multipleRecordLinks",
+          "purpose": "Dinner Parties",
+          "status": "active",
+          "links_to": "tblwbQrIu3nUWDz3G"
+        },
+        "fldj5IQgU4DoXY9Ux": {
+          "name": "Dinner Planner",
+          "type": "multipleRecordLinks",
+          "purpose": "Dinner Planner",
+          "status": "active",
+          "links_to": "tblnts17CCckLJoUQ"
+        },
+        "fldeGF4uZTBtiORTQ": {
+          "name": "Shopping List",
+          "type": "multipleRecordLinks",
+          "purpose": "Shopping List",
+          "status": "active",
+          "links_to": "tbldvpIO91xi72a0K"
+        },
+        "fldROwM8GJ3j4PYcN": {
+          "name": "Recipe Output Log",
+          "type": "multipleRecordLinks",
+          "purpose": "Recipe Output Log",
+          "status": "active",
+          "links_to": "tblYaJTAZDZzBkcwH"
+        },
+        "fldqak83xA9VPLyHK": {
+          "name": "Meals",
+          "type": "multipleRecordLinks",
+          "purpose": "Meals",
+          "status": "active",
+          "links_to": "tblzEBw7Whoomb63E"
+        }
+      }
     },
     "tblA0jfgqxhPFJU7S": {
       "name": "Properties",
       "module": "Phase 4 \u2014 Lifestyle",
-      "description": "Property search listings from Rightmove. Tracked, scored, and filtered.",
+      "description": "Properties table.",
       "fields": {
         "fldmdnjAULuYUFw2N": {
           "name": "Address",
           "type": "singleLineText",
-          "purpose": "Property address",
+          "purpose": "Address",
           "status": "active"
         },
         "fldeanzUCHNuWxVwh": {
           "name": "Rightmove URL",
           "type": "url",
-          "purpose": "Direct link to Rightmove listing",
+          "purpose": "Rightmove URL",
           "status": "active"
         },
         "fldbSPXZZXnrfpl4r": {
           "name": "Price",
           "type": "number",
-          "purpose": "Asking price in GBP",
+          "purpose": "Price",
           "status": "active"
         },
         "fldz8vlF3DxnaI3vf": {
           "name": "Bedrooms",
           "type": "number",
-          "purpose": "Number of bedrooms",
+          "purpose": "Bedrooms",
           "status": "active"
         },
         "fld5DW3mPh3o6Qq6P": {
           "name": "Bathrooms",
           "type": "number",
-          "purpose": "Number of bathrooms",
+          "purpose": "Bathrooms",
           "status": "active"
         },
         "fldaq1LpaR5kbBIlb": {
           "name": "Property Type",
           "type": "singleSelect",
-          "purpose": "Terraced/Semi/Detached/Flat/etc",
-          "status": "active"
+          "purpose": "Property Type",
+          "status": "active",
+          "choices": [
+            "Terraced",
+            "Semi-Detached",
+            "Detached",
+            "Flat",
+            "Maisonette",
+            "Bungalow",
+            "Other"
+          ]
         },
         "fldHZIUQ9xwPRHr1y": {
           "name": "Garden",
           "type": "singleSelect",
-          "purpose": "Whether property has a garden",
-          "status": "active"
+          "purpose": "Garden",
+          "status": "active",
+          "choices": [
+            "Yes",
+            "No",
+            "Unknown"
+          ]
         },
         "fldN6lhcSjbCl9lIJ": {
           "name": "Sq Ft",
           "type": "number",
-          "purpose": "Floor area in square feet",
+          "purpose": "Sq Ft",
           "status": "active"
         },
         "fldaPY2waDfNuZvQP": {
           "name": "Tenure",
           "type": "singleSelect",
-          "purpose": "Freehold/Leasehold",
-          "status": "active"
+          "purpose": "Tenure",
+          "status": "active",
+          "choices": [
+            "Freehold",
+            "Leasehold",
+            "Unknown"
+          ]
         },
         "fldAYivWmugoW3lTL": {
           "name": "EPC Rating",
           "type": "singleSelect",
-          "purpose": "Energy Performance Certificate rating",
-          "status": "active"
+          "purpose": "EPC Rating",
+          "status": "active",
+          "choices": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "Unknown"
+          ]
         },
         "fldcxOqWijwjgv7SJ": {
           "name": "Key Features",
           "type": "multilineText",
-          "purpose": "Key features from listing",
+          "purpose": "Key Features",
           "status": "active"
         },
         "fldV8iX7BaKxGVMEP": {
           "name": "Summary",
           "type": "multilineText",
-          "purpose": "Property description/summary",
+          "purpose": "Summary",
           "status": "active"
         },
         "flduTgfaXxHS98dak": {
           "name": "Assessment",
           "type": "multilineText",
-          "purpose": "Geeves assessment against criteria",
+          "purpose": "Assessment",
           "status": "active"
         },
         "fldODGg6Jpvy2QO1p": {
           "name": "Match Score",
           "type": "number",
-          "purpose": "Score 0-10 against search criteria",
+          "purpose": "Match Score",
           "status": "active"
         },
         "fld9vO1oh2ChSXyth": {
           "name": "Status",
           "type": "singleSelect",
-          "purpose": "Current tracking status",
-          "status": "active"
+          "purpose": "Status",
+          "status": "active",
+          "choices": [
+            "New",
+            "Interested",
+            "Viewing Booked",
+            "Viewed",
+            "Dismissed",
+            "Bought"
+          ]
         },
         "fldTacBpIxP3ci4jZ": {
           "name": "My Notes",
           "type": "multilineText",
-          "purpose": "David's personal notes",
+          "purpose": "My Notes",
           "status": "active"
         },
         "fldPq67bq5DuhAx8r": {
           "name": "First Seen",
           "type": "date",
-          "purpose": "When first picked up by scan",
+          "purpose": "First Seen",
           "status": "active"
         },
         "fldPcLTLXFy9rkReF": {
           "name": "Listing Date",
           "type": "date",
-          "purpose": "Date listed on Rightmove",
+          "purpose": "Listing Date",
           "status": "active"
         },
         "fldWGMVCZm88mzDQi": {
           "name": "Rightmove ID",
           "type": "singleLineText",
-          "purpose": "Rightmove property ID for dedup",
+          "purpose": "Rightmove ID",
           "status": "active"
         },
         "fldIaNZt5GPgkcXOL": {
           "name": "Agent",
           "type": "singleLineText",
-          "purpose": "Estate agent name",
+          "purpose": "Agent",
           "status": "active"
         },
         "fldLJ9Ga60bUC7tJP": {
           "name": "Feedback",
           "type": "multilineText",
-          "purpose": "Feedback from David/wife",
+          "purpose": "Feedback",
           "status": "active"
         }
       }
@@ -1259,30 +1877,36 @@
     "tbl6oeRjhK3sds9TI": {
       "name": "Property Criteria",
       "module": "Phase 4 \u2014 Lifestyle",
-      "description": "Search criteria and preferences for property search.",
+      "description": "Property Criteria table.",
       "fields": {
         "fldeN8H8whkH2W1Te": {
           "name": "Criterion",
           "type": "multilineText",
-          "purpose": "The criterion description",
+          "purpose": "Criterion",
           "status": "active"
         },
         "fldfuaDfocyn2WnJa": {
           "name": "Type",
           "type": "singleSelect",
-          "purpose": "Must have/Nice to have/Dealbreaker/Budget",
-          "status": "active"
+          "purpose": "Type",
+          "status": "active",
+          "choices": [
+            "Must have",
+            "Nice to have",
+            "Dealbreaker",
+            "Budget"
+          ]
         },
         "fldsyQLMAJ9xS0jwb": {
           "name": "Active",
           "type": "checkbox",
-          "purpose": "Whether this criterion is currently active",
+          "purpose": "Active",
           "status": "active"
         },
         "fldsa9w0xnK5blv4C": {
           "name": "Notes",
           "type": "multilineText",
-          "purpose": "Additional notes",
+          "purpose": "Notes",
           "status": "active"
         }
       }
@@ -1290,169 +1914,251 @@
     "tblvpSxjeoCQvjotM": {
       "name": "Restaurants",
       "module": "Phase 4 \u2014 Lifestyle & Discovery",
-      "description": "Master record for every restaurant visited or want to try. Google data via SerpApi, personal ratings and alignment scores.",
+      "description": "Restaurants table.",
       "fields": {
         "fld2TJDmJIdu1ayii": {
           "name": "Name",
           "type": "singleLineText",
-          "purpose": "Restaurant name",
+          "purpose": "Name",
           "status": "active"
         },
         "fldLzaKf7a6GPGI6C": {
           "name": "Cuisine",
           "type": "multipleSelects",
-          "purpose": "Cuisine type(s)",
-          "status": "active"
+          "purpose": "Cuisine",
+          "status": "active",
+          "choices": [
+            "Italian",
+            "Indian",
+            "Thai",
+            "Chinese",
+            "Japanese",
+            "French",
+            "British",
+            "Mexican",
+            "Mediterranean",
+            "Korean",
+            "Vietnamese",
+            "Spanish",
+            "Turkish",
+            "Other"
+          ]
         },
         "fld9o0uM3Zpf0J80O": {
           "name": "Address",
           "type": "multilineText",
-          "purpose": "Full address",
+          "purpose": "Address",
           "status": "active"
         },
         "fldg046XloE793VB8": {
           "name": "Postcode",
           "type": "singleLineText",
-          "purpose": "Postcode for map lookups",
+          "purpose": "Postcode",
           "status": "active"
         },
         "fldrd5ygZLFigE84x": {
           "name": "Phone",
           "type": "singleLineText",
-          "purpose": "Contact number",
+          "purpose": "Phone",
           "status": "active"
         },
         "fldBSectzalK5OqLF": {
           "name": "Website",
           "type": "url",
-          "purpose": "Restaurant website",
+          "purpose": "Website",
           "status": "active"
         },
         "fldNpo4ew68sDRNa9": {
           "name": "Maps URL",
           "type": "url",
-          "purpose": "Google search link for the restaurant",
+          "purpose": "Maps URL",
           "status": "active"
         },
         "fldlod8Sgu5gpUdYr": {
           "name": "Price Range",
           "type": "singleSelect",
-          "purpose": "Price range \u00a3-\u00a3\u00a3\u00a3\u00a3",
-          "status": "active"
+          "purpose": "Price Range",
+          "status": "active",
+          "choices": [
+            "\u00a3",
+            "\u00a3\u00a3",
+            "\u00a3\u00a3\u00a3",
+            "\u00a3\u00a3\u00a3\u00a3"
+          ]
         },
         "fldjNyYKI6y8HQzPS": {
           "name": "Food Type",
           "type": "multipleSelects",
-          "purpose": "Type of food venue",
-          "status": "active"
+          "purpose": "Food Type",
+          "status": "active",
+          "choices": [
+            "Fine dining",
+            "Casual",
+            "Pub",
+            "Cafe",
+            "Street food",
+            "Takeaway",
+            "Brunch",
+            "Roast",
+            "Bistro",
+            "Gastropub"
+          ]
         },
         "fld44e6rYBtZGE2JX": {
           "name": "Dietary Friendly",
           "type": "multipleSelects",
-          "purpose": "Dietary options available",
-          "status": "active"
+          "purpose": "Dietary Friendly",
+          "status": "active",
+          "choices": [
+            "Vegetarian-friendly",
+            "Vegan-friendly",
+            "Gluten-free options",
+            "Halal",
+            "Kosher"
+          ]
         },
         "fldydO2NkeYY0DKd9": {
           "name": "Ambience",
           "type": "multipleSelects",
-          "purpose": "Atmosphere/style tags",
-          "status": "active"
+          "purpose": "Ambience",
+          "status": "active",
+          "choices": [
+            "Romantic",
+            "Family-friendly",
+            "Quiet",
+            "Lively",
+            "Outdoor seating",
+            "BYOB",
+            "Dog-friendly",
+            "Date night"
+          ]
         },
         "fldJVW6srFaHlD0g5": {
           "name": "Google Rating",
           "type": "number",
-          "purpose": "Google star rating",
+          "purpose": "Google Rating",
           "status": "active"
         },
         "fldDHaYjwxJgiJnZd": {
           "name": "Google Review Count",
           "type": "number",
-          "purpose": "Number of Google reviews",
+          "purpose": "Google Review Count",
           "status": "active"
         },
         "fldtsfcW2zo6RbWfT": {
           "name": "Google Price Level",
           "type": "number",
-          "purpose": "Google price level 1-4",
+          "purpose": "Google Price Level",
           "status": "active"
         },
         "fld6zBMuMV4jN0gWT": {
           "name": "Google Types",
           "type": "multilineText",
-          "purpose": "Google place type tags",
+          "purpose": "Google Types",
           "status": "active"
         },
         "fldUd7n7y4lfiQqsV": {
           "name": "Review Summary",
           "type": "multilineText",
-          "purpose": "Summary of what reviewers say",
+          "purpose": "Review Summary",
           "status": "active"
         },
         "fldsqrHaMkJYpKyP4": {
           "name": "Alignment Score",
           "type": "singleSelect",
-          "purpose": "How well this matches your preferences",
-          "status": "active"
+          "purpose": "Alignment Score",
+          "status": "active",
+          "choices": [
+            "Strong match",
+            "Moderate",
+            "Weak",
+            "Unknown"
+          ]
         },
         "fldsIIfrgIYOsTExs": {
           "name": "Alignment Notes",
           "type": "multilineText",
-          "purpose": "Why this does/doesn't match",
+          "purpose": "Alignment Notes",
           "status": "active"
         },
         "fld9Qe5SGyyRvpGZy": {
           "name": "Source",
           "type": "singleSelect",
-          "purpose": "How this restaurant was added",
-          "status": "active"
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "We went",
+            "Recommended",
+            "Found online",
+            "Want to try"
+          ]
         },
         "fldSZQiVDuk4BXgEI": {
           "name": "Status",
           "type": "singleSelect",
-          "purpose": "Current status",
-          "status": "active"
+          "purpose": "Status",
+          "status": "active",
+          "choices": [
+            "Want to go",
+            "Been \u2014 loved it",
+            "Been \u2014 liked it",
+            "Been \u2014 meh",
+            "Been \u2014 avoid"
+          ]
         },
         "fldfcXWFuGqKtfi04": {
           "name": "Overall Rating",
           "type": "singleSelect",
-          "purpose": "Your combined rating 1-10",
-          "status": "active"
+          "purpose": "Overall Rating",
+          "status": "active",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
         },
         "fldUvzoJM3zEL2x8F": {
           "name": "Times Visited",
           "type": "number",
-          "purpose": "How many times visited",
+          "purpose": "Times Visited",
           "status": "active"
         },
         "fldFl8tulnbwaSGjx": {
           "name": "Last Visited",
           "type": "date",
-          "purpose": "Most recent visit date",
+          "purpose": "Last Visited",
           "status": "active"
         },
         "fldz69M7VRc0IDgQq": {
           "name": "Photo",
           "type": "multipleAttachments",
-          "purpose": "Photo of place or dish",
+          "purpose": "Photo",
           "status": "active"
         },
         "fld8x4FGLxpw5AYsv": {
           "name": "Notes",
           "type": "multilineText",
-          "purpose": "Freeform notes",
+          "purpose": "Notes",
           "status": "active"
         },
         "fldk6HLgYiLJvQlkx": {
           "name": "Restaurant Visits",
           "type": "multipleRecordLinks",
-          "purpose": "Link to visit records",
+          "purpose": "Restaurant Visits",
           "status": "active",
           "links_to": "tblf2k6uAHLW7mA4b"
         },
         "fldIQRmAvJB0ATnWw": {
           "name": "Recommended By",
           "type": "multipleRecordLinks",
-          "purpose": "Person who recommended",
+          "purpose": "Recommended By",
           "status": "active",
           "links_to": "tbl1WMPtQhWYW7bTI"
         }
@@ -1461,129 +2167,1159 @@
     "tblf2k6uAHLW7mA4b": {
       "name": "Restaurant Visits",
       "module": "Phase 4 \u2014 Lifestyle & Discovery",
-      "description": "Each visit to a restaurant. Detailed feedback, ratings, and notes.",
+      "description": "Restaurant Visits table.",
       "fields": {
         "fldgM2cY4CI8EQbMM": {
           "name": "Date",
           "type": "date",
-          "purpose": "When you went",
+          "purpose": "Date",
           "status": "active"
         },
         "fldtXfW1wMjbkkJ2p": {
           "name": "Dishes Ordered",
           "type": "multilineText",
-          "purpose": "What was ordered",
+          "purpose": "Dishes Ordered",
           "status": "active"
         },
         "fldPHQkSvEjo1oEs3": {
           "name": "Dish Ratings",
           "type": "multilineText",
-          "purpose": "Per-dish ratings",
+          "purpose": "Dish Ratings",
           "status": "active"
         },
         "fldvqEV2aCxBUTvcY": {
           "name": "Service Rating",
           "type": "singleSelect",
-          "purpose": "Service rating 1-10",
-          "status": "active"
+          "purpose": "Service Rating",
+          "status": "active",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
         },
         "fldk5EuOaHvEGpmaZ": {
           "name": "Ambience Rating",
           "type": "singleSelect",
-          "purpose": "Ambience rating 1-10",
-          "status": "active"
+          "purpose": "Ambience Rating",
+          "status": "active",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
         },
         "fldAAlvrbOIGRnMBm": {
           "name": "Value Rating",
           "type": "singleSelect",
-          "purpose": "Value rating 1-10",
-          "status": "active"
+          "purpose": "Value Rating",
+          "status": "active",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
         },
         "fld3XBGqc2GRg4kjK": {
           "name": "Overall Rating",
           "type": "singleSelect",
-          "purpose": "Overall rating 1-10",
-          "status": "active"
+          "purpose": "Overall Rating",
+          "status": "active",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
         },
         "fldtMDtBq4KkmbV55": {
           "name": "Wife's Rating",
           "type": "singleSelect",
-          "purpose": "Wife's rating 1-10",
-          "status": "active"
+          "purpose": "Wife's Rating",
+          "status": "active",
+          "choices": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
         },
         "fldZfTEtpVnbYYCrB": {
           "name": "Wife's Notes",
           "type": "multilineText",
-          "purpose": "Wife's separate feedback",
+          "purpose": "Wife's Notes",
           "status": "active"
         },
         "fldDoqDoRDFL0pBmB": {
           "name": "Would Return",
           "type": "singleSelect",
-          "purpose": "Would you go back",
-          "status": "active"
+          "purpose": "Would Return",
+          "status": "active",
+          "choices": [
+            "Definitely",
+            "Maybe",
+            "No"
+          ]
         },
         "fldzrOXfMlZQyVGXE": {
           "name": "Best Dish",
           "type": "singleLineText",
-          "purpose": "Standout dish",
+          "purpose": "Best Dish",
           "status": "active"
         },
         "fldy8aIJbMXpSUOGw": {
           "name": "Worst Dish",
           "type": "singleLineText",
-          "purpose": "Letdown dish",
+          "purpose": "Worst Dish",
           "status": "active"
         },
         "fldr0ucTrFU5HhX7M": {
           "name": "Cost Total",
           "type": "currency",
-          "purpose": "Total bill \u00a3",
+          "purpose": "Cost Total",
           "status": "active"
         },
         "fld77DFACVtPz4CiP": {
           "name": "Cost Per Head",
           "type": "currency",
-          "purpose": "Per person \u00a3",
+          "purpose": "Cost Per Head",
           "status": "active"
         },
         "fldwseQBQIXtKjiAW": {
           "name": "Occasion",
           "type": "singleSelect",
-          "purpose": "What the occasion was",
-          "status": "active"
+          "purpose": "Occasion",
+          "status": "active",
+          "choices": [
+            "Date night",
+            "Family meal",
+            "Friends",
+            "Birthday",
+            "Casual",
+            "Business",
+            "Anniversary"
+          ]
         },
         "fldHCsKTJZqNcLraL": {
           "name": "Photo",
           "type": "multipleAttachments",
-          "purpose": "Photo of the meal",
+          "purpose": "Photo",
           "status": "active"
         },
         "fldeKN2iTYyk81nCV": {
           "name": "Notes",
           "type": "multilineText",
-          "purpose": "Detailed feedback",
+          "purpose": "Notes",
           "status": "active"
         },
         "fldTaAKZ0W4RrEUJp": {
           "name": "Source",
           "type": "singleSelect",
-          "purpose": "How this was captured",
-          "status": "active"
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "Slack",
+            "Manual"
+          ]
         },
         "fld3ZBz6SKoiDwQdl": {
           "name": "Restaurant",
           "type": "multipleRecordLinks",
-          "purpose": "Link to restaurant",
+          "purpose": "Restaurant",
           "status": "active",
           "links_to": "tblvpSxjeoCQvjotM"
         },
         "fldB05E5NthL9YD9I": {
           "name": "People",
           "type": "multipleRecordLinks",
-          "purpose": "Who was there",
+          "purpose": "People",
           "status": "active",
           "links_to": "tbl1WMPtQhWYW7bTI"
+        }
+      }
+    },
+    "tblDKPUMuh8Xohoh1": {
+      "name": "News Sources",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "News Sources table.",
+      "fields": {
+        "fldPjyAPXdOo1HjTx": {
+          "name": "Source name",
+          "type": "singleLineText",
+          "purpose": "Source name",
+          "status": "active"
+        },
+        "fld68ihrxBu5w823m": {
+          "name": "Feed URL",
+          "type": "singleLineText",
+          "purpose": "Feed URL",
+          "status": "active"
+        },
+        "fldtuSL9Qn8p1t8yu": {
+          "name": "Category",
+          "type": "singleSelect",
+          "purpose": "Category",
+          "status": "active",
+          "choices": [
+            "Science",
+            "Tech",
+            "Culture",
+            "London",
+            "World",
+            "Other"
+          ]
+        },
+        "fldyTwLubXGtISFID": {
+          "name": "Active",
+          "type": "checkbox",
+          "purpose": "Active",
+          "status": "active"
+        }
+      }
+    },
+    "tblS6SryrC3RnRl1L": {
+      "name": "Habits",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Habits table.",
+      "fields": {
+        "fldReIOlQnaXACbyY": {
+          "name": "Habit",
+          "type": "singleLineText",
+          "purpose": "Habit",
+          "status": "active"
+        },
+        "fld66WoRy5fSUovYf": {
+          "name": "Frequency target",
+          "type": "singleSelect",
+          "purpose": "Frequency target",
+          "status": "active",
+          "choices": [
+            "Daily",
+            "Weekdays",
+            "3x week",
+            "Weekly"
+          ]
+        },
+        "fld008JNS8C5ysGHi": {
+          "name": "Category",
+          "type": "singleSelect",
+          "purpose": "Category",
+          "status": "active",
+          "choices": [
+            "Health",
+            "Learning",
+            "Mindfulness",
+            "Household",
+            "Other"
+          ]
+        },
+        "fld5aIxzxU4CIgbXY": {
+          "name": "Active",
+          "type": "checkbox",
+          "purpose": "Active",
+          "status": "active"
+        },
+        "fld7mQdf4DU4b93kC": {
+          "name": "Habit Log",
+          "type": "multipleRecordLinks",
+          "purpose": "Habit Log",
+          "status": "active",
+          "links_to": "tbl3YRZ1yoQ7kRPIT"
+        }
+      }
+    },
+    "tbl16Z64tClYJaPLZ": {
+      "name": "Daily Nutrition Summary",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Daily Nutrition Summary table.",
+      "fields": {
+        "fldFFY2BX1ZTG9YvJ": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldCZSQfWQEXPw4IL": {
+          "name": "Total calories",
+          "type": "number",
+          "purpose": "Total calories",
+          "status": "active"
+        },
+        "fldUu0M2h9eL9LbFl": {
+          "name": "Total protein",
+          "type": "number",
+          "purpose": "Total protein",
+          "status": "active"
+        },
+        "fldsHyaLSHAGKWAE3": {
+          "name": "Total carbs",
+          "type": "number",
+          "purpose": "Total carbs",
+          "status": "active"
+        },
+        "fldK2yAOSuBS1OncL": {
+          "name": "Total fat",
+          "type": "number",
+          "purpose": "Total fat",
+          "status": "active"
+        }
+      }
+    },
+    "tblzEBw7Whoomb63E": {
+      "name": "Meals",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Meals table.",
+      "fields": {
+        "fldki2iUBjCVn8YSa": {
+          "name": "Description",
+          "type": "singleLineText",
+          "purpose": "Description",
+          "status": "active"
+        },
+        "fldDYd5a10zlhVEDj": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fld9ilvSjVG6Pr2dn": {
+          "name": "Meal type",
+          "type": "singleSelect",
+          "purpose": "Meal type",
+          "status": "active",
+          "choices": [
+            "Breakfast",
+            "Lunch",
+            "Dinner",
+            "Snack"
+          ]
+        },
+        "fldBywzHLu3COumBD": {
+          "name": "Calories (est)",
+          "type": "number",
+          "purpose": "Calories (est)",
+          "status": "active"
+        },
+        "fldexyLmcQTKQTZK1": {
+          "name": "Protein (g)",
+          "type": "number",
+          "purpose": "Protein (g)",
+          "status": "active"
+        },
+        "fldoN9as0b0vNSVf1": {
+          "name": "Carbs (g)",
+          "type": "number",
+          "purpose": "Carbs (g)",
+          "status": "active"
+        },
+        "fld57a5cY7ggABHVl": {
+          "name": "Fat (g)",
+          "type": "number",
+          "purpose": "Fat (g)",
+          "status": "active"
+        },
+        "fldChfDrOYpDxNZMK": {
+          "name": "Accuracy",
+          "type": "singleSelect",
+          "purpose": "Accuracy",
+          "status": "active",
+          "choices": [
+            "Estimated",
+            "Barcode",
+            "From recipe"
+          ]
+        },
+        "fldJfCmNBIaFQeB68": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "Manual",
+            "Slack",
+            "Voice"
+          ]
+        },
+        "fldYx7kMtwPqwujmv": {
+          "name": "Logged",
+          "type": "date",
+          "purpose": "Logged",
+          "status": "active"
+        },
+        "fldLQB45RO3A5R4pI": {
+          "name": "From recipe",
+          "type": "multipleRecordLinks",
+          "purpose": "From recipe",
+          "status": "active",
+          "links_to": "tblehBgzRMa2Xucjd"
+        }
+      }
+    },
+    "tbl3YRZ1yoQ7kRPIT": {
+      "name": "Habit Log",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Habit Log table.",
+      "fields": {
+        "fldFlgoASNhNzips6": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldIP9FFi0xkBYKzz": {
+          "name": "Habit",
+          "type": "multipleRecordLinks",
+          "purpose": "Habit",
+          "status": "active",
+          "links_to": "tblS6SryrC3RnRl1L"
+        },
+        "fldP4JVJDXMZmdxgF": {
+          "name": "Completed",
+          "type": "checkbox",
+          "purpose": "Completed",
+          "status": "active"
+        },
+        "fldstgGXMS5BPnIec": {
+          "name": "Logged",
+          "type": "date",
+          "purpose": "Logged",
+          "status": "active"
+        }
+      }
+    },
+    "tblTZchsmcXXernI0": {
+      "name": "Sleep Log",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Sleep Log table.",
+      "fields": {
+        "fldlIWdCsCyJOvBRU": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldAbDsHZ2jbPHBYC": {
+          "name": "Bedtime",
+          "type": "singleLineText",
+          "purpose": "Bedtime",
+          "status": "active"
+        },
+        "fldAUDy3wrSXWzbqD": {
+          "name": "Wake time",
+          "type": "singleLineText",
+          "purpose": "Wake time",
+          "status": "active"
+        },
+        "fldneQGNsu08AzcqK": {
+          "name": "Hours slept",
+          "type": "number",
+          "purpose": "Hours slept",
+          "status": "active"
+        },
+        "fldW5BLgQ8SKC3EoP": {
+          "name": "Quality",
+          "type": "rating",
+          "purpose": "Quality",
+          "status": "active"
+        },
+        "fld7DkKfsux2O2rav": {
+          "name": "Notes",
+          "type": "multilineText",
+          "purpose": "Notes",
+          "status": "active"
+        },
+        "fldFfVxYeEAdnRR3D": {
+          "name": "Logged",
+          "type": "date",
+          "purpose": "Logged",
+          "status": "active"
+        }
+      }
+    },
+    "tblmihsXrU8sIg4mY": {
+      "name": "Digest Log",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Digest Log table.",
+      "fields": {
+        "fld2FAapbBRAAE9xq": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fldr0eiPj1xyNWYPi": {
+          "name": "Type",
+          "type": "singleSelect",
+          "purpose": "Type",
+          "status": "active",
+          "choices": [
+            "Morning",
+            "Weekly",
+            "Monthly"
+          ]
+        },
+        "fldOMMIk16tXKuqji": {
+          "name": "Content",
+          "type": "multilineText",
+          "purpose": "Content",
+          "status": "active"
+        },
+        "fldbipIRBvJd8CaAB": {
+          "name": "Delivered via",
+          "type": "singleSelect",
+          "purpose": "Delivered via",
+          "status": "active",
+          "choices": [
+            "Email",
+            "Slack"
+          ]
+        },
+        "fldsyjaQooH1qa6BX": {
+          "name": "Delivery status",
+          "type": "singleSelect",
+          "purpose": "Delivery status",
+          "status": "active",
+          "choices": [
+            "Sent",
+            "Failed"
+          ]
+        },
+        "fldv74KFeUjf8xeyk": {
+          "name": "Sections included",
+          "type": "multilineText",
+          "purpose": "Sections included",
+          "status": "active"
+        }
+      }
+    },
+    "tblDpKhGlQ2zQxBfD": {
+      "name": "Word List",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Word List table.",
+      "fields": {
+        "fldRT4oa33QhsZmpp": {
+          "name": "Word",
+          "type": "singleLineText",
+          "purpose": "Word",
+          "status": "active"
+        },
+        "fldg5atFQREia2NVW": {
+          "name": "Pronunciation",
+          "type": "singleLineText",
+          "purpose": "Pronunciation",
+          "status": "active"
+        },
+        "fldVN9fnU4BS6QgAx": {
+          "name": "Meaning",
+          "type": "singleLineText",
+          "purpose": "Meaning",
+          "status": "active"
+        },
+        "fldiZuuGCrHM3kXkk": {
+          "name": "Example sentence",
+          "type": "multilineText",
+          "purpose": "Example sentence",
+          "status": "active"
+        },
+        "fldyLOw4vGCMdjF8c": {
+          "name": "Part of speech",
+          "type": "singleSelect",
+          "purpose": "Part of speech",
+          "status": "active",
+          "choices": [
+            "Noun",
+            "Verb",
+            "Adjective",
+            "Adverb",
+            "Phrase"
+          ]
+        },
+        "fldmtBF7ZDKF8Q2DN": {
+          "name": "Used",
+          "type": "checkbox",
+          "purpose": "Used",
+          "status": "active"
+        },
+        "fldHWrYCoQna4Ig1w": {
+          "name": "Date used",
+          "type": "date",
+          "purpose": "Date used",
+          "status": "active"
+        },
+        "fldLuLIDKoidXpx2A": {
+          "name": "Difficulty",
+          "type": "singleSelect",
+          "purpose": "Difficulty",
+          "status": "active",
+          "choices": [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
+          ]
+        }
+      }
+    },
+    "tblMDYF8Lkl5A15CW": {
+      "name": "Workouts",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Workouts table.",
+      "fields": {
+        "fldKbiR7p0KG5LPzZ": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fld16Sur4Os7nqARR": {
+          "name": "Type",
+          "type": "singleSelect",
+          "purpose": "Type",
+          "status": "active",
+          "choices": [
+            "Gym",
+            "Run",
+            "Cycle",
+            "Walk",
+            "Swim",
+            "Yoga",
+            "Class",
+            "Other"
+          ]
+        },
+        "fldX5Ti56WHXZaffF": {
+          "name": "Duration (mins)",
+          "type": "number",
+          "purpose": "Duration (mins)",
+          "status": "active"
+        },
+        "fldtKi9Q2eQ7v5oMV": {
+          "name": "Distance (km)",
+          "type": "number",
+          "purpose": "Distance (km)",
+          "status": "active"
+        },
+        "fldTfthPC7aYGWFmt": {
+          "name": "Energy level",
+          "type": "rating",
+          "purpose": "Energy level",
+          "status": "active"
+        },
+        "fldM14nCgm9WWDahL": {
+          "name": "Perceived difficulty",
+          "type": "rating",
+          "purpose": "Perceived difficulty",
+          "status": "active"
+        },
+        "fldzM72xVmxflMM10": {
+          "name": "Notes",
+          "type": "multilineText",
+          "purpose": "Notes",
+          "status": "active"
+        },
+        "fldDsuQKViPTnMHeI": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "Manual",
+            "Slack",
+            "Voice",
+            "Strava",
+            "Google Fit"
+          ]
+        },
+        "fld8gZlhGrflv3yFV": {
+          "name": "Exercise Log",
+          "type": "multipleRecordLinks",
+          "purpose": "Exercise Log",
+          "status": "active",
+          "links_to": "tbl8MXDYZ2hajsdIk"
+        },
+        "fld7bGRhpi61YZjFK": {
+          "name": "Logged",
+          "type": "date",
+          "purpose": "Logged",
+          "status": "active"
+        },
+        "fldpMMKJ0zZWfyjL3": {
+          "name": "People",
+          "type": "multipleRecordLinks",
+          "purpose": "People",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        },
+        "fldbjknloIunkXequ": {
+          "name": "Cycling",
+          "type": "multipleRecordLinks",
+          "purpose": "Cycling",
+          "status": "active",
+          "links_to": "tblZ7hkoE68IRnQwV"
+        }
+      }
+    },
+    "tbl8MXDYZ2hajsdIk": {
+      "name": "Exercise Log",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Exercise Log table.",
+      "fields": {
+        "fld86JCKZgBha5E8Q": {
+          "name": "Exercise",
+          "type": "singleLineText",
+          "purpose": "Exercise",
+          "status": "active"
+        },
+        "fldRixqRBLko8GZCu": {
+          "name": "Workout",
+          "type": "multipleRecordLinks",
+          "purpose": "Workout",
+          "status": "active",
+          "links_to": "tblMDYF8Lkl5A15CW"
+        },
+        "fldWsYzFVfbJYD6TM": {
+          "name": "Sets",
+          "type": "number",
+          "purpose": "Sets",
+          "status": "active"
+        },
+        "fldUJRNG8jNoyI9Ob": {
+          "name": "Reps",
+          "type": "singleLineText",
+          "purpose": "Reps",
+          "status": "active"
+        },
+        "fldz0QcCo0wcnXD9H": {
+          "name": "Weight (kg)",
+          "type": "singleLineText",
+          "purpose": "Weight (kg)",
+          "status": "active"
+        }
+      }
+    },
+    "tblwqFHQu3ueh9aFx": {
+      "name": "Input Log",
+      "module": "Phase 1 \u2014 Foundation",
+      "description": "Input Log table.",
+      "fields": {
+        "fldvqhvpNbGePyelu": {
+          "name": "Raw message",
+          "type": "multilineText",
+          "purpose": "Raw message",
+          "status": "active"
+        },
+        "fldm7EznEGeCB91Vm": {
+          "name": "Channel",
+          "type": "singleSelect",
+          "purpose": "Channel",
+          "status": "active",
+          "choices": [
+            "Slack",
+            "Voice",
+            "WhatsApp",
+            "Telegram",
+            "Email",
+            "Other"
+          ]
+        },
+        "fldU6czCpRS8NZcrX": {
+          "name": "Message type",
+          "type": "singleSelect",
+          "purpose": "Message type",
+          "status": "active",
+          "choices": [
+            "Text",
+            "Voice note"
+          ]
+        },
+        "fldVruKFZYqmorhKV": {
+          "name": "Transcription",
+          "type": "multilineText",
+          "purpose": "Transcription",
+          "status": "active"
+        },
+        "fldhA0vc1lem5gIxv": {
+          "name": "Interpreted intent",
+          "type": "singleSelect",
+          "purpose": "Interpreted intent",
+          "status": "active",
+          "choices": [
+            "Log meal",
+            "Log workout",
+            "Add person note",
+            "Add todo",
+            "Add gift idea",
+            "Journal",
+            "Other"
+          ]
+        },
+        "fldrSE7ds0NOMFnws": {
+          "name": "Routed to",
+          "type": "singleLineText",
+          "purpose": "Routed to",
+          "status": "active"
+        },
+        "fld0mn7ewn3RnMfHn": {
+          "name": "Status",
+          "type": "singleSelect",
+          "purpose": "Status",
+          "status": "active",
+          "choices": [
+            "Success",
+            "Failed",
+            "Needs review"
+          ]
+        },
+        "fldHTR57ulboe5iFC": {
+          "name": "Detail",
+          "type": "multilineText",
+          "purpose": "Detail",
+          "status": "active"
+        }
+      }
+    },
+    "tblAM0Grin01IQmdd": {
+      "name": "Fitness Goals",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Fitness Goals table.",
+      "fields": {
+        "flddI6tqbCy50FXQI": {
+          "name": "Goal type",
+          "type": "singleLineText",
+          "purpose": "Goal type",
+          "status": "active"
+        },
+        "fld63lf1VtSVfx57C": {
+          "name": "Goal type select",
+          "type": "singleSelect",
+          "purpose": "Goal type select",
+          "status": "active",
+          "choices": [
+            "Cut",
+            "Bulk",
+            "Maintain",
+            "Endurance",
+            "Strength"
+          ]
+        },
+        "fldxMxeckDekAVXaD": {
+          "name": "Daily calorie target",
+          "type": "number",
+          "purpose": "Daily calorie target",
+          "status": "active"
+        },
+        "fldrUULc6rOkeLNzk": {
+          "name": "Daily protein target (g)",
+          "type": "number",
+          "purpose": "Daily protein target (g)",
+          "status": "active"
+        },
+        "fld5kNPANFMRnRiWz": {
+          "name": "Weekly workout target",
+          "type": "number",
+          "purpose": "Weekly workout target",
+          "status": "active"
+        },
+        "fldcpgTRlqDLQBvLX": {
+          "name": "Start date",
+          "type": "date",
+          "purpose": "Start date",
+          "status": "active"
+        },
+        "fldWaU17Ht8IEEqDx": {
+          "name": "Active",
+          "type": "checkbox",
+          "purpose": "Active",
+          "status": "active"
+        },
+        "fldoxXb1Emq55rMD6": {
+          "name": "Notes",
+          "type": "multilineText",
+          "purpose": "Notes",
+          "status": "active"
+        }
+      }
+    },
+    "tblZ7hkoE68IRnQwV": {
+      "name": "Cycling",
+      "module": "Phase 2 \u2014 Daily Bulletin",
+      "description": "Cycling table.",
+      "fields": {
+        "fldVqHReXkhEDEzJ4": {
+          "name": "Date",
+          "type": "date",
+          "purpose": "Date",
+          "status": "active"
+        },
+        "fld39CTzuEHShbdcI": {
+          "name": "Workout",
+          "type": "multipleRecordLinks",
+          "purpose": "Workout",
+          "status": "active",
+          "links_to": "tblMDYF8Lkl5A15CW"
+        },
+        "fldm7yt575A7PHs7u": {
+          "name": "Route",
+          "type": "singleLineText",
+          "purpose": "Route",
+          "status": "active"
+        },
+        "fld7eWROdotAVSqhi": {
+          "name": "Distance (miles)",
+          "type": "number",
+          "purpose": "Distance (miles)",
+          "status": "active"
+        },
+        "fld436YktuoPmA2tr": {
+          "name": "Duration (mins)",
+          "type": "number",
+          "purpose": "Duration (mins)",
+          "status": "active"
+        },
+        "fldVdrI8CVszhVzLg": {
+          "name": "Elevation gain (m)",
+          "type": "number",
+          "purpose": "Elevation gain (m)",
+          "status": "active"
+        },
+        "fldH4NoFMIwReoDVB": {
+          "name": "Avg speed (mph)",
+          "type": "number",
+          "purpose": "Avg speed (mph)",
+          "status": "active"
+        },
+        "fldyuqbSKQbsnUnwf": {
+          "name": "Max speed (mph)",
+          "type": "number",
+          "purpose": "Max speed (mph)",
+          "status": "active"
+        },
+        "fldBJYXOPsI0B5IgM": {
+          "name": "Ride type",
+          "type": "singleSelect",
+          "purpose": "Ride type",
+          "status": "active",
+          "choices": [
+            "Road",
+            "Gravel",
+            "MTB",
+            "Turbo",
+            "Commute"
+          ]
+        },
+        "fld9yUgazeCS3tm2u": {
+          "name": "Bike used",
+          "type": "singleLineText",
+          "purpose": "Bike used",
+          "status": "active"
+        },
+        "fldQpvgytHK3pRrNN": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "Strava",
+            "Garmin",
+            "Manual"
+          ]
+        },
+        "fldRuAEZnHIJykhcZ": {
+          "name": "People",
+          "type": "multipleRecordLinks",
+          "purpose": "People",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        },
+        "fld6svx7V73rSOXGB": {
+          "name": "Avg heart rate",
+          "type": "number",
+          "purpose": "Avg heart rate",
+          "status": "active"
+        },
+        "fldpvsYZg8yXWPxfp": {
+          "name": "Max heart rate",
+          "type": "number",
+          "purpose": "Max heart rate",
+          "status": "active"
+        },
+        "fldlcGjf3Reyu2a56": {
+          "name": "Avg power (W)",
+          "type": "number",
+          "purpose": "Avg power (W)",
+          "status": "active"
+        },
+        "fldDXHwY0uklNOpjj": {
+          "name": "Calories burned",
+          "type": "number",
+          "purpose": "Calories burned",
+          "status": "active"
+        },
+        "fldIveetJEEmgCVt2": {
+          "name": "Strava URL",
+          "type": "url",
+          "purpose": "Strava URL",
+          "status": "active"
+        },
+        "fldUFRqw6hebC8nwR": {
+          "name": "Notes",
+          "type": "multilineText",
+          "purpose": "Notes",
+          "status": "active"
+        },
+        "fldQztDrNqnMt1Z4x": {
+          "name": "Logged",
+          "type": "date",
+          "purpose": "Logged",
+          "status": "active"
+        }
+      }
+    },
+    "tbl62rEmak92HLXX2": {
+      "name": "Intentions",
+      "module": "Unknown",
+      "description": "Intentions table.",
+      "fields": {
+        "fld6wsMsM4RtJZfy9": {
+          "name": "Intention",
+          "type": "singleLineText",
+          "purpose": "Intention",
+          "status": "active"
+        },
+        "fldR9G0Cy2D9l9g7z": {
+          "name": "Week starting",
+          "type": "date",
+          "purpose": "Week starting",
+          "status": "active"
+        },
+        "fldJVrXwA4TxH4vYN": {
+          "name": "Type",
+          "type": "singleSelect",
+          "purpose": "Type",
+          "status": "active",
+          "choices": [
+            "Accomplish",
+            "Let go of",
+            "Focus"
+          ]
+        },
+        "fldSV6PXOgnT4ptjY": {
+          "name": "Status",
+          "type": "singleSelect",
+          "purpose": "Status",
+          "status": "active",
+          "choices": [
+            "Set",
+            "Achieved",
+            "Missed",
+            "Carried over"
+          ]
+        },
+        "fldnUR2g3uDkICXsK": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "Source",
+          "status": "active",
+          "choices": [
+            "Suggested",
+            "Manual"
+          ]
+        },
+        "fldIrmJaVFI1pdpeb": {
+          "name": "Reflection",
+          "type": "multilineText",
+          "purpose": "Reflection",
+          "status": "active"
+        }
+      }
+    },
+    "tbl62rEmak92HLXX2": {
+      "name": "Intentions",
+      "module": "Phase 3 — Weekly Digest + Intentions",
+      "description": "Weekly intentions — set, track, and reflect on intentions each week.",
+      "fields": {
+        "fld6wsMsM4RtJZfy9": {
+          "name": "Intention",
+          "type": "singleLineText",
+          "purpose": "What you intend to do/focus on",
+          "status": "active"
+        },
+        "fldR9G0Cy2D9l9g7z": {
+          "name": "Week starting",
+          "type": "date",
+          "purpose": "The Monday of the week this intention applies to",
+          "status": "active"
+        },
+        "fldJVrXwA4TxH4vYN": {
+          "name": "Type",
+          "type": "singleSelect",
+          "purpose": "Accomplish / Let go of / Focus",
+          "status": "active",
+          "choices": [
+            "Accomplish",
+            "Let go of",
+            "Focus"
+          ]
+        },
+        "fldSV6PXOgnT4ptjY": {
+          "name": "Status",
+          "type": "singleSelect",
+          "purpose": "Set / Achieved / Missed / Carried over",
+          "status": "active",
+          "choices": [
+            "Set",
+            "Achieved",
+            "Missed",
+            "Carried over"
+          ]
+        },
+        "fldnUR2g3uDkICXsK": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "Suggested by Hermes or manually set",
+          "status": "active",
+          "choices": [
+            "Suggested",
+            "Manual"
+          ]
+        },
+        "fldIrmJaVFI1pdpeb": {
+          "name": "Reflection",
+          "type": "multilineText",
+          "purpose": "End-of-week reflection on this intention",
+          "status": "active"
         }
       }
     }

@@ -4,11 +4,11 @@
     "people_graph": {
       "phase": 1,
       "status": "active",
-      "skill": "people-agent (not yet created)",
+      "skill": "people-agent",
       "tables": ["People", "Person Notes", "Conversation Log"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Core tables exist. Google Contacts import pending. Skill not yet built."
+      "notes": "Core tables exist. Skill written. Slack capture active. Person Notes and Conversation Log properly linked. Google Contacts import pending. Junk fields need manual Airtable UI deletion."
     },
     "morning_digest": {
       "phase": 2,
@@ -39,12 +39,12 @@
     },
     "sleep_habits": {
       "phase": 2,
-      "status": "planned",
-      "skill": null,
+      "status": "built",
+      "skill": "sleep-agent",
       "tables": ["Sleep Log", "Habits", "Habit Log"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Not yet built."
+      "notes": "Tables exist. Skill written. Sleep logging and habit tracking via Slack capture. Auto-creates habit records on first log."
     },
     "fitness": {
       "phase": 2,
@@ -57,21 +57,21 @@
     },
     "meal_tracker": {
       "phase": 2,
-      "status": "planned",
-      "skill": null,
+      "status": "built",
+      "skill": "meals-agent",
       "tables": ["Meals", "Daily Nutrition Summary"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Not yet built. Depends on Recipes module."
+      "notes": "Tables exist. Skill written. Slack capture active. From recipe link field added. Airtable sync via recipe_sync.py when meal links to recipe."
     },
     "weekly_digest": {
       "phase": 3,
-      "status": "planned",
-      "skill": null,
-      "tables": ["Digest Log (shared)", "Intentions"],
-      "cron_jobs": [],
-      "slack_capture": false,
-      "notes": "Not yet built."
+      "status": "built",
+      "skill": "weekly-digest-agent",
+      "tables": ["Intentions", "Digest Log (shared)"],
+      "cron_jobs": ["b0b836135650 (Geeves Weekly Digest + Intentions, Sunday 8pm UTC)"],
+      "slack_capture": true,
+      "notes": "Built June 2026. Intentions table created. Cron job runs Sunday 8pm UTC. Fetch + HTML builder scripts created."
     },
     "recipes": {
       "phase": 3,
@@ -89,7 +89,7 @@
       "tables": ["Films"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Films table exists. OMDb lookup works. Slack capture active. Legacy tables (FilmClub_Data, FilmClub_Log) need manual deletion in Airtable UI."
+      "notes": "Films table exists. OMDb lookup works. Slack capture active. Legacy FilmClub_Data/FilmClub_Log tables already deleted. Junk fields (FilmClub_Data, FilmClub_Log, Films x4) still in People table — need manual deletion in Airtable UI."
     },
     "travel_commute": {
       "phase": 3,
@@ -143,7 +143,7 @@
       "tables": ["Restaurants", "Restaurant Visits"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Tables created. Skill written. SerpApi Google Maps lookup working. Google search links for Maps URLs. Depends on People graph and Dining Preferences."
+      "notes": "Tables created. Skill written. SerpApi Google Maps lookup. Google search link for maps URL. Wife's separate rating/notes. Cross-module Dining Preferences for alignment scoring."
     },
     "events_discovery": {
       "phase": 4,
@@ -227,6 +227,7 @@
     "todos-agent (devops/todos-agent)",
     "property-agent (devops/property-agent)",
     "restaurants-agent (devops/restaurants-agent)",
+    "weekly-digest-agent (devops/weekly-digest-agent)",
     "geeves-airtable (devops/geeves-airtable)",
     "geeves-steward (geeves/geeves-steward)"
     ],
@@ -235,7 +236,6 @@
       "fitness-agent",
       "meals-agent",
       "sleep-agent",
-      "weekly-digest-agent",
       "travel-agent",
       "relationships-agent",
       "goals-agent",
@@ -259,6 +259,12 @@
       "schedule": "once at 2026-06-18 09:00",
       "status": "scheduled",
       "skill": null
+    },
+    "b0b836135650": {
+      "name": "Geeves Weekly Digest + Intentions",
+      "schedule": "0 20 * * 0",
+      "status": "active",
+      "skill": "weekly-digest-agent"
     }
   }
 }

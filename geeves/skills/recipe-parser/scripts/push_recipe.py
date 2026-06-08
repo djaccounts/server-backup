@@ -11,7 +11,7 @@ Usage:
 Requires in ~/.hermes/.env:
   AIRTABLE_API_KEY, NVIDIA_API_KEY (for photo), SLACK_BOT_TOKEN (for Slack download)
 """
-import argparse, base64, json, subprocess, sys, urllib.request, urllib.error, urllib.parse
+import argparse, base64, json, re, subprocess, sys, urllib.request, urllib.error, urllib.parse
 
 # ── Config ──
 BASE_ID = "appzvmonQXs4x2AlL"
@@ -21,24 +21,79 @@ MEALIE_URL = "http://localhost:9925"
 MEALIE_USER = "changeme@example.com"
 MEALIE_PASS = "MyPassword123"
 
-CATEGORIES = {
-    "chicken": "Meat", "beef": "Meat", "pork": "Meat", "lamb": "Meat", "thighs": "Meat",
-    "salmon": "Fish", "tuna": "Fish", "shrimp": "Fish", "fish": "Fish",
-    "onion": "Veg", "garlic": "Veg", "tomato": "Veg", "parsley": "Veg",
-    "lemon": "Fruit", "blueberr": "Fruit", "apple": "Fruit", "banana": "Fruit",
-    "butter": "Dairy", "cheese": "Dairy", "milk": "Dairy", "cream": "Dairy", "yogurt": "Dairy",
-    "flour": "Grain", "rice": "Grain", "pasta": "Grain", "bread": "Grain", "oat": "Grain",
-    "salt": "Spice", "pepper": "Spice", "paprika": "Spice", "cumin": "Spice",
-    "cinnamon": "Spice", "turmeric": "Spice", "oregano": "Spice", "basil": "Spice",
-    "oil": "Pantry", "sugar": "Pantry", "vinegar": "Pantry", "honey": "Pantry",
+CATEGORY_KEYWORDS = {
+    "Meat": ["chicken", "beef", "pork", "lamb", "bacon", "sausage", "pancetta", "prosciutto", "steak", "mince", "turkey", "duck", "gammon", "ham"],
+    "Fish": ["salmon", "tuna", "cod", "haddock", "prawn", "shrimp", "anchovy", "fish", "trout", "mackerel", "sardine", "mussel", "scallop", "crab", "lobster"],
+    "Veg": ["onion", "garlic", "tomato", "potato", "cucumber", "pepper", "chilli", "chili", "carrot", "celery", "broccoli", "cauliflower", "spinach", "kale", "cabbage", "lettuce", "rocket", "mushroom", "pea", "bean", "leek", "courgette", "aubergine", "sweetcorn", "corn", "beetroot", "parsnip", "turnip", "swede", "butternut", "pumpkin", "squash", "asparagus", "artichoke", "fennel", "watercress", "mangetout", "spring onion", "shallot", "scallion", "avocado", "sweet potato"],
+    "Fruit": ["lemon", "lime", "orange", "apple", "banana", "blueberr", "strawberr", "raspberr", "cranberr", "raisin", "sultana", "date", "apricot", "mango", "pineapple", "grape", "peach", "pear", "plum", "cherry", "fig", "pomegranate", "coconut", "olive", "kalamata"],
+    "Dairy": ["butter", "milk", "cream", "cheese", "yogurt", "yoghurt", "feta", "parmesan", "mozzarella", "cheddar", "ricotta", "halloumi", "mascarpone", "crème fraiche", "sour cream", "cream cheese", "goat"],
+    "Grain": ["flour", "spaghetti", "penne", "pasta", "rice", "oat", "bread", "couscous", "bulgur", "quinoa", "noodle", "lasagne", "macaroni", "fusilli", "rigatoni", "linguine", "fettuccine", "breadcrumb", "tortilla", "wrap", "ciabatta", "focaccia", "pitta", "pita", "yeast", "cake flour", "bread flour", "self-raising"],
+    "Spice": ["salt", "pepper", "paprika", "cumin", "cinnamon", "turmeric", "ginger", "nutmeg", "clove", "coriander", "cardamom", "saffron", "vanilla", "oregano", "basil", "thyme", "rosemary", "dill", "parsley", "sage", "mint", "chive", "bay leaf", "bay leave", "chilli flake", "chilli powder", "cayenne", "five spice", "garam masala", "curry", "ras el hanout", "baharat", "allspice", "star anise", "mixed spice", "italian seasoning", "herbes de provence", "mustard seed", "mustard powder"],
+    "Pantry": ["oil", "vinegar", "sugar", "honey", "syrup", "baking powder", "baking soda", "bicarbonate", "cornflour", "cornstarch", "gelatine", "agar", "stock", "wine", "soy sauce", "tamari", "fish sauce", "oyster sauce", "worcestershire", "tabasco", "ketchup", "mayonnaise", "mustard", "pesto", "tahini", "hummus", "miso", "capers", "gherkin", "pickle", "tomato purée", "tomato paste", "passata", "chickpea", "kidney bean", "lentil", "black bean", "coconut milk", "coconut cream", "desiccated coconut", "cream of tartar", "cocoa", "chocolate"],
+    "Eggs": ["egg"],
+    "Nuts": ["almond", "walnut", "cashew", "peanut", "pistachio", "hazelnut", "pecan", "pine nut", "sesame seed", "poppy seed", "sunflower seed", "pumpkin seed", "chia seed", "flax seed", "linseed"],
+    "Other": [],
 }
 
 def categorise(ingredient):
     ing_lower = ingredient.lower()
-    for keyword, cat in CATEGORIES.items():
-        if keyword in ing_lower:
-            return cat
+    for cat, keywords in CATEGORY_KEYWORDS.items():
+        for kw in keywords:
+            if kw in ing_lower:
+                return cat
     return "Other"
+
+def clean_ingredient_name(raw):
+    """Extract clean ingredient name from a raw recipe ingredient line.
+    E.g. '2-3 garlic cloves, finely grated' → 'Garlic'
+         '1/2 tsp ground cumin' → 'Cumin'
+         '500g full-fat Greek yoghurt (thick/strained)' → 'Greek yoghurt'
+    """
+    text = raw.strip()
+    # Remove parenthetical notes
+    text = re.sub(r'\s*\(.*?\)', '', text).strip()
+    # Remove leading quantities and units
+    text = re.sub(
+        r'^(?:[\d/→.\s-]+|x\s*\d+\s*)\s*'
+        r'(?:cup|cups|tbsp|tsp|tablespoon|teaspoons|tablespoons|'
+        r'lbs?|oz|g|kg|ml|l|litre|liter|'
+        r'clove|cloves|slice|slices|piece|pieces|'
+        r'sprig|sprigs|pack|packs|pinch|dash|bunch|'
+        r'large|medium|small|'
+        r'whole|half|quarter|'
+        r'tin|tins|can|cans|jar|jars|bottle|bottles|'
+        r'teaspoon|teaspoons)\s+',
+        '', text, flags=re.IGNORECASE).strip()
+    # Remove preparation instructions after comma
+    text = re.sub(
+        r'\s*,\s*(?:'
+        r'finely|roughly|thinly|thickly|'
+        r'chopped|diced|minced|grated|sliced|shredded|crushed|'
+        r'pressed|peeled|deseeded|quartered|trimmed|'
+        r'softened|melted|room temperature|'
+        r'plus\s+extra.*|to\s+taste|for\s+garnish|to\s+serve|optional|'
+        r'cored|chunked|rings|strips|'
+        r'sifted|picked|left whole|'
+        r'thaw.*|measure.*'
+        r').*$',
+        '', text, flags=re.IGNORECASE).strip()
+    # Remove trailing phrases
+    text = re.sub(
+        r'\s+(?:to taste|to serve|for serving|for garnish|optional|for \w+|to finish).*$',
+        '', text, flags=re.IGNORECASE).strip()
+    # Remove leading articles
+    text = re.sub(r'^(?:a |an |the |~|small |large |medium )', '', text, flags=re.IGNORECASE).strip()
+    # Title case
+    if text:
+        words = text.split()
+        result = []
+        for w in words:
+            if len(w) <= 2 and w.lower() not in ('oz',):
+                result.append(w.lower())
+            else:
+                result.append(w.capitalize())
+        return ' '.join(result)
+    return text
 
 def get_env_key(key_name):
     result = subprocess.run(
@@ -122,10 +177,15 @@ def sync_to_airtable(recipe_name, slug, source, ingredients):
         print(f"Created recipe: {recipe_id}")
 
     # Sync ingredients
+    seen = set()
     for ing in ingredients:
-        cat = categorise(ing)
+        clean_name = clean_ingredient_name(ing)
+        if not clean_name or clean_name.lower() in seen:
+            continue
+        seen.add(clean_name.lower())
+        cat = categorise(clean_name)
         r = airtable_post(INGREDIENTS_TABLE, {"fields": {
-            "Ingredient": ing,
+            "Ingredient": clean_name,
             "Category": cat,
             "Recipe": [recipe_id]
         }})

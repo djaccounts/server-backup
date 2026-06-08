@@ -35,6 +35,15 @@ TABLES = {
     # Restaurant module tables
     "Restaurants":         "tblvpSxjeoCQvjotM",
     "Restaurant_Visits":   "tblf2k6uAHLW7mA4b",
+    # Meals module
+    "Meals":               "tblzEBw7Whoomb63E",
+    # Sleep/Habits module
+    "Sleep Log":           "tblTZchsmcXXernI0",
+    "Habits":              "tblS6SryrC3RnRl1L",
+    "Habit Log":           "tbl3YRZ1yoQ7kRPIT",
+    # People module
+    "Person Notes":        "tbl6hnxzXXmWFkVfh",
+    "Conversation Log":    "tbl2dbgksA9XveLcx",
 }
 
 
@@ -67,8 +76,10 @@ def q(s):
 
 
 def airtable_post(table, fields):
-    _, status = api("POST", f"{BASE}/{q(table)}", {"fields": fields})
-    return status == 200
+    r, status = api("POST", f"{BASE}/{q(table)}", {"fields": fields})
+    if status == 200:
+        return True, r.get("id", "")
+    return False, ""
 
 
 def airtable_patch(table, record_id, fields):
@@ -105,7 +116,7 @@ CATEGORY_RULES = [
     ]),
     ("Recipe", [
         r"\brecipe\b", r"\bcook\b", r"\bcooking\b", r"\bbake\b", r"\bbaking\b",
-        r"\bingredient\b", r"\bmeal\b", r"\bdinner\b", r"\blunch\b", r"\bbreakfast\b",
+        r"\bingredient\b", r"\bdinner\b", r"\blunch\b", r"\bbreakfast\b",
         r"\bsnack\b", r"\bdessert\b", r"\bside dish\b",
         r"\bwhat('s|\s+is)\s+for\s+dinner\b", r"\bwhat\s+should\s+i\s+cook\b",
         r"\badd\s+(this\s+)?recipe\b", r"\bemail\s+(me\s+)?(the\s+)?recipe\b",
@@ -118,13 +129,21 @@ CATEGORY_RULES = [
         r"\bcups?\s+(of\s+)?(flour|sugar|butter|milk|oil)\b",
         r"\btablespoons?\s+(of\s+)?\w+\b", r"\bteaspoons?\s+(of\s+)?\w+\b",
     ]),
+    ("Meal", [
+        r"\bate\b", r"\bhad\b", r"\bfor lunch\b", r"\bfor dinner\b", r"\bfor breakfast\b",
+        r"\bfor snack\b", r"\bsnack\b", r"\bcalories\b", r"\bmacros\b", r"\bprotein\b",
+        r"\bcarbs?\b", r"\bfat\b", r"\blog(ged)? (my )?(food|meal|lunch|dinner|breakfast|snack)\b",
+        r"\bfood log\b", r"\bnutrition\b", r"\bcalorie\b",
+    ]),
     ("Restaurant", [
-        r"\brestaurant\b", r"\bwent to\b", r"\bate at\b", r"\bdinner at\b",
-        r"\blunch at\b", r"\bfind me a restaurant\b", r"\brecommend a restaurant\b",
+        r"\brestaurant\b", r"\bfor dinner\b", r"\bfor lunch\b", r"\bwent to\b", r"\bate at\b",
+        r"\bdinner at\b", r"\blunch at\b", r"\bfind me a restaurant\b", r"\brecommend a restaurant\b",
         r"\brat(e|ing|ed) (the )?restaurant\b", r"\bscored (the )?restaurant\b",
-        r"\bbooking\b", r"\bbooked\b", r"\bmenu\b", r"\bfine dining\b",
-        r"\bwent out (for|to)\b", r"\bplace on\b", r"\bplace in\b",
-        r"\bwe ate\b", r"\bwe went\b", r"\btried\b.*\b(place|restaurant|cafe|pub)\b",
+        r"\bbooking\b", r"\bbooked\b.*\b(restaurant|place|cafe|pub)\b",
+        r"\bmenu\b", r"\bfine dining\b",
+        r"\bwent out (for|to)\b.*\b(eat|dinner|lunch|food)\b",
+        r"\bwe ate\b", r"\bwe went\b.*\b(restaurant|place|cafe|pub)\b",
+        r"\btried\b.*\b(place|restaurant|cafe|pub)\b",
         r"\b(place|restaurant|cafe|pub)\b.*\b(was|were)\b.*\b(great|good|amazing|terrible|bad|ok|nice)\b",
     ]),
     ("Module Request", [
@@ -133,12 +152,19 @@ CATEGORY_RULES = [
         r"\bholiday\b", r"\bproperty\b", r"\bhouse\b",
         r"\brecommend\b", r"\bsuggest\b",
     ]),
+    ("Sleep/Habit", [
+        r"\bslept\b", r"\bsleep\b", r"\bbed\b", r"\bwake\b", r"\bwoke\b",
+        r"\btired\b", r"\brest\b", r"\bhabit\b", r"\broutine\b", r"\bstreak\b",
+        r"\bcompleted\b", r"\bdid my\b", r"\blogged\b",
+    ]),
     ("Film Club", [
         r"\bfilm club\b", r"\bmovie club\b", r"\bmovie night\b",
         r"\bfilm night\b", r"\bjust watched\b", r"\bfinished watching\b",
         r"\brat(e|ing|ed) (the )?(movie|film)\b",
         r"\bscored (the )?(movie|film)\b", r"\badd to (the )?list\b",
         r"\blog (the )?(movie|film)\b",
+        r"\bfilm club\b", r"\bmovie club\b",  # double weight for explicit club mention
+        r"\bjust watched\b", r"\bfinished watching\b",  # double weight for watching signals
     ]),
 ]
 
@@ -222,29 +248,39 @@ def handle_person_note(msg, dry_run=False):
     text = msg.get("text", "")
     name = extract_name(text)
     ts = msg.get("ts", "")
+    today = datetime.date.today().isoformat()
 
     if name:
         existing = find_person(name)
         if existing:
-            current_log = existing["fields"].get("Conversation Log", "")
-            new_entry = f"\n[{ts}] {text}"
+            # Create a Person Notes record linked to this person
             if dry_run:
-                print(f"  [DRY RUN] Would append to {name}'s conversation log")
+                print(f"  [DRY RUN] Would create person note for {name}: {text[:60]}")
                 return True
-            ok = airtable_patch("People", existing["id"], {"Conversation Log": current_log + new_entry})
+            ok, _ = airtable_post("Person Notes", {
+                "Note": text,
+                "Person": [existing["id"]],
+                "Source": "Slack",
+            })
             if ok:
-                print(f"  ✅ Updated {name}'s conversation log")
+                print(f"  ✅ Created person note for {name}")
             return ok
         else:
+            # Person doesn't exist — create them with Tier 4
             if dry_run:
                 print(f"  [DRY RUN] Would create new person: {name}")
                 return True
-            ok = airtable_post("People", {
+            ok, pid = airtable_post("People", {
                 "Name": name,
-                "Tier": "Tier 4 (other)",
-                "Conversation Log": f"[{ts}] {text}",
+                "Tier": "Tier 4",
             })
             if ok:
+                # Also create a Person Note with the context
+                airtable_post("Person Notes", {
+                    "Note": f"Added via Slack: {text}",
+                    "Person": [pid],
+                    "Source": "Slack",
+                })
                 print(f"  ✅ Created new person: {name}")
             return ok
     else:
@@ -256,7 +292,7 @@ def handle_person_note(msg, dry_run=False):
             "Period": "Ad-hoc",
             "Summary": text,
             "Source Entries": f"[{ts}] {text}",
-            "Created": datetime.date.today().isoformat(),
+            "Created": today,
         })
 
 
@@ -270,7 +306,7 @@ def handle_todo(msg, dry_run=False):
     if dry_run:
         print(f"  [DRY RUN] Would create todo: {json.dumps(fields)}")
         return True
-    ok = airtable_post("Todos", fields)
+    ok, _ = airtable_post("Todos", fields)
     if ok:
         print(f"  ✅ Created todo: {task[:60]}")
     return ok
@@ -286,7 +322,7 @@ def handle_memory(msg, dry_run=False):
         "Period": "Ad-hoc",
         "Summary": text,
         "Source Entries": f"[{ts}] {text}",
-        "Created": datetime.date.today().isoformat(),
+        "Created": datetime.date.today()[0].isoformat(),
     })
 
 
@@ -298,7 +334,7 @@ def handle_module_request(msg, dry_run=False):
     return airtable_post("Output_Log", {
         "Item": text[:100],
         "Module": "General",
-        "Generated At": datetime.date.today().isoformat(),
+        "Generated At": datetime.date.today()[0].isoformat(),
         "Content": text,
     })
 
@@ -312,9 +348,157 @@ def handle_recipe(msg, dry_run=False):
     return airtable_post("Output_Log", {
         "Item": text[:100],
         "Module": "Recipe",
-        "Generated At": datetime.date.today().isoformat(),
+        "Generated At": datetime.date.today()[0].isoformat(),
         "Content": text,
     })
+
+
+def handle_meal(msg, dry_run=False):
+    """Handle meal logging messages — log to Meals table."""
+    text = msg.get("text", "")
+    ts = msg.get("ts", "")
+    today = datetime.date.today().isoformat()
+
+    # Extract what was eaten — remove common prefixes
+    description = text
+    prefixes = [
+        r"(?i)^i ate\s+", r"(?i)^i had\s+", r"(?i)^i've had\s+",
+        r"(?i)^had\s+", r"(?i)^ate\s+", r"(?i)^lunch:\s+", r"(?i)^dinner:\s+",
+        r"(?i)^breakfast:\s+", r"(?i)^snack:\s+", r"(?i)^logged\s+",
+        r"(?i)^log\s+(my\s+)?(food|meal|lunch|dinner|breakfast|snack):\s*",
+        r"(?i)^food:\s+",
+    ]
+    for prefix in prefixes:
+        description = re.sub(prefix, "", description).strip()
+
+    # Detect meal type from context
+    text_lower = text.lower()
+    meal_type = "Snack"  # default
+    if re.search(r"\b(breakfast|morning)\b", text_lower):
+        meal_type = "Breakfast"
+    elif re.search(r"\b(lunch|midday)\b", text_lower):
+        meal_type = "Lunch"
+    elif re.search(r"\b(dinner|evening|supper)\b", text_lower):
+        meal_type = "Dinner"
+    elif re.search(r"\b(snack|afternoon)\b", text_lower):
+        meal_type = "Snack"
+
+    # Time-based fallback for meal type
+    if meal_type == "Snack":
+        hour = datetime.datetime.now().hour
+        if hour < 11:
+            meal_type = "Breakfast"
+        elif hour < 14:
+            meal_type = "Lunch"
+        elif hour >= 17:
+            meal_type = "Dinner"
+
+    if dry_run:
+        print(f"  [DRY RUN] Would log meal: {description[:60]} (type={meal_type})")
+        return True
+
+    return airtable_post("Meals", {
+        "Description": description[:200],
+        "Date": today,
+        "Meal type": meal_type,
+        "Accuracy": "Estimated",
+        "Source": "Slack",
+    })
+
+
+# ── Sleep/Habit helpers ──────────────────────────────────────────────────────────
+
+def handle_sleep_habit(msg, dry_run=False):
+    """Handle sleep logging and habit tracking messages."""
+    text = msg.get("text", "")
+    today = datetime.date.today().isoformat()
+    text_lower = text.lower()
+
+    # Check if this is a sleep log message
+    if re.search(r"\b(slept|sleep|bed|woke|wake)\b", text_lower):
+        # Extract bedtime
+        bedtime = None
+        m = re.search(r"(?:went to bed|bed at|slept at)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", text_lower)
+        if m:
+            bedtime = m.group(1).strip()
+        else:
+            m = re.search(r"(?:from|at)\s+(\d{1,2}(?::\d{2})?\s*(?:pm|am)?)\s+(?:to|-)\s+\d{1,2}", text_lower)
+            if m:
+                bedtime = m.group(1).strip()
+
+        # Extract wake time
+        wake_time = None
+        m = re.search(r"(?:woke|wake)\s+(?:at\s+)?(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", text_lower)
+        if m:
+            wake_time = m.group(1).strip()
+        else:
+            m = re.search(r"(?:to|-)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", text_lower)
+            if m:
+                wake_time = m.group(1).strip()
+
+        # Extract hours slept
+        hours = None
+        m = re.search(r"(\d+(?:\.\d+)?)\s*hours?\s*(?:of\s+)?(?:sleep|slept)", text_lower)
+        if m:
+            hours = float(m.group(1))
+
+        # Extract quality
+        quality = None
+        m = re.search(r"(?:quality|rated?|rating)\s+(\d)\s*/?\s*5?", text_lower)
+        if m:
+            quality = int(m.group(1))
+
+        if dry_run:
+            print(f"  [DRY RUN] Would log sleep: bed={bedtime}, wake={wake_time}, hours={hours}, quality={quality}")
+            return True
+
+        fields = {"Date": today}
+        if bedtime:
+            fields["Bedtime"] = bedtime
+        if wake_time:
+            fields["Wake time"] = wake_time
+        if hours:
+            fields["Hours slept"] = hours
+        if quality:
+            fields["Quality"] = quality
+        if len(fields) > 1:  # More than just Date
+            return airtable_post("Sleep Log", fields)
+        return False
+
+    # Check if this is a habit message
+    if re.search(r"\b(habit|completed|did my|logged|routine|streak)\b", text_lower):
+        # Extract habit name
+        habit_name = None
+        m = re.search(r"(?:did my|completed|logged)\s+(.+?)(?:\s*$|\s+(?:habit|today|streak))", text_lower)
+        if m:
+            habit_name = m.group(1).strip().title()
+
+        if dry_run:
+            print(f"  [DRY RUN] Would log habit: {habit_name}")
+            return True
+
+        if habit_name:
+            # Find or create the habit
+            formula = f"{{Habit}}='{habit_name}'"
+            r, status = api("GET", f"{BASE}/Habits?filterByFormula={q(formula)}&maxRecords=1")
+            habit_id = None
+            if status == 200 and r.get("records"):
+                habit_id = r["records"][0]["id"]
+            else:
+                # Create the habit
+                hr, hs = api("POST", f"{BASE}/Habits", {"fields": {"Habit": habit_name, "Active": True}})
+                if hs == 200:
+                    habit_id = hr.get("id")
+
+            if habit_id:
+                return airtable_post("Habit Log", {
+                    "Date": today,
+                    "Habit": [habit_id],
+                    "Completed": True,
+                })
+        return False
+
+    return False
 
 
 # ── Film Club helpers ────────────────────────────────────────────────────────────
@@ -449,7 +633,7 @@ def handle_film_club(msg, dry_run=False):
         return airtable_post("Output_Log", {
             "Item": "Film Club note",
             "Module": "FilmClub",
-            "Generated At": datetime.date.today().isoformat(),
+            "Generated At": datetime.date.today()[0].isoformat(),
             "Content": text,
         })
 
@@ -487,24 +671,193 @@ def handle_film_club(msg, dry_run=False):
         print(f"  [DRY RUN] Would create Films: {json.dumps(fields, indent=2)[:300]}")
         return True
 
-    ok = airtable_post("Films", fields)
+    ok, _ = airtable_post("Films", fields)
     if ok:
         print(f"  ✅ Films record created")
     return ok
 
 
 def handle_restaurant(msg, dry_run=False):
-    """Handle restaurant-related messages — log to Output_Log for Hermes to process."""
+    """Handle restaurant-related messages — create Restaurants and Restaurant Visits records."""
     text = msg.get("text", "")
+    ts = msg.get("ts", "")
+    today = datetime.date.today().isoformat()
+
+    # Extract restaurant name
+    restaurant_name = extract_restaurant_name(text)
+    rating = extract_rating(text)
+    wife_rating = extract_wife_rating(text)
+    would_return = extract_would_return(text)
+    cost = extract_cost(text)
+    dishes = extract_dishes(text)
+
+    print(f"   🍽️ Restaurant: {restaurant_name or 'unknown'} | Rating: {rating or '—'} | Wife: {wife_rating or '—'} | Return: {would_return or '—'}")
+
+    if not restaurant_name:
+        # Can't identify restaurant — log for Hermes to handle
+        if dry_run:
+            print(f"  [DRY RUN] Would log restaurant note to Output_Log")
+            return True
+        return airtable_post("Output_Log", {
+            "Item": text[:100],
+            "Module": "Restaurant",
+            "Generated At": today,
+            "Content": text,
+        })[0]
+
+    # Build Google search URL for the restaurant
+    maps_url = f"https://www.google.com/search?q={urllib.parse.quote(restaurant_name + ' restaurant London')}"
+
+    # Find or create restaurant record
+    existing = find_restaurant(restaurant_name)
+    if existing:
+        restaurant_id = existing["id"]
+        print(f"   ℹ️  Found existing restaurant: {restaurant_name}")
+    else:
+        fields = {"Name": restaurant_name, "Maps URL": maps_url, "Source": "We went"}
+        if rating:
+            fields["Overall Rating"] = rating
+        if dry_run:
+            print(f"  [DRY RUN] Would create restaurant: {json.dumps(fields)}")
+            restaurant_id = "dry_run_id"
+        else:
+            ok, rid = airtable_post("Restaurants", fields)
+            if ok:
+                restaurant_id = rid
+                print(f"  ✅ Created restaurant: {restaurant_name}")
+            else:
+                print(f"  ❌ Failed to create restaurant")
+                return True  # still try to log visit
+
+    # Create visit record
+    visit_fields = {"Date": today, "Source": "Slack"}
+    if restaurant_id and restaurant_id != "dry_run_id":
+        visit_fields["Restaurant"] = [restaurant_id]
+    if rating:
+        visit_fields["Overall Rating"] = rating
+    if wife_rating:
+        visit_fields["Wife's Rating"] = wife_rating
+    if would_return:
+        visit_fields["Would Return"] = would_return
+    if cost:
+        visit_fields["Cost Total"] = cost
+    if dishes:
+        visit_fields["Dishes Ordered"] = dishes
+
     if dry_run:
-        print(f"  [DRY RUN] Would log restaurant note to Output_Log (Module=Restaurant)")
+        print(f"  [DRY RUN] Would create visit: {json.dumps(visit_fields)}")
         return True
-    return airtable_post("Output_Log", {
-        "Item": text[:100],
-        "Module": "Restaurant",
-        "Generated At": datetime.date.today().isoformat(),
-        "Content": text,
-    })
+
+    ok, _ = airtable_post("Restaurant_Visits", visit_fields)
+    if ok:
+        print(f"  ✅ Created restaurant visit for: {restaurant_name}")
+    return ok
+
+
+def extract_restaurant_name(text):
+    """Extract restaurant name from a message."""
+    # Quoted names
+    m = re.search(r'["\u201c\u201d\']([A-Z][^"\']{2,60})["\u201c\u201d\']', text)
+    if m:
+        return m.group(1).strip()
+
+    boundary = {"at", "in", "to", "with", "for", "from", "and", "but", "was",
+                "were", "had", "has", "got", "rated", "gave", "scored", "the",
+                "about", "like", "really", "very", "by", "as", "so", "if", "or",
+                "up", "out", "off", "not", "just", "also", "list", "place",
+                "restaurant", "cafe", "pub", "bar", "went", "ate", "tried",
+                "had", "dinner", "lunch", "breakfast", "food", "meal", "park",
+                "last", "night", "this", "that", "it", "there", "here"}
+
+    patterns = [
+        r'\bwent to\s+(?:the\s+)?(?:restaurant\s+|cafe\s+|pub\s+|bar\s+)?([A-Z][a-z]+(?:\'[a-z]+)?(?:\s+[A-Z]?[a-z]+(?:\'[a-z]+)?){0,4})',
+        r'\bate at\s+(?:the\s+)?(?:restaurant\s+|cafe\s+|pub\s+|bar\s+)?([A-Z][a-z]+(?:\'[a-z]+)?(?:\s+[A-Z]?[a-z]+(?:\'[a-z]+)?){0,4})',
+        r'\bdinner at\s+(?:the\s+)?(?:restaurant\s+|cafe\s+|pub\s+|bar\s+)?([A-Z][a-z]+(?:\'[a-z]+)?(?:\s+[A-Z]?[a-z]+(?:\'[a-z]+)?){0,4})',
+        r'\blunch at\s+(?:the\s+)?(?:restaurant\s+|cafe\s+|pub\s+|bar\s+)?([A-Z][a-z]+(?:\'[a-z]+)?(?:\s+[A-Z]?[a-z]+(?:\'[a-z]+)?){0,4})',
+        r'\bbooked\s+(?:the\s+)?(?:restaurant\s+|cafe\s+|pub\s+|bar\s+)?([A-Z][a-z]+(?:\'[a-z]+)?(?:\s+[A-Z]?[a-z]+(?:\'[a-z]+)?){0,4})',
+        r'\btried\s+(?:the\s+)?(?:restaurant\s+|cafe\s+|pub\s+|bar\s+)?([A-Z][a-z]+(?:\'[a-z]+)?(?:\s+[A-Z]?[a-z]+(?:\'[a-z]+)?){0,4})',
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.IGNORECASE)
+        if m:
+            raw = m.group(1).strip()
+            words = raw.split()
+            name_words = []
+            for w in words:
+                if w.lower() in boundary:
+                    break
+                name_words.append(w)
+            name = " ".join(name_words).strip()
+            if len(name) > 1:
+                return name
+    return None
+
+
+def extract_wife_rating(text):
+    """Extract wife's rating from message."""
+    m = re.search(r"(?:wife|she)\s+(?:rated|gave|scored)\s+(?:it\s+)?(\d(?:\.\d)?)\s*(?:/|out of)\s*(?:5|10)", text, re.IGNORECASE)
+    if m:
+        val = float(m.group(1))
+        if val <= 5:
+            return str(min(int(val * 2), 10))
+        return str(min(int(val), 10))
+    m = re.search(r"(?:wife|she)\s+(?:rated|gave|scored)\s+(?:it\s+)?(\d{1,2})", text, re.IGNORECASE)
+    if m:
+        return str(min(int(m.group(1)), 10))
+    return None
+
+
+def extract_would_return(text):
+    tl = text.lower()
+    if any(w in tl for w in ["definitely going back", "will return", "going back", "back again", "can't wait to go back"]):
+        return "Definitely"
+    if any(w in tl for w in ["maybe go back", "might return", "could go back", "not sure about going back"]):
+        return "Maybe"
+    if any(w in tl for w in ["never going back", "won't return", "not going back", "avoid"]):
+        return "No"
+    return None
+
+
+def extract_cost(text):
+    """Extract total cost from message."""
+    m = re.search(r'(?:bill|cost|total|spent|was)\s+(?:£|GBP\s+)(\d{2,4})(?:\.\d{2})?', text, re.IGNORECASE)
+    if m:
+        return float(m.group(1))
+    m = re.search(r'£(\d{2,4})(?:\.\d{2})?\s+(?:total|bill|for the meal)', text, re.IGNORECASE)
+    if m:
+        return float(m.group(1))
+    return None
+
+
+def extract_dishes(text):
+    """Extract dishes ordered from message."""
+    m = re.search(r'(?:had|ordered|ate|tried)\s+(?:the\s+)?(.+?)(?:\.|,|;|\band\b)', text, re.IGNORECASE)
+    if m:
+        dishes = m.group(1).strip()
+        if len(dishes) > 5 and len(dishes) < 200:
+            return dishes
+    return None
+
+
+def find_restaurant(name):
+    """Find a restaurant by name (fuzzy match)."""
+    if not name:
+        return None
+    # Try exact match first
+    formula = f"{{Name}}='{name}'"
+    r, status = api("GET", f"{BASE}/Restaurants?filterByFormula={q(formula)}&maxRecords=5")
+    if status == 200:
+        records = r.get("records", [])
+        if records:
+            return records[0]
+    # Try contains match
+    formula = f"FIND('{name}', {{Name}})>0"
+    r, status = api("GET", f"{BASE}/Restaurants?filterByFormula={q(formula)}&maxRecords=5")
+    if status == 200:
+        records = r.get("records", [])
+        if records:
+            return records[0]
+    return None
 
 
 HANDLERS = {
@@ -512,7 +865,9 @@ HANDLERS = {
     "Todo": handle_todo,
     "Memory": handle_memory,
     "Recipe": handle_recipe,
+    "Meal": handle_meal,
     "Restaurant": handle_restaurant,
+    "Sleep/Habit": handle_sleep_habit,
     "Module Request": handle_module_request,
     "Film Club": handle_film_club,
 }

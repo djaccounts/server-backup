@@ -90,7 +90,6 @@ The groundwork everything else stands on.
 The first daily-value layer, and the things the user touches every day.
 
 - **Morning digest** — a single readable briefing to start the day: weather, the day's calendar, today's tasks, what's for dinner, due reminders, curated news worth knowing, markets, and the word of the day. Delivered to the inbox each morning.
-- **Evening digest** — a short close to the day: what got done, what rolls over to tomorrow, tomorrow's shape.
 - **To-do list** — tasks across short, medium, and long horizons, surfaced at the right cadence rather than all at once.
 - **Sleep and habit tracking** — quick to log, quietly building a picture over time; the morning briefing can soften on a bad night.
 - **Fitness tracking** — workouts logged in a sentence or imported from a wearable; summarised weekly, with the next session suggested from recent history.

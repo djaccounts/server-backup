@@ -107,6 +107,10 @@ def categorize_ingredient(name):
     """LLM-free heuristic categorization of ingredients."""
     name_lower = name.lower()
 
+    # Eggs (check before Dairy since "egg" can match dairy keywords)
+    if any(w in name_lower for w in ["egg", "eggs"]):
+        return "Eggs"
+
     # Meat
     if any(w in name_lower for w in ["chicken", "beef", "pork", "lamb", "turkey", "duck",
                                        "bacon", "sausage", "steak", "mince", "ham", "prosciutto",
@@ -123,7 +127,7 @@ def categorize_ingredient(name):
     # Dairy
     if any(w in name_lower for w in ["milk", "cheese", "butter", "cream", "yogurt", "yoghurt",
                                        "feta", "parmesan", "mozzarella", "cheddar", "ricotta",
-                                       "mascarpone", "halloumi", "brie", "gouda", "egg", "eggs"]):
+                                       "mascarpone", "halloumi", "brie", "gouda"]):
         return "Dairy"
 
     # Grain
@@ -177,6 +181,59 @@ def categorize_ingredient(name):
         return "Veg"
 
     return "Other"
+
+
+def clean_ingredient_name(raw):
+    """Extract clean ingredient name from a raw recipe ingredient line.
+    E.g. '2-3 garlic cloves, finely grated' → 'Garlic'
+         '1/2 tsp ground cumin' → 'Cumin'
+         '500g full-fat Greek yoghurt (thick/strained)' → 'Greek yoghurt'
+    """
+    text = raw.strip()
+    # Remove parenthetical notes
+    text = re.sub(r'\s*\(.*?\)', '', text).strip()
+    # Remove leading quantities and units
+    text = re.sub(
+        r'^(?:[\d/→.\s-]+|x\s*\d+\s*)\s*'
+        r'(?:cup|cups|tbsp|tsp|tablespoon|teaspoons|tablespoons|'
+        r'lbs?|oz|g|kg|ml|l|litre|liter|'
+        r'clove|cloves|slice|slices|piece|pieces|'
+        r'sprig|sprigs|pack|packs|pinch|dash|bunch|'
+        r'large|medium|small|'
+        r'whole|half|quarter|'
+        r'tin|tins|can|cans|jar|jars|bottle|bottles|'
+        r'teaspoon|teaspoons)\s+',
+        '', text, flags=re.IGNORECASE).strip()
+    # Remove preparation instructions after comma
+    text = re.sub(
+        r'\s*,\s*(?:'
+        r'finely|roughly|thinly|thickly|'
+        r'chopped|diced|minced|grated|sliced|shredded|crushed|'
+        r'pressed|peeled|deseeded|quartered|trimmed|'
+        r'softened|melted|room temperature|'
+        r'plus\s+extra.*|to\s+taste|for\s+garnish|to\s+serve|optional|'
+        r'cored|chunked|rings|strips|'
+        r'sifted|picked|left whole|'
+        r'thaw.*|measure.*'
+        r').*$',
+        '', text, flags=re.IGNORECASE).strip()
+    # Remove trailing phrases
+    text = re.sub(
+        r'\s+(?:to taste|to serve|for serving|for garnish|optional|for \w+|to finish).*$',
+        '', text, flags=re.IGNORECASE).strip()
+    # Remove leading articles
+    text = re.sub(r'^(?:a |an |the |~|small |large |medium )', '', text, flags=re.IGNORECASE).strip()
+    # Title case
+    if text:
+        words = text.split()
+        result = []
+        for w in words:
+            if len(w) <= 2 and w.lower() not in ('oz',):
+                result.append(w.lower())
+            else:
+                result.append(w.capitalize())
+        return ' '.join(result)
+    return text
 
 
 def get_seasonal_months(ingredient_name):
@@ -310,31 +367,23 @@ def sync_recipe(slug):
 
     # 4. Sync ingredients
     ingredients = recipe.get("recipeIngredient", [])
-    seen_displays = set()
+    seen_names = set()
     ingredient_count = 0
 
     for ing in ingredients:
-        display = ing.get("display", "")
-        if not display or display in seen_displays:
+        # Get the raw text from display or note
+        raw_text = ing.get("display", "") or ing.get("note", "")
+        if not raw_text:
+            food = ing.get("food") or {}
+            raw_text = food.get("name", "")
+        if not raw_text:
             continue
-        seen_displays.add(display)
 
-        # Parse quantity and ingredient name from display
-        # Display format is typically: "500g Chicken thighs" or "2 tbsp olive oil"
-        quantity = ""
-        ing_name = display
-
-        # Try to extract quantity from the beginning
-        qty_match = re.match(r'^([\d./]+\s*\w*)\s+(.+)$', display)
-        if qty_match:
-            quantity = qty_match.group(1).strip()
-            ing_name = qty_match.group(2).strip()
-
-        # Use 'note' field if available for cleaner name
-        if ing.get("note") and not ing.get("food"):
-            ing_name = ing["note"]
-            quantity = str(ing.get("quantity", "")) + " " + str(ing.get("unit", "")).strip()
-            quantity = quantity.strip()
+        # Clean the ingredient name (remove quantities, units, prep notes)
+        ing_name = clean_ingredient_name(raw_text)
+        if not ing_name or ing_name.lower() in seen_names:
+            continue
+        seen_names.add(ing_name.lower())
 
         category = categorize_ingredient(ing_name)
         seasonal = get_seasonal_months(ing_name)
@@ -342,7 +391,6 @@ def sync_recipe(slug):
         ing_fields = {
             "Ingredient": ing_name,
             "Recipe": [recipe_record_id],
-            "Quantity": quantity,
             "Category": category,
         }
         if seasonal:

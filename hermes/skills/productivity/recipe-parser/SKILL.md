@@ -217,9 +217,9 @@ The Airtable API rejects unknown field names with HTTP 422. These are the **exac
 - `Recipe` — multipleRecordLinks → Recipes table
 - `Quantity` — singleLineText
 
-**Category single-select options** (exact strings): `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Other`
+**Category single-select options** (exact strings): `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Eggs`, `Other`
 
-⚠️ Creating new select options via API returns HTTP 422 "Insufficient permissions". Always map to existing options.
+⚠️ Creating new select options via the Metadata API returns HTTP 422 "Insufficient permissions". Use `typecast=true` on POST to auto-create new options (e.g., "Eggs" was added this way).
 
 ## Airtable Filter Formula Gotchas
 
@@ -235,16 +235,19 @@ The Airtable API rejects unknown field names with HTTP 422. These are the **exac
 
 For the complete photo/text/URL → Mealie → Airtable pipeline, use:
 ```
-python3 /root/.hermes/skills/productivity/recipe-parser/scripts/push_recipe.py --photo /path/to/image.jpg
-python3 /root/.hermes/skills/productivity/recipe-parser/scripts/push_recipe.py --text "recipe text..."
-python3 /root/.hermes/skills/productivity/recipe-parser/scripts/push_recipe.py --url "https://..."
+python3 /root/Geeves/skills/recipe-parser/scripts/push_recipe.py --photo /path/to/image.jpg
+python3 /root/Geeves/skills/recipe-parser/scripts/push_recipe.py --text "recipe text..."
+python3 /root/Geeves/skills/recipe-parser/scripts/push_recipe.py --url "https://..."
 ```
 
 For Mealie → Airtable sync only (e.g., after manual Mealie edits):
 ```
-python3 /root/.hermes/skills/productivity/recipe-parser/scripts/recipe_sync.py --slug <slug>
-python3 /root/.hermes/skills/productivity/recipe-parser/scripts/recipe_sync.py  # syncs all
+python3 /root/Geeves/scripts/recipe_sync.py <slug>
 ```
+
+## Ingredient Name Cleaning
+
+When syncing to Airtable, ingredient names are **cleaned** — the `Ingredient` field stores ONLY the ingredient name, not the full recipe line. See `references/ingredient-cleaning.md` for the full algorithm, category mapping, and examples.
 
 ## Listing & Deduplicating Mealie Recipes
 

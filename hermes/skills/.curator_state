@@ -1,9 +1,9 @@
 {
-  "last_report_path": null,
-  "last_run_at": "2026-05-31T21:35:12.260118+00:00",
-  "last_run_duration_seconds": null,
-  "last_run_summary": "deferred first run — curator seeded, will run after one interval; use `hermes curator run --dry-run` to preview now",
+  "last_report_path": "/root/.hermes/logs/curator/20260607-223455",
+  "last_run_at": "2026-06-07T22:34:55.220377+00:00",
+  "last_run_duration_seconds": 1117.691033,
+  "last_run_summary": "auto: no changes; llm: Now let me write the structured summary:\n\n## Curator Pass Summary\n\n### What was done\n\n**94 agent-created skills → 77 active + 45 archived** (some skills had multiple items consolidated into one umbrella)\n\n**10 new umbrella skills created**,…\narchived 41 skill(s):\n  • apple-notes — pruned (stale)\n  • apple-reminders — pruned (stale)\n  • claude-code — pruned (stale)\n  • codebase-inspection — pruned (stale)\n  • codex — pruned (stale)\n  • debugging-hermes-tui-commands — pruned (stale)\n  • dogfood — pruned (stale)\n  • dspy — pruned (stale)\n  • evaluating-llms-harness — pruned (stale)\n  • findmy — pruned (stale)\n  … and 31 more\nfull report: hermes curator status",
   "last_run_summary_shown_at": null,
   "paused": false,
-  "run_count": 0
+  "run_count": 1
 }

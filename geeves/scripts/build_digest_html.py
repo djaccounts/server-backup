@@ -111,6 +111,51 @@ def build_html():
             {source_link}
         </div>""")
     
+    # === PROPERTY SEARCH ===
+    property_recs = fetch_latest("Properties", 50)
+    # Filter to new/interested properties
+    recent_props = []
+    seen_ids = set()
+    for r in property_recs:
+        f = r["fields"]
+        status = f.get("Status", "")
+        rm_id = f.get("Rightmove ID", "")
+        if status in ("New", "Interested") and rm_id not in seen_ids:
+            seen_ids.add(rm_id)
+            recent_props.append(f)
+
+    if recent_props:
+        # Sort by match score descending
+        recent_props.sort(key=lambda p: p.get("Match Score", 0), reverse=True)
+        prop_rows = ""
+        for p in recent_props[:2]:
+            address = p.get("Address", "")
+            price = p.get("Price", 0)
+            beds = p.get("Bedrooms", "?")
+            prop_type = p.get("Property Type", "")
+            score = p.get("Match Score", 0)
+            url = p.get("Rightmove URL", "#")
+            features = p.get("Key Features", "")
+            # Extract first 3 key features
+            feat_list = [l.strip() for l in features.split("\n") if l.strip()][:3]
+            feat_html = " · ".join(feat_list) if feat_list else ""
+            price_str = f"£{price:,}" if price else "Price TBC"
+
+            prop_rows += f"""
+            <div class="property-card">
+                <p><strong><a href="{url}">{address}</a></strong></p>
+                <p>{price_str} · {beds} bed {prop_type}</p>
+                <p class="source">{feat_html}</p>
+                <p class="source">⭐ Match score: {score}/10 · <a href="{url}">View on Rightmove →</a></p>
+            </div>"""
+
+        sections.append(f"""
+        <div class="section">
+            <h2>🏠 Property Picks</h2>
+            <p class="source">New listings matching your criteria (3+ beds, garden, north of Thames, £750k-£1m)</p>
+            {prop_rows}
+        </div>""")
+
     # === MARKETS ===
     today_stocks = [r["fields"] for r in stock_recs if r["fields"].get("Date") == today_iso]
     # Deduplicate by ticker
@@ -161,48 +206,6 @@ def build_html():
             <h2>📊 Token Usage (Yesterday)</h2>
             <p><strong>{total:,.0f}</strong> active tokens across {sessions} sessions</p>
             <p class="source">Top model: {top}</p>
-        </div>""")
-
-    # === PROPERTY SEARCH ===
-    property_recs = fetch_latest("Properties", 50)
-    # Filter to new/interested properties seen in the last 3 days
-    recent_props = []
-    for r in property_recs:
-        f = r["fields"]
-        status = f.get("Status", "")
-        if status in ("New", "Interested"):
-            recent_props.append(f)
-
-    if recent_props:
-        # Sort by match score descending
-        recent_props.sort(key=lambda p: p.get("Match Score", 0), reverse=True)
-        prop_rows = ""
-        for p in recent_props[:5]:
-            address = p.get("Address", "")
-            price = p.get("Price", 0)
-            beds = p.get("Bedrooms", "?")
-            prop_type = p.get("Property Type", "")
-            score = p.get("Match Score", 0)
-            url = p.get("Rightmove URL", "#")
-            features = p.get("Key Features", "")
-            # Extract first 3 key features
-            feat_list = [l.strip() for l in features.split("\n") if l.strip()][:3]
-            feat_html = " · ".join(feat_list) if feat_list else ""
-            price_str = f"£{price:,}" if price else "Price TBC"
-
-            prop_rows += f"""
-            <div class="property-card">
-                <p><strong><a href="{url}">{address}</a></strong></p>
-                <p>{price_str} · {beds} bed {prop_type}</p>
-                <p class="source">{feat_html}</p>
-                <p class="source">⭐ Match score: {score}/10 · <a href="{url}">View on Rightmove →</a></p>
-            </div>"""
-
-        sections.append(f"""
-        <div class="section">
-            <h2>🏠 Property Picks</h2>
-            <p class="source">New listings matching your criteria (3+ beds, garden, north of Thames, £750k-£1m)</p>
-            {prop_rows}
         </div>""")
 
     sections_html = "\n".join(sections)

@@ -367,6 +367,27 @@ RECIPE_TABLES = {
 }
 
 
+WEEKLY_DIGEST_TABLES = {
+    "Intentions": {
+        "fields": [
+            {"name": "Intention", "type": "text"},
+            {"name": "Week starting", "type": "date"},
+            {"name": "Type", "type": "select", "options": [
+                "Accomplish", "Let go of", "Focus",
+            ]},
+            {"name": "Status", "type": "select", "options": [
+                "Set", "Achieved", "Missed", "Carried over",
+            ]},
+            {"name": "Source", "type": "select", "options": [
+                "Suggested", "Manual",
+            ]},
+            {"name": "Reflection", "type": "longText"},
+            # Created = createdTime — auto, not created via API
+        ],
+    },
+}
+
+
 RESTAURANT_TABLES = {
     "Restaurants": {
         "fields": [
@@ -462,6 +483,33 @@ RESTAURANT_TABLES = {
         ],
     },
 }
+
+
+def create_weekly_digest_tables():
+    """Create all Weekly Digest module tables (Intentions)."""
+    print("\n📅 Creating Weekly Digest module tables via API...")
+    print()
+
+    tables = list_tables()
+
+    for table_name, spec in WEEKLY_DIGEST_TABLES.items():
+        existing = find_table(tables, table_name)
+        if existing:
+            print(f"  ℹ️  Table '{table_name}' already exists (id: {existing['id']})")
+            continue
+
+        normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
+        result = create_table(table_name, normal_fields)
+        if result:
+            print(f"    ✅ Created '{table_name}' (id: {result['id']})")
+        print()
+
+    print("📊 Weekly Digest module table IDs:")
+    for table_name in WEEKLY_DIGEST_TABLES:
+        t = find_table(list_tables(), table_name)
+        if t:
+            print(f"   {table_name:25s} {t['id']}")
+    print()
 
 
 def create_restaurant_tables():
@@ -781,6 +829,14 @@ def main():
         show_schema()
     elif args[0] == "--recipe":
         create_recipe_tables()
+        print("\n📊 Final schema:")
+        show_schema()
+    elif args[0] == "--restaurant":
+        create_restaurant_tables()
+        print("\n📊 Final schema:")
+        show_schema()
+    elif args[0] == "--weekly":
+        create_weekly_digest_tables()
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--module":

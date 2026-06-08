@@ -169,13 +169,7 @@ Pulls from many tables; writes a record of each briefing sent.
 
 ---
 
-## Module 4 — Evening Digest
-
-Uses the shared `Digest Log` table above (Type = Evening). No new tables — it reads from Todos, Dinner Planner, and the calendar.
-
----
-
-## Module 5 — To-Do List
+## Module 4 — To-Do List
 
 ### Table: `Todos`
 
@@ -192,7 +186,7 @@ Uses the shared `Digest Log` table above (Type = Evening). No new tables — it 
 
 ---
 
-## Module 6 — Sleep + Habit Tracker
+## Module 5 — Sleep + Habit Tracker
 
 ### Table: `Sleep Log`
 
@@ -225,7 +219,7 @@ Each daily completion.
 
 ---
 
-## Module 7 — Fitness Tracker
+## Module 6 — Fitness Tracker
 
 ### Table: `Workouts`
 
@@ -262,7 +256,7 @@ Optional detail for gym sessions.
 
 ---
 
-## Module 8 — Meal Tracker
+## Module 7 — Meal Tracker
 
 ### Table: `Meals`
 
@@ -295,7 +289,7 @@ A daily roll-up for digests and trends (can be a view or a generated table).
 
 ---
 
-## Module 9 — Weekly Digest + Intentions
+## Module 8 — Weekly Digest + Intentions
 
 Uses the shared `Digest Log` (Type = Weekly) plus an intentions table.
 
@@ -311,7 +305,7 @@ Uses the shared `Digest Log` (Type = Weekly) plus an intentions table.
 
 ---
 
-## Module 10 — Recipe App
+## Module 9 — Recipe App
 
 One of the richest modules. Links to people (for dinner parties) and to meals (for logging what was eaten).
 
@@ -408,7 +402,7 @@ What Hermes generated, when, how it was rated. Prevents repetition, enables lear
 
 ---
 
-## Module 10b — Dining Preferences *(shared cross-module bridge)*
+## Module 9b — Dining Preferences *(shared cross-module bridge)*
 
 Populated automatically by Hermes from recipe ratings, meal frequency, and ingredient patterns. Read by the future Restaurant Finder module to personalise recommendations.
 
@@ -421,7 +415,7 @@ Populated automatically by Hermes from recipe ratings, meal frequency, and ingre
 
 ---
 
-## Module 11 — Travel + Commute Assistant
+## Module 10 — Travel + Commute Assistant
 
 Mostly Hermes reading the calendar and live transit data. A small reference table helps.
 
@@ -435,7 +429,7 @@ Mostly Hermes reading the calendar and live transit data. A small reference tabl
 
 ---
 
-## Module 12 — Relationship + Occasion Tracker
+## Module 11 — Relationship + Occasion Tracker
 
 Reads heavily from the People Graph. Adds occasion tracking.
 
@@ -455,7 +449,7 @@ Reads heavily from the People Graph. Adds occasion tracking.
 
 ---
 
-## Module 13 — Gift Ideas Running List
+## Module 12 — Gift Ideas Running List
 
 ### Table: `Gift Ideas`
 
@@ -483,7 +477,7 @@ What has actually been given, so nothing repeats and the system learns what land
 
 ---
 
-## Module 14 — Skills + Goals Tracker
+## Module 13 — Skills + Goals Tracker
 
 ### Table: `Goals`
 
@@ -508,7 +502,7 @@ What has actually been given, so nothing repeats and the system learns what land
 
 ---
 
-## Module 15 — Document + Subscription Organiser
+## Module 14 — Document + Subscription Organiser
 
 ### Table: `Documents`
 
@@ -537,7 +531,7 @@ What has actually been given, so nothing repeats and the system learns what land
 
 ---
 
-## Module 16 — Wardrobe App
+## Module 15 — Wardrobe App
 
 ### Table: `Wardrobe Items`
 
@@ -571,7 +565,7 @@ The preference table for wardrobe.
 
 ---
 
-## Module 17 — Restaurant Tracker + Recommendations
+## Module 16 — Restaurant Tracker + Recommendations
 
 ### Table: `Restaurants`
 
@@ -599,7 +593,7 @@ The preference table for wardrobe.
 
 ---
 
-## Module 18 — Events, Gigs + Places (Discovery)
+## Module 17 — Events, Gigs + Places (Discovery)
 
 ### Table: `Event Sources`
 
@@ -632,7 +626,7 @@ What events are filtered against.
 
 ---
 
-## Module 19 — Movies, TV + Books
+## Module 18 — Movies, TV + Books
 
 ### Table: `Watchlist`
 
@@ -660,7 +654,7 @@ What events are filtered against.
 
 ---
 
-## Module 20 — Property Search
+## Module 19 — Property Search
 
 ### Table: `Properties`
 
@@ -688,7 +682,7 @@ The deal-breakers and preferences (the context table).
 
 ---
 
-## Module 21 — London To-Do + Holiday Planner
+## Module 20 — London To-Do + Holiday Planner
 
 ### Table: `London To-Do`
 
@@ -718,7 +712,7 @@ The deal-breakers and preferences (the context table).
 
 ---
 
-## Module 22 — Restaurants
+## Module 21 — Restaurants
 
 Restaurant tracking and review module. Logs visits, captures detailed feedback (including separate ratings and notes for David and wife), and builds a taste profile over time via the shared `Dining Preferences` table. Recommendations are powered by comparing restaurant attributes against your dining preferences and visit history.
 

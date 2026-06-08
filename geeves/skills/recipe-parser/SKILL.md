@@ -1,6 +1,7 @@
 ---
 name: recipe-parser
 description: Parse recipes from raw text or photos, push to Mealie, sync to Airtable. Use when user sends a recipe (text, URL, or photo) in Slack or asks to add a recipe.
+version: 1.1.0
 triggers:
   - recipe
   - add recipe
@@ -52,7 +53,7 @@ All keys in `~/.hermes/.env`:
 **Recipes table:** `Name`, `Mealie Slug`, `Notes`, `Ingredients` (linked), `Created` (auto)
 **Ingredients table:** `Ingredient`, `Category` (single-select), `Recipe` (linked), `Quantity`
 
-Existing Category options: `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Other`
+Existing Category options: `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Eggs`, `Other`
 
 ## Workflow
 
@@ -138,7 +139,21 @@ CATEGORIES = {
 }
 ```
 
-Always map to existing single-select options: `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Other`.
+Always map to existing single-select options: `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Eggs`, `Other`.
+
+## Ingredient Name Cleaning
+
+When syncing to Airtable, ingredient names are **cleaned** before storage:
+- Raw: `"2-3 garlic cloves, finely grated"` → Clean: `"Garlic"`
+- Raw: `"1/2 tsp ground cumin"` → Clean: `"Cumin"`
+- Raw: `"500g full-fat Greek yoghurt (thick/strained)"` → Clean: `"Greek yoghurt"`
+- Raw: `"2 tbsp extra-virgin olive oil"` → Clean: `"Olive oil"`
+
+The `clean_ingredient_name()` function in `scripts/push_recipe.py` and `scripts/recipe_sync.py` handles this:
+1. Removes parenthetical notes
+2. Strips leading quantities and units (cups, tbsp, g, cloves, etc.)
+3. Removes preparation instructions (chopped, minced, grated, etc.)
+4. Deduplicates within a recipe (case-insensitive)
 
 ## Full Pipeline Script
 
@@ -154,7 +169,7 @@ python3 scripts/push_recipe.py --url "https://..."
 
 1. **Mealie slug suffix**: If slug exists, Mealie appends `-1`, `-2`, etc. Always use the returned slug.
 2. **Airtable field names**: Exact match required — `Mealie Slug` (not `Slug`), `Ingredient` (not `Name`).
-3. **Category single-select**: Must use existing options only. Never create new ones programmatically (permission error).
+3. **Category single-select**: Must use existing options only: `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Eggs`, `Other`. Use `typecast=true` to auto-create new options if needed (e.g. "Eggs" was added this way).
 4. **Vision API**: NVIDIA NIM works. Google AI Studio key may be invalid. OpenRouter needs credits. Groq vision may be unavailable.
 5. **JSON-LD format**: Mealie's `/api/recipes/create/html-or-json` expects `{"data": "<JSON-LD string>"}` — double-encoded JSON.
 6. **URL scraping**: Reddit URLs are blocked. BBC Good Food, AllRecipes work. When in doubt, paste raw text.

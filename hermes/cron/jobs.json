@@ -23,15 +23,15 @@
       "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 4
+        "completed": 5
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-02T15:29:19.046414+00:00",
-      "next_run_at": "2026-06-07T06:00:00+00:00",
-      "last_run_at": "2026-06-06T06:02:33.838500+00:00",
+      "next_run_at": "2026-06-08T06:00:00+00:00",
+      "last_run_at": "2026-06-07T06:02:08.816750+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -113,16 +113,16 @@
       "schedule_display": "0 2 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T15:56:27.457927+00:00",
-      "next_run_at": "2026-06-08T02:00:00+00:00",
-      "last_run_at": null,
-      "last_status": null,
+      "next_run_at": "2026-06-09T02:00:00+00:00",
+      "last_run_at": "2026-06-07T02:00:59.315898+00:00",
+      "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "origin",
@@ -158,16 +158,16 @@
       "schedule_display": "0 5 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T19:43:45.740827+00:00",
-      "next_run_at": "2026-06-07T05:00:00+00:00",
-      "last_run_at": null,
-      "last_status": null,
+      "next_run_at": "2026-06-08T05:00:00+00:00",
+      "last_run_at": "2026-06-07T05:01:39.108536+00:00",
+      "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "local",
@@ -183,7 +183,57 @@
       ],
       "workdir": null,
       "profile": null
+    },
+    {
+      "id": "b0b836135650",
+      "name": "Geeves Weekly Digest + Intentions",
+      "prompt": "You are OWL, the Geeves personal assistant. It's Sunday evening \u2014 time for the weekly digest.\n\nTASK: Run the weekly digest pipeline \u2014 fetch the past 7 days of data, build the HTML digest, generate PDF, and deliver via email + Slack.\n\nSTEPS:\n\n1. FETCH DATA\n   Run: python3 /root/Geeves/scripts/weekly_digest_fetch.py --write\n   This collects the past week's data from Todos, Workouts, Sleep, Habits, and Intentions tables.\n\n2. BUILD HTML\n   Run: python3 /root/Geeves/scripts/build_weekly_digest_html.py --save\n   This reads the fetched data and composes the HTML digest.\n   Output: /root/Geeves/digests/weekly_YYYY-MM-DD.html\n\n3. GENERATE PDF\n   Run: python3 /root/Geeves/scripts/digest_to_pdf.py --file /root/Geeves/digests/weekly_YYYY-MM-DD.html\n   Output: /root/Geeves/digests/weekly_YYYY-MM-DD.pdf\n\n4. SEND EMAIL\n   Use the AgentMail REST API to send the digest email:\n   - To: dj@djaccounts.com\n   - Subject: \"Geeves Weekly Digest \u2014 [week range]\"\n   - Body: the HTML from step 2\n   - Attachment: the PDF from step 3\n   - From: davidj@agentmail.to\n   Read AGENT_MAIL_API key from /root/.hermes/.env\n\n5. POST TO SLACK\n   Post a brief summary to the home channel:\n   - \"\ud83d\udcc5 Weekly Digest is ready! [link to key sections]\"\n   - Include: tasks completed, workouts logged, sleep average, intentions review\n   Read SLACK_BOT_TOKEN and SLACK_HOME_CHANNEL from /root/.hermes/.env\n\n6. LOG TO DIGEST LOG\n   The fetch script already wrote a Digest Log entry. Verify it was created.\n\nIMPORTANT:\n- execute_code is BLOCKED in cron. Use write_file + terminal pattern for all Python scripts.\n- If a section has no data (e.g., no workouts logged), skip it gracefully.\n- The HTML builder handles empty sections automatically.\n- If any step fails, continue with the next steps and report what failed.\n\nReport the results: what data was found, what was sent, and any errors.",
+      "skills": [
+        "weekly-digest-agent",
+        "public-apis"
+      ],
+      "skill": "weekly-digest-agent",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 20 * * 0",
+        "display": "0 20 * * 0"
+      },
+      "schedule_display": "0 20 * * 0",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-07T20:32:03.932112+00:00",
+      "next_run_at": "2026-06-14T20:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7C89HKQ9",
+        "chat_name": "C0B7C89HKQ9",
+        "thread_id": "1780862280.658149"
+      },
+      "enabled_toolsets": [
+        "terminal",
+        "file",
+        "skills"
+      ],
+      "workdir": null,
+      "profile": null
     }
   ],
-  "updated_at": "2026-06-07T02:00:39.197439+00:00"
+  "updated_at": "2026-06-08T02:00:06.167659+00:00"
 }

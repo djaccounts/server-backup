@@ -42,6 +42,9 @@ python3 /root/Geeves/scripts/table_builder.py --bulletin
 # Create Films table (master film diary + film club)
 python3 /root/Geeves/scripts/table_builder.py --films
 
+# Create Weekly Digest tables (Intentions)
+python3 /root/Geeves/scripts/table_builder.py --weekly
+
 # Scaffold a new module (creates Data, Context, Log tables)
 python3 /root/Geeves/scripts/table_builder.py --module DinnerParty
 ```
@@ -58,8 +61,22 @@ When adding new table groups, add a dict to `table_builder.py` (following `CORE_
 || `Todos` | tblTcdZQ9AIltQDfu | Tasks with Timeframe, Category, Source; Status: Not started/In progress/Done |
 | `Memory_Summaries` | tblXH4eCLwM8S30cn | Periodic long-term memory roll-ups |
 | `Output_Log` | tbldJT41dAAX1WTkC | What Hermes generated, when, and rating |
-| `Properties` | tblA0jfgqxhPFJU7S | Property search listings from Rightmove — address, price, score, status |
-| `Property Criteria` | tbl6oeRjhK3sds9TI | Search criteria — Must have/Nice to have/Dealbreaker/Budget |
+|| `Properties` | tblA0jfgqxhPFJU7S | Property search listings from Rightmove — address, price, score, status |
+|| `Property Criteria` | tbl6oeRjhK3sds9TI | Search criteria — Must have/Nice to have/Dealbreaker/Budget |
+|| `Sleep Log` | tblTZchsmcXXernI0 | Daily sleep tracking — bedtime, wake time, hours, quality rating |
+|| `Habits` | tblS6SryrC3RnRl1L | Habit definitions — name, frequency target, category |
+|| `Habit Log` | tbl3YRZ1yoQ7kRPIT | Daily habit completion — date, habit link, completed checkbox |
+|| `Workouts` | tblMDYF8Lkl5A15CW | Workout sessions — type, duration, distance, energy, difficulty |
+|| `Exercise Log` | tbl8MXDYZ2hajsdIk | Gym exercise detail — exercise, workout link, sets, reps, weight |
+|| `Fitness Goals` | tblAM0Grin01IQmdd | Fitness targets — goal type, calorie/protein/workout targets |
+|| `Meals` | tblzEBw7Whoomb63E | Meal log — description, date, type, macros, accuracy, source |
+|| `Daily Nutrition Summary` | tbl16Z64tClYJaPLZ | Daily nutrition roll-up — date, total calories/protein/carbs/fat |
+|| `Digest Log` | tblmihsXrU8sIg4mY | Digest email log — date, type, content, delivery status |
+|| `Word List` | tblDpKhGlQ2zQxBfD | Russian vocabulary — word, pronunciation, meaning, example, difficulty |
+|| `News Sources` | tblDKPUMuh8Xohoh1 | RSS news sources — name, feed URL, category, active |
+|| `Input Log` | `tblwqFHQu3ueh9aFx` | Incoming message log — raw message, channel, intent, routing |
+|| `Intentions` | `tbl62rEmak92HLXX2` | Weekly intentions — set, track, and reflect on intentions each week. |
+|| `Cycling` | `tblZ7hkoE68IRnQwV` | Cycling ride log — route, distance (miles), speed, elevation, HR, power, bike, people, Strava URL |
 
 **People v2 fields (key changes):**
 - `Relationship type` (singleSelect) replaces old `Relationship` (text)
@@ -104,8 +121,42 @@ key = r.stdout.strip().split("\n")[0].split("=", 1)[1]
 Never use shell interpolation (`$KEY` in curl) — keys with `+`, `/`, `=` break shell quoting.
 
 ## API Quirks
+
+### Field Type Name Mapping (Schema Reference → API)
+The Schema Reference v2 uses Airtable UI type names. The Metadata API uses different JSON type names. **This is the #1 cause of 422 errors during table creation.**
+
+| Schema Reference (UI name) | API type name | Notes |
+|---|---|---|
+| `long text` | `multilineText` | `longText` causes 422 INVALID_REQUEST_UNKNOWN |
+| `single line text` | `singleLineText` | |
+| `multiple record links` | `multipleRecordLinks` | |
+| `single select` | `singleSelect` | |
+| `multiple select` | `multipleSelects` | |
+| `created time` | *not supported* | Cannot be created via API — add manually in web UI |
+| `last modified time` | *not supported* | Cannot be created via API — add manually in web UI |
+
+### ⚠ Distance Fields: Miles, Not Kilometres
+David uses **miles** for cycling/vehicle distance and **mph** for speed — NOT km/kmh. Always use miles for distance fields. When creating any table with distance or speed fields, default to miles/mph unless explicitly told otherwise.
+
+### ⚠ Pitfall: `patch` with `replace_all=true` on JSON Files
+**NEVER use `patch` with `replace_all=true` on schema_registry.json** (or any JSON file with repeated patterns). The patch tool matches `old_string` against the ENTIRE file and replaces ALL occurrences — so if the string appears in every table entry, every table entry gets the replacement, corrupting the entire file.
+
+**Recovery when schema_registry.json is corrupted:**
+1. Query Airtable API: `GET meta/bases/{baseId}/tables` — returns all tables with field IDs and types
+2. Rebuild the registry from scratch using the API response
+3. Write fresh JSON — do NOT try to patch the corrupted file
+
+**Correct approach for JSON files:** Use targeted patches with unique surrounding context (include braces, commas, quotes from adjacent fields to make the match unique). Or rewrite the whole file.
+
+### Table Creation Strategy: Minimal First, Then Add
+When creating tables with many fields, the API may reject complex field combinations (e.g., `date` + `multilineText` + `singleSelect` together). **Pattern that works:**
+1. Create the table with only the primary field + simple fields (text, select, date, number, checkbox)
+2. Add complex fields (`multilineText`, `rating`, `multipleRecordLinks`) via separate `add_field()` calls after the table exists
+3. This avoids mysterious 422 INVALID_REQUEST_UNKNOWN errors from field type interactions
+
+### Field Options Required at Creation Time
 - `createdTime`/`lastModifiedTime` are auto-managed — skip in create_table()
-- `multipleRecordLinks` needs `linkedTableId` — add via separate add_field() call, NOT during table creation (causes 422 INVALID_REQUEST_UNKNOWN)
+- `multipleRecordLinks`: Only `{"linkedTableId": "tblXXXX"}` is valid during table creation. Do NOT include `isReversed` or `prefersSingleRecordLink` — they cause 422. Add the link via separate `add_field()` call if creation fails.
 - **Date fields require options**: `{"dateFormat": {"name": "local"}}` — without this, table creation fails with `INVALID_FIELD_TYPE_OPTIONS_FOR_CREATE`
 - **Number fields require options**: `{"precision": N}` — without this, table creation fails with `INVALID_FIELD_TYPE_OPTIONS_FOR_CREATE`. Always include `"precision": N` in field defs (e.g. `"precision": 2` for prices, `"precision": 1` for temperatures, `"precision": 0` for integers).
 - **⚠ multipleSelects fields require options during table creation**: `{"choices": [{"name": "Option1"}, ...]}` — without this, table creation fails with `INVALID_FIELD_TYPE_OPTIONS_FOR_CREATE`. Same format as singleSelect but the field type is `"multipleSelects"`.
@@ -119,6 +170,17 @@ Never use shell interpolation (`$KEY` in curl) — keys with `+`, `/`, `=` break
 - **⚠ filterByFormula does NOT work for multipleRecordLinks fields** — Formula filters like `{Recipe}='recXXX'` silently return empty results for link fields. **Workaround:** fetch all records (or use a large `maxRecords` value) and filter locally in Python by checking `record['fields'].get('LinkFieldName', [])`. This is slower but is the only reliable approach.
 - Rate limit: 5 req/sec per base, 10 records per batch create
 - API **cannot** detect if a table has wrong schema — always use `--schema` first, then delete + recreate in web UI if needed
+
+### ⚠ URL-Encode Table Names With Spaces
+Airtable table names containing spaces (e.g., `Sleep Log`, `Habit Log`, `Recipe Context`, `Exercise Log`, `Daily Nutrition Summary`, `Property Criteria`, etc.) **must be URL-encoded** when used in REST API paths. Using the raw name in a URL path raises `http.client.InvalidURL: URL can't contain control characters`.
+
+```python
+import urllib.parse
+encoded_table = urllib.parse.quote(table_name)
+url = f"https://api.airtable.com/v0/{BASE}/{encoded_table}?max_records=100"
+```
+
+The `airtable_api.py` helper and `fetch_records()` in digest scripts handle this — but any new script that calls the Airtable API directly must encode table names. Single-word table names (`Todos`, `People`, `Recipes`, `Films`) don't need encoding but encoding them is harmless.
 
 ## Google OAuth — Setup (Updated for New Google Auth Platform)
 
@@ -215,6 +277,7 @@ Some modules need domain-specific fields and external API integration rather tha
 | **Recipe App** | `Recipes`, `Ingredients`, `Dinner Parties`, `Dinner Planner`, `Shopping List`, `Recipe Context`, `Recipe Output Log` | See below | Mealie (port 9925). Sync: Mealie → Airtable. **Full recipe workflows, Mealie API, and meal logging: see `recipes-agent` skill.** |
 || **Dining Preferences** | `Dining Preferences` | `tblzzGIF7yPf37NG5` | Auto-populated by Hermes from recipe ratings, meal frequency, ingredient patterns. Read by Restaurant module for alignment scoring. |
 || **Restaurants** | `Restaurants`, `Restaurant Visits` | See below | SerpApi Google Maps (free tier 250/mo). **Full restaurant workflows, visit logging, and recommendations: see `restaurants-agent` skill.** |
+| **Weekly Digest** | `Intentions` | `tbl62rEmak92HLXX2` | Weekly intentions — set, track, reflect. Sunday 8pm UTC cron. **Full weekly digest pipeline: see `weekly-digest-agent` skill.** |
 
 **Recipe App table IDs:**
 
@@ -236,13 +299,9 @@ Some modules need domain-specific fields and external API integration rather tha
 | `Restaurants` | `tblvpSxjeoCQvjotM` |
 | `Restaurant Visits` | `tblf2k6uAHLW7mA4b` |
 
-**Film Club** is not a separate module — it's a view/filter on the Films table (`Film Club = Yes`).
+`table_builder.py --recipe` creates all 7 tables.
 
-**Recipe App architecture:** Mealie (port 9925) is the recipe engine — URL scraping, ingredient parsing, method, nutrition, scaling, images. Airtable holds slim metadata and cross-module links. Sync direction: Mealie → Airtable (one-way, on-demand). `table_builder.py --recipe` creates all 7 tables.
-
-**⚠ Module table IDs must be recorded here when created.** Airtable auto-generates them and they're needed for API calls.
-
-## MCP Server Configuration (for Hermes)
+`table_builder.py --recipe` creates all 7 tables.
 When adding MCP servers to Hermes, `hermes mcp add` has shell-parsing issues with special characters. Instead, write directly to `~/.hermes/config.yaml` via Python:
 
 ```python
@@ -395,10 +454,11 @@ Script: `/root/Geeves/scripts/slack_capture.py` — classifies incoming Slack me
 | Memory | remember, note, log, history, previously | Memory_Summaries |
 | Recipe | recipe, cook, cooking, bake, meal, dinner, lunch, breakfast, snack, dessert, ingredient, shopping list, dinner party, plan dinner, favourite recipe, email recipe, PDF recipe, mealie | Output_Log (Module=Recipe) |
 | Film Club | film club, movie club, movie night, film night, just watched, finished watching, rated X/5, rated X/10, add to list, log the film | Films |
-| Module Request | movie, film, watch, party, travel, holiday, property, house, recommend, suggest | Output_Log (Module=General) |
+| Restaurant | restaurant, went to, ate at, dinner at, lunch at, find me a restaurant, recommend a restaurant, booked, menu, fine dining, went out for, we ate, we went | Restaurants + Restaurant Visits |
+| Module Request | party, travel, holiday, property, house, recommend, suggest | Output_Log (Module=General) |
 | General | (fallback) | Skipped — no record |
 
-**⚠ No raw message table.** One Slack message → one useful Airtable record in the correct table. General messages produce no record. There is NO intermediate Slack_Capture/Input Log table — David explicitly rejected it as unnecessary bloat.
+**⚠ No raw message table for Slack capture.** One Slack message → one useful Airtable record in the correct table. General messages produce no record. The `Input Log` table exists for audit/debugging purposes but is not the primary capture path — David explicitly rejected capture-via-Input-Log as unnecessary bloat.
 
 **⚠ No cron job for Slack capture.** Capture is real-time: David messages in Slack → Hermes classifies and writes to Airtable immediately. A cron loop adds latency and complexity with no benefit since Hermes is already listening.
 
