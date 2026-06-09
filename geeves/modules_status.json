@@ -48,12 +48,12 @@
     },
     "fitness": {
       "phase": 2,
-      "status": "planned",
-      "skill": null,
-      "tables": ["Workouts", "Exercise Log", "Fitness Goals"],
+      "status": "active",
+      "skill": "fitness-agent",
+      "tables": ["Workouts", "Exercise Log", "Cycling", "Fitness Goals"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Not yet built."
+      "notes": "Tables exist. Skill written v1.0.0. Slack capture active. Supports gym sessions with exercise detail, cycling rides with full metrics, runs, swims, yoga, walks. Fitness Goals shared with Meals module."
     },
     "meal_tracker": {
       "phase": 2,
@@ -156,12 +156,12 @@
     },
     "watching_reading": {
       "phase": 4,
-      "status": "planned",
-      "skill": null,
-      "tables": ["Watchlist", "Reading List"],
+      "status": "built",
+      "skill": "books-agent",
+      "tables": ["Books"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Not yet built."
+      "notes": "Books table created June 2026. Skill written v1.0.0. Slack capture active. Links to People for recommendations. Goodreads integration via CSV import (API deprecated 2020)."
     },
     "property": {
       "phase": 4,
@@ -223,17 +223,18 @@
     "public-apis (devops/public-apis)",
     "bulletin-agent (devops/bulletin-agent)",
     "film-club-agent (devops/film-club-agent)",
+    "fitness-agent (devops/fitness-agent)",
     "recipes-agent (devops/recipes-agent)",
     "todos-agent (devops/todos-agent)",
     "property-agent (devops/property-agent)",
     "restaurants-agent (devops/restaurants-agent)",
     "weekly-digest-agent (devops/weekly-digest-agent)",
+    "books-agent (devops/books-agent)",
     "geeves-airtable (devops/geeves-airtable)",
     "geeves-steward (geeves/geeves-steward)"
     ],
     "needed": [
       "people-agent",
-      "fitness-agent",
       "meals-agent",
       "sleep-agent",
       "travel-agent",

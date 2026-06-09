@@ -1,6 +1,6 @@
 ---
 name: hermes-dev-admin
-description: "Hermes Agent development, administration, and Docker deployment. Use when configuring Hermes providers, managing Docker/s6 containers, debugging TUI slash commands, authoring skills, or troubleshooting gateway issues. Covers: provider config, Docker/s6 supervision tree, TUI debugging, skill authoring conventions."
+description: "Hermes Agent development, administration, and Docker deployment. Use when configuring Hermes providers, managing Docker/s6 containers, debugging TUI slash commands, authoring skills, troubleshooting gateway issues, or self-hosting web applications (Baserow, etc.) with Docker + Nginx. Covers: provider config, Docker/s6 supervision tree, TUI debugging, skill authoring conventions, Nginx reverse proxy patterns, self-hosted app deployment."
 version: 1.0.0
 author: Hermes Agent
 license: MIT
@@ -23,6 +23,7 @@ Configure, extend, debug, and deploy Hermes Agent.
 - Authoring in-repo skills
 - Troubleshooting gateway, config, or Docker issues
 - Managing multi-profile gateways
+- **Self-hosting web applications** (Baserow, etc.) with Docker + Nginx reverse proxy — see `references/self-hosted-services.md`
 
 ## Table of Contents
 

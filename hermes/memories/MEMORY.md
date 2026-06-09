@@ -1,6 +1,4 @@
-Airtable: Geeves base (appzvmonQXs4x2AlL) only. NEVER touch Practice Management. Schema changes via geeves-steward skill. Registry: schema_registry.json. Schema Ref v2 + module status + planning protocol at /root/Geeves/. NOTE: Module_Build_Playbook.md does NOT exist on disk.
-§
-Restaurant Module (Phase 4): Built June 2026. Tables: Restaurants (tblvpSxjeoCQvjotM), Restaurant Visits (tblf2k6uAHLW7mA4b). Skill: restaurants-agent (devops/restaurants-agent). SerpApi Google Maps lookup. Google search link for Maps URL. Wife's separate rating/notes. Cross-module Dining Preferences (tblzzGIF7yPf37NG5) for alignment scoring. Slack capture creates records.
+Airtable: Geeves base (appzvmonQXs4x2AlL). NEVER touch Practice Management. Schema via geeves-steward. HIT API RATE LIMITS June 2026 — migrating to Baserow.
 §
 Bulletin: 6am UTC daily via AgentMail + PDF. Skill: bulletin-agent. Cron: 813b03d1a3e1.
 Weekly Digest: Sunday 8pm UTC. Intentions tbl62rEmak92HLXX2. Skill: weekly-digest-agent. Cron: b0b836135650. Scripts: weekly_digest_fetch.py + build_weekly_digest_html.py.
@@ -11,6 +9,12 @@ Todos: skill built v1.1.0 at devops/todos-agent, table tblTcdZQ9AIltQDfu. When a
 §
 Recipe Module: Live June 2026. Tables: Recipes (tblehBgzRMa2Xucjd), Ingredients (tblNsgbYHNK8xWnB7), Dinner Parties, Dinner Planner, Shopping List, Recipe Context, Recipe Output Log. Skill: recipes-agent v1.1.0.
 §
-Phase 2 modules (June 2026): All tables built including Cycling (miles, links to Workouts+People, Strava/Garmin). Workouts has People link. Meals has From recipe link. Evening digest removed. Key API learnings: longText→multilineText; NEVER patch replace_all on JSON; rebuild registry from GET meta/bases/{baseId}/tables if corrupted; miles not km for distance.
+Phase 2 modules (June 2026): Cycling, Workouts, Meals links. Key API learnings: longText→multilineText; never patch replace_all on JSON; rebuild registry from GET meta/bases/{baseId}/tables if corrupted. Sleep Log tblTZchsmcXXernI0.
 §
-Google Contacts sync: Option A (one-time import) already done. Option B (live two-way sync) planned for future — needs cron job, Google People API polling, conflict resolution/dedup logic.
+Sleep Log tblTZchsmcXXernI0: Bedtime, Wake time, Hours slept, Quality, Notes, Night bathroom visits (fldZqK4F3MeWj3ko0, added 2026-06-08), Logged.
+§
+Backup: Private Git repo github.com/djaccounts/server-backup via SSH key. Script: /root/server-backup/backup.sh. Cron: nightly 2am UTC (job d3761ebbc9ac). Backs up Nginx, systemd, crontab, Docker, Mealie volume, Geeves, Hermes, SSH config, packages. Secrets excluded via .gitignore. Live since June 6 2026.
+§
+Baserow: Self-hosted at http://77.68.33.121 (Nginx → Docker port 8080). v2.2.2. Admin: daverj1987@gmail.com. Workspace "Geeves" (id=95). Compose: /root/baserow/docker-compose.yml. Nginx: Baserow serves root, Mealie at /mealie. Migration from Airtable in progress.
+§
+Books: table tblUfRTBkCMLUe2pY, skill books-agent v1.0.0. Fields: Title, Author, Status/Genre/Format/Source selects, My rating (1-5), Date started/finished, Recommended by (→People). Slack capture active.

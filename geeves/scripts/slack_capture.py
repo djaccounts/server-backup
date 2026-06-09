@@ -37,6 +37,11 @@ TABLES = {
     "Restaurant_Visits":   "tblf2k6uAHLW7mA4b",
     # Meals module
     "Meals":               "tblzEBw7Whoomb63E",
+    # Fitness module
+    "Workouts":            "tblMDYF8Lkl5A15CW",
+    "Exercise Log":        "tbl8MXDYZ2hajsdIk",
+    "Cycling":             "tblZ7hkoE68IRnQwV",
+    "Fitness Goals":       "tblAM0Grin01IQmdd",
     # Sleep/Habits module
     "Sleep Log":           "tblTZchsmcXXernI0",
     "Habits":              "tblS6SryrC3RnRl1L",
@@ -44,6 +49,8 @@ TABLES = {
     # People module
     "Person Notes":        "tbl6hnxzXXmWFkVfh",
     "Conversation Log":    "tbl2dbgksA9XveLcx",
+    # Books module
+    "Books":               "tblUfRTBkCMLUe2pY",
 }
 
 
@@ -157,14 +164,40 @@ CATEGORY_RULES = [
         r"\btired\b", r"\brest\b", r"\bhabit\b", r"\broutine\b", r"\bstreak\b",
         r"\bcompleted\b", r"\bdid my\b", r"\blogged\b",
     ]),
+    ("Fitness", [
+        r"\bworkout\b", r"\bgym\b", r"\bran\b", r"\brun\b",
+        r"\bcycl(ing|ed|e)\b", r"\bbike\b", r"\bride\b",
+        r"\bswim\b", r"\bswam\b", r"\bpool\b",
+        r"\byoga\b", r"\bstretch\b",
+        r"\bwalk(ed|s|ing)?\b", r"\bhike\b",
+        r"\btrained\b", r"\btraining\b", r"\blift(ed|ing|s)?\b",
+        r"\bexercise\b", r"\bcardio\b", r"\bstrength\b",
+        r"\bweights?\b", r"\bbench\b", r"\bsquat\b", r"\bdeadlift\b",
+        r"\bpress\b", r"\btreadmill\b", r"\brow(ed|ing|s)?\b",
+        r"\bsets?\b", r"\breps?\b", r"\bHIIT\b",
+        r"\bpeloton\b", r"\bstrava\b", r"\bfitness\b",
+        r"\bPB\b", r"\bpersonal best\b", r"\bgymnastics\b",
+    ]),
     ("Film Club", [
         r"\bfilm club\b", r"\bmovie club\b", r"\bmovie night\b",
         r"\bfilm night\b", r"\bjust watched\b", r"\bfinished watching\b",
         r"\brat(e|ing|ed) (the )?(movie|film)\b",
         r"\bscored (the )?(movie|film)\b", r"\badd to (the )?list\b",
         r"\blog (the )?(movie|film)\b",
-        r"\bfilm club\b", r"\bmovie club\b",  # double weight for explicit club mention
-        r"\bjust watched\b", r"\bfinished watching\b",  # double weight for watching signals
+    ]),
+    ("Books", [
+        r"\bbook\b", r"\breading\b", r"\bread\b",
+        r"\bnovel\b", r"\bauthor\b", r"\bisbn\b",
+        r"\baudiobook\b", r"\bebook\b", r"\be-book\b",
+        r"\bhardcover\b", r"\bpaperback\b",
+        r"\bgoodreads\b",
+        r"\bfinished (the )?(book|novel|it)\b",
+        r"\bjust (read|finished)\b",
+        r"\bwant to read\b", r"\badd to (my )?(reading )?list\b",
+        r"\bcurrently reading\b", r"\bstarted reading\b",
+        r"\bgave up on\b", r"\bstopped reading\b",
+        r"\brecommend(s|ed|ation)?\b.*\b(book|novel|read)\b",
+        r"\b(book|novel|read)\b.*\brecommend(s|ed|ation)?\b",
     ]),
 ]
 
@@ -501,7 +534,207 @@ def handle_sleep_habit(msg, dry_run=False):
     return False
 
 
-# ── Film Club helpers ────────────────────────────────────────────────────────────
+# ── Fitness helpers ─────────────────────────────────────────────────────────────
+
+def handle_fitness(msg, dry_run=False):
+    """Handle workout logging, gym sessions, cycling, and fitness goals."""
+    text = msg.get("text", "")
+    today = datetime.date.today().isoformat()
+    text_lower = text.lower()
+
+    # Detect workout type
+    workout_type = "Other"
+    if re.search(r"\b(gym|lift|weights|bench|squat|deadlift|press|hiit)\b", text_lower):
+        workout_type = "Gym"
+    elif re.search(r"\b(run|ran|jog|treadmill)\b", text_lower):
+        workout_type = "Run"
+    elif re.search(r"\b(cycl|bike|ride|strava)\b", text_lower):
+        workout_type = "Cycle"
+    elif re.search(r"\b(swim|swam|pool)\b", text_lower):
+        workout_type = "Swim"
+    elif re.search(r"\b(yoga|stretch)\b", text_lower):
+        workout_type = "Yoga"
+    elif re.search(r"\b(walk|hike)\b", text_lower):
+        workout_type = "Walk"
+    elif re.search(r"\b(class|session|peloton)\b", text_lower):
+        workout_type = "Class"
+
+    # Extract duration
+    duration = None
+    m = re.search(r"(\d+)\s*(?:min|mins|minutes)\b", text_lower)
+    if m:
+        duration = int(m.group(1))
+    else:
+        m = re.search(r"(\d+)\s*(?:hr|hrs|hours?)\b", text_lower)
+        if m:
+            duration = int(m.group(1)) * 60
+
+    # Extract distance
+    distance = None
+    m = re.search(r"(\d+(?:\.\d+)?)\s*(?:km|kilomet)", text_lower)
+    if m:
+        distance = float(m.group(1))
+    else:
+        m = re.search(r"(\d+(?:\.\d+)?)\s*(?:mi|miles?)\b", text_lower)
+        if m:
+            distance = round(float(m.group(1)) * 1.609, 1)
+
+    # Extract energy level
+    energy = None
+    m = re.search(r"(?:energy|felt|feeling)\s+(\d)\s*/?5", text_lower)
+    if m:
+        energy = int(m.group(1))
+
+    # Extract difficulty
+    difficulty = None
+    m = re.search(r"(?:difficulty|hard|tough)\s+(\d)\s*/?5", text_lower)
+    if m:
+        difficulty = int(m.group(1))
+
+    if dry_run:
+        print(f"  [DRY RUN] Would log workout: type={workout_type}, dur={distance}, dist={distance}, energy={energy}, diff={difficulty}")
+        return True
+
+    fields = {"Date": today, "Type": workout_type, "Source": "Slack"}
+    if duration:
+        fields["Duration (mins)"] = duration
+    if distance:
+        fields["Distance (km)"] = distance
+    if energy:
+        fields["Energy level"] = energy
+    if difficulty:
+        fields["Perceived difficulty"] = difficulty
+
+    # Cycle rides get a linked Cycling record
+    if workout_type == "Cycle":
+        ride_type = "Road"
+        for rt, label in [("gravel", "Gravel"), ("mtb", "MTB"), ("turbo", "Turbo"), ("commute", "Commute")]:
+            if rt in text_lower:
+                ride_type = label
+                break
+        avg_speed = None
+        m = re.search(r"(?:avg|average)\s+(\d+(?:\.\d+)?)\s*mph", text_lower)
+        if m:
+            avg_speed = float(m.group(1))
+        max_speed = None
+        m = re.search(r"(?:max|top)\s+speed\s+(\d+(?:\.\d+)?)\s*mph", text_lower)
+        if m:
+            max_speed = float(m.group(1))
+        elevation = None
+        m = re.search(r"(?:elevation|climbed|ascended)\s+(\d+)\s*m", text_lower)
+        if m:
+            elevation = int(m.group(1))
+        bike = None
+        m = re.search(r"(?:on my|rode the|using the)\s+(.+?)(?:\.|\s+and|\s+for|\s+at|$)", text_lower)
+        if m:
+            bike = m.group(1).strip()
+
+        ok, workout_id = airtable_post("Workouts", {**fields, "Notes": text[:500]})
+        if ok:
+            cycling_fields = {"Date": today, "Workout": [workout_id], "Ride type": ride_type}
+            if distance:
+                cycling_fields["Distance (miles)"] = round(distance * 0.621, 1)
+            if duration:
+                cycling_fields["Duration (mins)"] = duration
+            if elevation:
+                cycling_fields["Elevation gain (m)"] = elevation
+            if avg_speed:
+                cycling_fields["Avg speed (mph)"] = avg_speed
+            if max_speed:
+                cycling_fields["Max speed (mph)"] = max_speed
+            if bike:
+                cycling_fields["Bike used"] = bike.capitalize()
+            airtable_post("Cycling", cycling_fields)
+            dist_str = f"{distance}km " if distance else ""
+            print(f"  ✅ Logged cycle ride: {dist_str}{ride_type}")
+            return True
+        return False
+
+    # Gym sessions: extract exercises
+    if workout_type == "Gym":
+        exercises = _extract_exercises(text)
+        if exercises:
+            ok, workout_id = airtable_post("Workouts", {**fields, "Notes": text[:500]})
+            if ok:
+                for ex in exercises:
+                    airtable_post("Exercise Log", {
+                        "Exercise": ex["name"],
+                        "Workout": [workout_id],
+                        "Sets": ex.get("sets"),
+                        "Reps": ex.get("reps"),
+                        "Weight (kg)": ex.get("weight"),
+                    })
+                print(f"  ✅ Logged gym session with {len(exercises)} exercises")
+                return True
+            return False
+
+    # Default: just log the workout
+    ok, _ = airtable_post("Workouts", {**fields, "Notes": text[:500]})
+    if ok:
+        type_str = workout_type if workout_type != "Other" else "workout"
+        dur_str = f", {duration}min" if duration else ""
+        dist_str = f", {distance}km" if distance else ""
+        print(f"  ✅ Logged {type_str}: {dur_str}{dist_str}")
+    return ok
+
+
+def _extract_exercises(text):
+    """Extract exercise names, sets, reps, weight from gym session text."""
+    exercises = []
+    text_lower = text.lower()
+
+    # Pattern: "sets x reps exercise" or "exercise: sets x reps at weight kg"
+    patterns = [
+        # "3x8 bench press at 60kg"
+        r'(\d+)\s*x\s*(\d+)\s+(?:at\s+\d+(?:\.\d+)?\s*kg\s+)?([\w\s]+?)(?:\s+at\s+(\d+(?:\.\d+)?)\s*kg)?(?:\s*[,\.;]|$)',
+        # "bench press: 3x8 at 60kg"
+        r'([\w\s]+?):\s*(\d+)\s*x\s*(?:\d+\s*,\s*)*(?:\d+)\s*(?:at\s+(\d+(?:\.\d+)?)\s*kg)?',
+        # "3 sets of 8 bench press at 60kg"
+        r'(\d+)\s+sets?\s+(?:of\s+)?(\d+)\s+(?:reps?\s+)?([\w\s]+?)(?:\s+at\s+(\d+(?:\.\d+)?)\s*kg)?(?:\s*[,\.;]|$)',
+    ]
+
+    known_exercises = [
+        "bench press", "squat", "deadlift", "overhead press", "ohp",
+        "barbell row", "pull ups", "pullups", "lat pulldown", "leg press",
+        "bicep curl", "tricep extension", "lateral raise", "front raise",
+        "chest press", "leg extension", "leg curl", "calf raise",
+        "incline bench", "decline bench", "dumbbell press", "cable row",
+        "face pull", "shrugs", "dips", "crunches", "plank",
+    ]
+
+    found_names = set()
+    for pattern in patterns:
+        for m in re.finditer(pattern, text_lower):
+            groups = m.groups()
+            if len(groups) < 3:
+                continue
+            if "set" in groups[0] or groups[0].isdigit() and int(groups[0]) > 30:
+                # Pattern 1 or 3: sets, reps, name, weight
+                sets = int(groups[0])
+                reps = groups[1]
+                name = groups[2].strip().title()[:50]
+                weight = f"{groups[3]}kg" if len(groups) > 3 and groups[3] else None
+            else:
+                # Pattern 2: name, sets, weight
+                name = groups[0].strip().title()[:50]
+                sets = int(groups[1]) if groups[1] else None
+                reps = None
+                weight = f"{groups[2]}kg" if len(groups) > 2 and groups[2] else None
+
+            if name and len(name) > 2 and name not in found_names:
+                found_names.add(name)
+                exercises.append({"name": name, "sets": sets, "reps": reps, "weight": weight})
+
+    if exercises:
+        return exercises
+
+    # Fallback: just match known exercise names
+    for ex in known_exercises:
+        if ex in text_lower:
+            if ex not in found_names:
+                found_names.add(ex)
+                exercises.append({"name": ex.title(), "sets": None, "reps": None, "weight": None})
+    return exercises
 
 def get_omdb_key():
     r = subprocess.run(["grep", "OMDB_API_KEY", ENV_PATH], capture_output=True, text=True)
@@ -818,6 +1051,97 @@ def extract_would_return(text):
     return None
 
 
+def handle_books(msg, dry_run=False):
+    """Handle book-related messages — add to reading list, log finished books, track reading."""
+    import re as _re
+    text = msg.get("text", "")
+    today = datetime.date.today().isoformat()
+    text_lower = text.lower()
+
+    # Extract title — look for quoted text or text after "book" / "add" / "reading"
+    title = None
+    # Try quoted title first
+    m = _re.search(r'"([^"]+)"', text)
+    if m:
+        title = m.group(1).strip()
+    else:
+        # Try patterns like "add X to my list" or "finished X" or "reading X"
+        for pattern in [
+            _re.compile(r'(?:add|finished|reading|started|just read|want to read|recommend(?:ed)?)\s+(?:the\s+)?(?:book\s+)?["\u201c]?([^"\u201d]+?)["\u201d]?\s+(?:to my|to the|from|by|today|this year|$)', _re.IGNORECASE),
+            _re.compile(r'(?:book|novel)\s+(?:called|named|titled)\s+["\u201c]?([^"\u201d]+)["\u201d]?', _re.IGNORECASE),
+            _re.compile(r'(?:by|author)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', _re.IGNORECASE),
+        ]:
+            m = pattern.search(text)
+            if m:
+                candidate = m.group(1).strip()
+                if len(candidate) > 2 and len(candidate) < 100:
+                    title = candidate
+                    break
+
+    # Extract author
+    author = None
+    m = _re.search(r'(?:by|author)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', text)
+    if m:
+        author = m.group(1).strip()
+
+    # Determine status — order matters! More specific patterns first.
+    status = "Want to read"  # default
+    if _re.search(r'\b(finished|just read|completed)\b', text_lower):
+        status = "Read"
+    elif _re.search(r'\b(gave up|stopped|abandoned|quit)\b', text_lower):
+        status = "Abandoned"
+    elif _re.search(r'\bwant to read\b', text_lower):
+        status = "Want to read"
+    elif _re.search(r'\badd(ed|s)?\s+.*to\s+(my\s+)?(reading\s+)?list\b', text_lower):
+        status = "Want to read"
+    elif _re.search(r'\b(started|currently on|partway through)\b', text_lower):
+        status = "Reading"
+    elif _re.search(r'\breading\b', text_lower):
+        status = "Reading"
+
+    # Extract rating
+    rating = None
+    m = _re.search(r'(?:rated?|rating|gave)\s+(?:it\s+)?(\d+(?:\.\d+)?)\s*/?\s*(?:5|10)?', text_lower)
+    if m:
+        val = float(m.group(1))
+        if val > 5:  # Assume 10-point scale
+            val = val / 2
+        rating = min(5, max(1, round(val)))
+    else:
+        # Look for star emojis or X/5 patterns
+        m = _re.search(r'(\d+)\s*/\s*5', text)
+        if m:
+            rating = min(5, max(1, int(m.group(1))))
+
+    # Build fields
+    fields = {}
+    if title:
+        fields["Title"] = title[:200]
+    if author:
+        fields["Author"] = author[:100]
+    fields["Status"] = status
+    fields["Source"] = "Slack"
+    if status == "Read":
+        fields["Date finished"] = today
+        if rating:
+            fields["My rating"] = rating
+    elif status == "Reading":
+        fields["Date started"] = today
+
+    if not title:
+        print(f"  ℹ️  Could not extract book title — skipping")
+        return False
+
+    if dry_run:
+        print(f"  [DRY RUN] Would create book record: {json.dumps(fields)}")
+        return True
+
+    ok, _ = airtable_post("Books", fields)
+    if ok:
+        print(f"  ✅ Book: '{title}' → {status}" + (f" ({rating}★)" if rating else ""))
+    return ok
+
+
 def extract_cost(text):
     """Extract total cost from message."""
     m = re.search(r'(?:bill|cost|total|spent|was)\s+(?:£|GBP\s+)(\d{2,4})(?:\.\d{2})?', text, re.IGNORECASE)
@@ -868,8 +1192,10 @@ HANDLERS = {
     "Meal": handle_meal,
     "Restaurant": handle_restaurant,
     "Sleep/Habit": handle_sleep_habit,
+    "Fitness": handle_fitness,
     "Module Request": handle_module_request,
     "Film Club": handle_film_club,
+    "Books": handle_books,
 }
 
 

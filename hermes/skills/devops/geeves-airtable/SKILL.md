@@ -45,6 +45,9 @@ python3 /root/Geeves/scripts/table_builder.py --films
 # Create Weekly Digest tables (Intentions)
 python3 /root/Geeves/scripts/table_builder.py --weekly
 
+# Verify fitness tables exist (already created — shows schema)
+python3 /root/Geeves/scripts/table_builder.py --fitness
+
 # Scaffold a new module (creates Data, Context, Log tables)
 python3 /root/Geeves/scripts/table_builder.py --module DinnerParty
 ```
@@ -162,6 +165,21 @@ When creating tables with many fields, the API may reject complex field combinat
 - **⚠ multipleSelects fields require options during table creation**: `{"choices": [{"name": "Option1"}, ...]}` — without this, table creation fails with `INVALID_FIELD_TYPE_OPTIONS_FOR_CREATE`. Same format as singleSelect but the field type is `"multipleSelects"`.
 - **⚠ Checkbox fields require options during table creation**: `{"icon": "check", "color": "greenBright"}` — without this, table creation fails with `INVALID_FIELD_TYPE_OPTIONS_FOR_CREATE`. The icon/color values are Airtable defaults; any valid combination works.
 - Select options: `{"choices": [{"name": "Option1"}, ...]}`
+- **⚠ Rating fields require options**: `{"max": 5, "icon": "star", "color": "yellowBright"}` — without icon and color, field creation fails with `INVALID_FIELD_TYPE_OPTIONS_FOR_CREATE`. Valid colors: `yellowBright`, `yellowDark1`, `orangeBright`, `redBright`, `pinkBright`, `purpleBright`, `blueBright`, `cyanBright`, `tealBright`, `greenBright`.
+
+### ⚠ Pitfall: Select Field Options Corruption During Table Creation
+
+**Symptom:** After creating a table, select fields show `['choices']` as their only option (the literal string "choices" instead of the actual option values). The Airtable UI displays a single choice called "choices".
+
+**Cause:** The `build_field_payload()` function in `table_builder.py` has a bug where select field options specified in the MODULE_TABLES dict don't get properly included when the table is created via `create_table()`. The options are silently dropped, and Airtable creates the field with a corrupted placeholder.
+
+**Detection:** After creating any table with select fields, immediately run `--schema` and verify that select fields show the correct choice lists, not `['choices']`.
+
+**Fix:** The API **cannot** fix corrupted select fields — PATCH returns 422 INVALID_REQUEST_UNKNOWN. The table **must be deleted from the Airtable web UI and recreated**. The API cannot delete tables.
+
+**Workaround pattern:** Create tables WITHOUT select fields, then add select fields one-by-one via `add_field()` calls. The `add_field()` path uses the same `build_field_payload()` function but seems to work correctly for select types when called post-creation. Alternatively, exclude select fields from the initial `create_table()` payload and add them all via `add_field()` after the table exists.
+
+**⚠ This also means: always verify select field options immediately after table creation. If corrupted, stop and ask the user to delete the table before proceeding.**
 - **⚠ Can't write new select options via the Records API** (without `typecast`). Writing a value to a `singleSelect` field that isn't already a defined choice fails with `INVALID_MULTIPLE_CHOICE_OPTIONS`. **Two workarounds:**
   1. **`typecast=true` on batch PATCH:** `api("PATCH", f"{BASE}/Table", {"records": [...], "typecast": True})` — auto-creates new select options. This is the preferred approach for remapping values (e.g. changing "Tier 1 (David)" → "Tier 1" across all records).
   2. **Metadata API:** `PATCH` the field's `options.choices` array to add options first, then write records using the new option names.
@@ -234,14 +252,24 @@ David prefers **fewer, wider tables** over many narrow linked tables. When desig
 
 The `patch` tool with `mode='replace'` silently produces nested/broken code when `old_string` doesn't exactly match the current file state (e.g., after a prior partial edit). **Always re-read the file with `read_file` before patching** — do not rely on a read from earlier in the session. If a patch fails or produces indentation errors, read the whole file fresh and retry.
 
+### ⚠ Pitfall: Accidentally Removing Adjacent List Entries
+
+When patching a list (like `CATEGORY_RULES` in `slack_capture.py` or `elif` chains in `table_builder.py`), the `old_string` must include **exact** surrounding context. If the match is too short or too generic, the patch tool can:
+- Replace a middle entry and orphan the entries that followed it (they become unreachable code)
+- Match multiple locations and corrupt the file
+
+**Always include the entry BEFORE and AFTER the target** in your `old_string` to make the match unique. For list entries, include the closing `]` of the previous entry and the opening `(` of the next entry. For `elif` chains, include the preceding `elif` and following `elif`.
+
+**Recovery:** If an entry gets orphaned, re-read the file, find the orphaned code, and patch it back into the correct location with proper indentation.
+
 ## Building New Modules
 
 **Follow the Module Build Playbook:** `/root/Geeves/Module_Build_Playbook.md`
 
 The playbook is the standard process for every new module. Key principles:
 
-1. **Check first** — `modules_status.json` for current state, `schema_registry.json` for table IDs
-2. **Get approval** — Present full field list to user before creating anything
+1. **Check first** — `modules_status.json` for current state, `schema_registry.json` for table IDs. **IMPORTANT: Run `table_builder.py --schema` to check if tables ALREADY EXIST in Airtable before assuming they need creation.** Tables may have been created in a prior session without the module being marked "built." If tables exist but there's no skill, skip table creation and proceed directly to skill authoring.
+2. **Get approval** — Present full field list to user before creating anything (only needed if tables don't exist yet)
 3. **Build in order** — Tables → Skill → Scripts → Slack capture → Cron → Docs → Test
 4. **Create a class-level skill** — `/root/.hermes/skills/devops/<module>-agent/SKILL.md` using the template at `/root/Geeves/templates/module-skill-template.md`
 5. **Update all docs** — `schema_registry.json`, `modules_status.json`, skill, cross-references
@@ -250,6 +278,7 @@ The playbook is the standard process for every new module. Key principles:
 **Skill template:** `/root/Geeves/templates/module-skill-template.md`
 **Module status tracker:** `/root/Geeves/modules_status.json`
 **Schema reference:** `Geeves_Schema_Reference_v2.md` (approved table/field definitions)
+**Build checklist:** `references/module-build-checklist.md` — step-by-step checklist with common pitfalls
 
 ## Module Scaffold Pattern
 
@@ -277,7 +306,9 @@ Some modules need domain-specific fields and external API integration rather tha
 | **Recipe App** | `Recipes`, `Ingredients`, `Dinner Parties`, `Dinner Planner`, `Shopping List`, `Recipe Context`, `Recipe Output Log` | See below | Mealie (port 9925). Sync: Mealie → Airtable. **Full recipe workflows, Mealie API, and meal logging: see `recipes-agent` skill.** |
 || **Dining Preferences** | `Dining Preferences` | `tblzzGIF7yPf37NG5` | Auto-populated by Hermes from recipe ratings, meal frequency, ingredient patterns. Read by Restaurant module for alignment scoring. |
 || **Restaurants** | `Restaurants`, `Restaurant Visits` | See below | SerpApi Google Maps (free tier 250/mo). **Full restaurant workflows, visit logging, and recommendations: see `restaurants-agent` skill.** |
-| **Weekly Digest** | `Intentions` | `tbl62rEmak92HLXX2` | Weekly intentions — set, track, reflect. Sunday 8pm UTC cron. **Full weekly digest pipeline: see `weekly-digest-agent` skill.** |
+|| **Weekly Digest** | `Intentions` | `tbl62rEmak92HLXX2` | Weekly intentions — set, track, reflect. Sunday 8pm UTC cron. **Full weekly digest pipeline: see `weekly-digest-agent` skill.** |
+|| **Books** | `Books` | `tblUfRTBkCMLUe2pY` | Reading list, book tracking, Goodreads references, people-graph recommendations. **Full books workflows: see `books-agent` skill.** |
+|| **Fitness** | `Workouts`, `Exercise Log`, `Cycling`, `Fitness Goals` | See below | Slack capture for workout logging, gym sessions, cycling rides. **Full fitness workflows: see `fitness-agent` skill.** |
 
 **Recipe App table IDs:**
 
@@ -302,6 +333,16 @@ Some modules need domain-specific fields and external API integration rather tha
 `table_builder.py --recipe` creates all 7 tables.
 
 `table_builder.py --recipe` creates all 7 tables.
+
+**Fitness module table IDs:**
+
+| Table | ID |
+|-------|----|
+| `Workouts` | `tblMDYF8Lkl5A15CW` |
+| `Exercise Log` | `tbl8MXDYZ2hajsdIk` |
+| `Cycling` | `tblZ7hkoE68IRnQwV` |
+| `Fitness Goals` | `tblAM0Grin01IQmdd` |
+
 When adding MCP servers to Hermes, `hermes mcp add` has shell-parsing issues with special characters. Instead, write directly to `~/.hermes/config.yaml` via Python:
 
 ```python
@@ -454,8 +495,10 @@ Script: `/root/Geeves/scripts/slack_capture.py` — classifies incoming Slack me
 | Memory | remember, note, log, history, previously | Memory_Summaries |
 | Recipe | recipe, cook, cooking, bake, meal, dinner, lunch, breakfast, snack, dessert, ingredient, shopping list, dinner party, plan dinner, favourite recipe, email recipe, PDF recipe, mealie | Output_Log (Module=Recipe) |
 | Film Club | film club, movie club, movie night, film night, just watched, finished watching, rated X/5, rated X/10, add to list, log the film | Films |
-| Restaurant | restaurant, went to, ate at, dinner at, lunch at, find me a restaurant, recommend a restaurant, booked, menu, fine dining, went out for, we ate, we went | Restaurants + Restaurant Visits |
-| Module Request | party, travel, holiday, property, house, recommend, suggest | Output_Log (Module=General) |
+|| Restaurant | restaurant, went to, ate at, dinner at, lunch at, find me a restaurant, recommend a restaurant, booked, menu, fine dining, went out for, we ate, we went | Restaurants + Restaurant Visits |
+|| **Fitness** | workout, gym, run, ran, cycling, bike, ride, swim, yoga, walk, trained, training, lift, cardio, weights, bench, squat, deadlift, press, HIIT, strava, peloton, energy X/5, difficulty X/5 | Workouts, Exercise Log, Cycling |
+|| Module Request | party, travel, holiday, property, house, recommend, suggest | Output_Log (Module=General) |
+| **Books** | book, reading, read, novel, author, audiobook, ebook, hardcover, paperback, goodreads, finished a book, want to read, add to reading list, started reading, gave up on, stopped reading, recommended book | Books |
 | General | (fallback) | Skipped — no record |
 
 **⚠ No raw message table for Slack capture.** One Slack message → one useful Airtable record in the correct table. General messages produce no record. The `Input Log` table exists for audit/debugging purposes but is not the primary capture path — David explicitly rejected capture-via-Input-Log as unnecessary bloat.
@@ -468,7 +511,17 @@ Script: `/root/Geeves/scripts/slack_capture.py` — classifies incoming Slack me
 
 ### ⚠ Pitfall: Classification Priority Overlap
 
-Film Club and Module Request both match keywords like "film" and "movie". **Film Club rules must appear before Module Request** in `CATEGORY_RULES` so the `max()` scorer picks Film Club first on ties. If Module Request appears first, film messages get misrouted to Output_Log.
+Multiple categories can match the same keywords. The `max()` scorer picks the highest-scoring category, but when scores are tied, Python's `max()` returns the **first** matching entry — so **order matters**.
+
+Known overlaps:
+- **Film Club vs Module Request**: "film", "movie" → Film Club must appear BEFORE Module Request
+- **Books vs Module Request**: "book", "read", "recommend" → Books must appear BEFORE Module Request (book recommendations overlap with Module Request's "recommend")
+- **Books vs Film Club**: minimal overlap — Books should appear AFTER Film Club
+- **Fitness vs Module Request**: "walk", "travel" → Fitness must appear BEFORE Module Request
+- **Fitness vs Sleep/Habit**: "tired", "rest" → Sleep/Habit must appear BEFORE Fitness (sleep messages mention tiredness)
+- **Meal vs Recipe**: "dinner", "lunch", "breakfast", "snack" → Recipe must appear BEFORE Meal (recipe requests mention meal types)
+
+**Rule of thumb:** More specific categories should appear BEFORE more general ones. When adding a new category, check for keyword overlap with ALL existing categories and position accordingly.
 
 ### Name Extraction — Pitfalls
 

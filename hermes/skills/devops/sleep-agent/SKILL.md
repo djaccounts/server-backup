@@ -1,7 +1,7 @@
 ---
 name: sleep-agent
 description: "Geeves Sleep & Habits Agent — track sleep and habits in Airtable. Use when logging sleep, tracking habits, reporting bedtime/wake time, sleep quality, habit completion, or when the user mentions sleep, rest, tired, habit, routine, or streaks."
-version: 1.0.0
+version: 1.1.0
 author: Geeves
 ---
 
@@ -29,6 +29,8 @@ Manages the `Sleep Log`, `Habits`, and `Habit Log` tables. Handles sleep trackin
 | `Hours slept` | number | Total hours slept |
 | `Quality` | rating | 1-5 sleep quality rating |
 | `Notes` | multilineText | Sleep notes (woke in night, etc.) |
+| `Night bathroom visits` | number | Number of times woke to pee (integer) |
+| `Night awake time (mins)` | number | Total minutes awake during the night (integer) |
 | `Logged` | date | When this was logged |
 
 ### Habits
@@ -57,7 +59,7 @@ Use `/root/Geeves/scripts/airtable_api.py`:
 ```bash
 # Log sleep
 python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "Sleep Log" \
-  '{"Date": "2026-06-07", "Bedtime": "23:15", "Wake time": "06:45", "Hours slept": 7.5, "Quality": 4, "Notes": "Woke once in the night"}'
+  '{"Date": "2026-06-07", "Bedtime": "23:15", "Wake time": "06:45", "Hours slept": 7.5, "Quality": 4, "Notes": "Woke once in the night", "Night bathroom visits": 1}'
 
 # Log habit completion
 python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "Habit Log" \
@@ -126,6 +128,8 @@ Script: `/root/Geeves/scripts/slack_capture.py`
 - "woke up at X" → Wake: time: X
 - "slept X hours" → Hours slept: X
 - "quality X/5" or "rated X" → Quality: X
+- "peed X times" / "bathroom X times" / "toilet X times" → Night bathroom visits: X
+- "awake for X mins" / "awake X minutes" / "up for X mins" → Night awake time (mins): X
 - If only bedtime + wake time given, calculate hours
 
 **Habit logging:**
@@ -149,9 +153,9 @@ None yet. Future: morning digest could include last night's sleep summary.
 
 ## Standing Rules
 
-- All schema changes go through steward (`geeves-steward` skill)
+- Schema changes require David's explicit approval before running
 - Registry: `/root/Geeves/schema_registry.json`
-- Get David's explicit approval before creating any Airtable table
+- Get David's explicit approval before creating any Airtable table or field
 - Thread decisions supersede reference docs
 - Update this skill when conversation changes a decision
 
@@ -163,6 +167,7 @@ None yet. Future: morning digest could include last night's sleep summary.
 4. **Habit linking:** When logging a habit completion, always link to the Habits table via the `Habit` field.
 5. **Select field 422 errors:** Use exact values: `"Daily"`, `"Weekdays"`, `"3x week"`, `"Weekly"` for Frequency target; `"Health"`, `"Learning"`, `"Mindfulness"`, `"Household"`, `"Other"` for Category.
 6. **filterByFormula on linked fields:** Cannot filter Habit Log by Habit name directly — filter by linked record ID.
+7. **Night bathroom visits field:** Pass as integer (precision 0), not float. If user says "didn't get up" or doesn't mention it, omit the field rather than writing 0 — absence means "not recorded", 0 means "recorded zero".
 
 ## Reference
 

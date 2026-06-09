@@ -1,7 +1,7 @@
 ---
 name: recipes-agent
 description: "Geeves Recipes Agent — Mealie recipe management, Airtable sync, meal logging, dinner party planning, shopping list generation, and recipe discovery via web search. Use when adding recipes, planning meals, logging what you ate, planning dinner parties, searching for recipe ideas, or managing the recipe module."
-version: 1.2.0
+version: 1.3.0
 author: Geeves
 ---
 
@@ -43,7 +43,21 @@ TOKEN=$(curl -s -X POST http://localhost:9925/api/auth/token \
 | Duplicate | POST | `/api/recipes/{slug}/duplicate` |
 | List/search | GET | `/api/recipes?search=keyword` |
 
-**⚠ POST `/api/recipes/create/url` returns a plain string** (the slug), NOT JSON. Parse with `result.strip().strip('"')`.
+### Import from URL — Correct Pattern
+
+```python
+# ALWAYS use JSON body. Form-encoded (url=...) returns 422.
+r = subprocess.run([
+    "curl", "-s", "-X", "POST", "http://localhost:9925/api/recipes/create/url",
+    "-H", "Authorization: Bearer <token>",
+    "-H", "Content-Type: application/json",
+    "-d", json.dumps({"url": "https://example.com/recipe"})
+], capture_output=True, text=True)
+slug = r.stdout.strip().strip('"')  # Returns plain string, NOT JSON
+```
+
+**⚠ POST body must be JSON** `{"url": "..."}` with `Content-Type: application/json`. Form-encoded (`url=...`) returns HTTP 422.
+**⚠ POST returns a plain string** (the slug), NOT JSON. Parse with `result.strip().strip('"')`.
 
 ### Fetch Full Recipe
 
@@ -109,6 +123,9 @@ for ing in recipe["recipeIngredient"]:
 - "Eggs" was added via `typecast=true` (Metadata API rejects new options directly)
 - Eggs are NOT in Dairy — they have their own category
 
+**Ingredient categorization edge cases:**
+Dried spices, flakes, and powders are **Spice**, not Veg — e.g., "red chili flakes", "onion powder", "paprika", "cumin", "cinnamon", "chili powder", "curry powder" → `Spice`. Paste-form ingredients are **Pantry**, not Veg — e.g., "tomato paste", "tomato sauce", "soy sauce", "worcestershire sauce" → `Pantry`. Use `typecast=true` if the Cuisine select option doesn't exist yet (the API auto-creates it).
+
 ### Other Tables
 
 - **Dinner Parties** — links guests to recipes, auto-compiles dietary constraints, generates shopping lists
@@ -152,7 +169,7 @@ with urllib.request.urlopen(req, timeout=30) as resp:
 for r in data.get("organic_results", []):
     print(r.get("title",""))
     print(r.get("link",""))
-    s = r.get("snippet","")
+    s = r.get("snippet", "")
     if s: print(">", s[:150])
     print()
 ```
@@ -165,10 +182,10 @@ for r in data.get("organic_results", []):
 - If SerpApi returns no useful results, try a second query with different keywords before falling back to general knowledge
 
 ### Add Recipe from URL
-1. Mealie `POST /api/recipes/create/url` → scrape
+1. Mealie `POST /api/recipes/create/url` with JSON body → scrape → get slug
 2. Read back via `GET /api/recipes/{slug}`
-3. Create Airtable Recipes record
-4. Create Airtable Ingredient records (LLM categorises)
+3. Create Airtable Recipes record (use `typecast=true` for new Cuisine values)
+4. Create Airtable Ingredient records (categorise with edge-case rules above)
 5. Update Recipe Output Log
 
 ### Log Meal (with recipe)
@@ -197,10 +214,11 @@ for r in data.get("organic_results", []):
 3. **Default password may not work** — reset via SQLite if 401
 4. **Duplicate ingredients** — deduplicate by cleaned name (case-insensitive), NOT by raw display string
 5. **BASE_URL must match access URL** — update when changing from port to path-based access
-6. **POST returns plain string** — parse with `strip().strip('"')`, not `json.load()`
+6. **POST /api/recipes/create/url** — body MUST be JSON `{"url": "..."}`, NOT form-encoded. Form-encoded returns 422. Response is a plain string (the slug), not JSON.
 7. **Slug suffix on re-push** — Mealie appends `-1`, `-2`, etc. when slug exists. Delete old versions first if you want clean slugs. Mealie PATCH can rename: `PATCH /api/recipes/{slug}` with `{"name": "...", "slug": "..."}`.
 8. **`food` field can be null** — Use `ing.get("food") or {}` before `.get("name")` to avoid `AttributeError`
 9. **Ingredient `display` field is raw** — Contains full recipe line (qty + unit + name + prep). Must be cleaned before storing in Airtable.
+10. **Dried spices/flakes/powders → Spice, not Veg** — e.g., chili flakes, onion powder, paprika, cumin. Pastes/sauces → Pantry, not Veg — e.g., tomato paste, Worcestershire sauce.
 
 ## Standing Rules
 

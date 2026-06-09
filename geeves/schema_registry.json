@@ -1,7 +1,7 @@
 {
   "base_id": "appzvmonQXs4x2AlL",
   "base_name": "Geeves",
-  "last_synced": "2026-06-08T12:00:00Z",
+  "last_synced": "2026-06-10T00:00:00Z",
   "schema_version": "v2",
   "tables": {
     "tbl1WMPtQhWYW7bTI": {
@@ -2666,6 +2666,18 @@
           "type": "date",
           "purpose": "Logged",
           "status": "active"
+        },
+        "fldZqK4F3MeWj3ko0": {
+          "name": "Night bathroom visits",
+          "type": "number",
+          "purpose": "Number of times woke in the night to use the bathroom",
+          "status": "active"
+        },
+        "fldwdnsyGUnWlN5qR": {
+          "name": "Night awake time (mins)",
+          "type": "number",
+          "purpose": "Total minutes awake during the night",
+          "status": "active"
         }
       }
     },
@@ -3209,66 +3221,8 @@
     },
     "tbl62rEmak92HLXX2": {
       "name": "Intentions",
-      "module": "Unknown",
-      "description": "Intentions table.",
-      "fields": {
-        "fld6wsMsM4RtJZfy9": {
-          "name": "Intention",
-          "type": "singleLineText",
-          "purpose": "Intention",
-          "status": "active"
-        },
-        "fldR9G0Cy2D9l9g7z": {
-          "name": "Week starting",
-          "type": "date",
-          "purpose": "Week starting",
-          "status": "active"
-        },
-        "fldJVrXwA4TxH4vYN": {
-          "name": "Type",
-          "type": "singleSelect",
-          "purpose": "Type",
-          "status": "active",
-          "choices": [
-            "Accomplish",
-            "Let go of",
-            "Focus"
-          ]
-        },
-        "fldSV6PXOgnT4ptjY": {
-          "name": "Status",
-          "type": "singleSelect",
-          "purpose": "Status",
-          "status": "active",
-          "choices": [
-            "Set",
-            "Achieved",
-            "Missed",
-            "Carried over"
-          ]
-        },
-        "fldnUR2g3uDkICXsK": {
-          "name": "Source",
-          "type": "singleSelect",
-          "purpose": "Source",
-          "status": "active",
-          "choices": [
-            "Suggested",
-            "Manual"
-          ]
-        },
-        "fldIrmJaVFI1pdpeb": {
-          "name": "Reflection",
-          "type": "multilineText",
-          "purpose": "Reflection",
-          "status": "active"
-        }
-      }
-    },
-    "tbl62rEmak92HLXX2": {
-      "name": "Intentions",
-      "module": "Phase 3 — Weekly Digest + Intentions",
-      "description": "Weekly intentions — set, track, and reflect on intentions each week.",
+      "module": "Phase 3 \u2014 Weekly Digest + Intentions",
+      "description": "Weekly intentions \u2014 set, track, and reflect on intentions each week.",
       "fields": {
         "fld6wsMsM4RtJZfy9": {
           "name": "Intention",
@@ -3321,6 +3275,133 @@
           "purpose": "End-of-week reflection on this intention",
           "status": "active"
         }
+      }
+    },
+    "tblUfRTBkCMLUe2pY": {
+      "name": "Books",
+      "module": "Phase 4 \u2014 Lifestyle",
+      "description": "Book reading tracker \u2014 want-to-read, currently reading, finished, abandoned. Links to People for recommendations.",
+      "fields": {
+        "flda8mJiRmJ2Sthf3": {
+          "name": "Title",
+          "type": "singleLineText",
+          "purpose": "Book title",
+          "status": "active"
+        },
+        "fldbpHL4tEWYrl7L0": {
+          "name": "Author",
+          "type": "singleLineText",
+          "purpose": "Author name",
+          "status": "active"
+        },
+        "fldxCBnRrRqbbYnE7": {
+          "name": "Status",
+          "type": "singleSelect",
+          "purpose": "Reading status",
+          "status": "active",
+          "choices": [
+            "Want to read",
+            "Reading",
+            "Read",
+            "Abandoned"
+          ]
+        },
+        "fld18YzAkO3CU1hIh": {
+          "name": "Genre",
+          "type": "multipleSelects",
+          "purpose": "Book genre(s)",
+          "status": "active",
+          "choices": [
+            "Fiction",
+            "Non-fiction",
+            "Biography",
+            "History",
+            "Science",
+            "Philosophy",
+            "Self-help",
+            "Business",
+            "Fantasy",
+            "Sci-fi",
+            "Thriller",
+            "Romance",
+            "Other"
+          ]
+        },
+        "fldyhJuyk9PissKub": {
+          "name": "Date started",
+          "type": "date",
+          "purpose": "When reading began",
+          "status": "active"
+        },
+        "fldxcfo9UPZY5wVue": {
+          "name": "Date finished",
+          "type": "date",
+          "purpose": "When completed",
+          "status": "active"
+        },
+        "fldp5ba1OaHecO77l": {
+          "name": "Goodreads ID",
+          "type": "singleLineText",
+          "purpose": "Goodreads reference",
+          "status": "active"
+        },
+        "fldBDOiAqEMaa9lE1": {
+          "name": "ISBN",
+          "type": "singleLineText",
+          "purpose": "ISBN for lookups",
+          "status": "active"
+        },
+        "fld5ymse3oCzD5l7K": {
+          "name": "Page count",
+          "type": "number",
+          "purpose": "Total pages",
+          "status": "active"
+        },
+        "fldYnC4Q4ZbuKMqcC": {
+          "name": "Format",
+          "type": "singleSelect",
+          "purpose": "Book format",
+          "status": "active",
+          "choices": [
+            "Hardcover",
+            "Paperback",
+            "eBook",
+            "Audiobook"
+          ]
+        },
+        "fld0qNUO3qNOMgIBV": {
+          "name": "Cover image",
+          "type": "multipleAttachments",
+          "purpose": "Book cover",
+          "status": "active"
+        },
+        "fldAf4Z8IpdSGlvQ3": {
+          "name": "Notes",
+          "type": "multilineText",
+          "purpose": "Thoughts, summary",
+          "status": "active"
+        },
+        "flde76M3ru0p3FZjY": {
+          "name": "Source",
+          "type": "singleSelect",
+          "purpose": "How added",
+          "status": "active",
+          "choices": [
+            "Manual",
+            "Slack",
+            "Goodreads import"
+          ]
+        },
+        "fldVmpqvUr1i6arjC": {
+          "name": "Recommended by",
+          "type": "multipleRecordLinks",
+          "purpose": "Who recommended this book",
+          "status": "active",
+          "links_to": "tbl1WMPtQhWYW7bTI"
+        }
+      },
+      "cross_module_links": {
+        "Recommended by": "tbl1WMPtQhWYW7bTI (People)"
       }
     }
   }

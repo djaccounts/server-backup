@@ -142,6 +142,19 @@
     "use_count": 0,
     "view_count": 0
   },
+  "baserow": {
+    "archived_at": null,
+    "created_at": "2026-06-08T09:30:12.483505+00:00",
+    "created_by": "agent",
+    "last_patched_at": "2026-06-08T12:04:24.247470+00:00",
+    "last_used_at": "2026-06-08T12:08:59.289875+00:00",
+    "last_viewed_at": "2026-06-08T12:08:59.286107+00:00",
+    "patch_count": 2,
+    "pinned": false,
+    "state": "active",
+    "use_count": 3,
+    "view_count": 3
+  },
   "blogwatcher": {
     "archived_at": null,
     "created_at": "2026-06-07T22:34:55.696051+00:00",
@@ -155,17 +168,30 @@
     "use_count": 0,
     "view_count": 0
   },
+  "books-agent": {
+    "archived_at": null,
+    "created_at": "2026-06-08T20:36:22.569419+00:00",
+    "created_by": null,
+    "last_patched_at": "2026-06-08T20:38:52.453751+00:00",
+    "last_used_at": "2026-06-08T20:36:22.572622+00:00",
+    "last_viewed_at": "2026-06-08T20:36:22.569435+00:00",
+    "patch_count": 1,
+    "pinned": false,
+    "state": "active",
+    "use_count": 1,
+    "view_count": 1
+  },
   "bulletin-agent": {
     "archived_at": null,
     "created_at": "2026-06-06T08:03:17.132624+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-07T20:41:25.051526+00:00",
-    "last_used_at": "2026-06-07T06:19:52.059830+00:00",
+    "last_used_at": "2026-06-08T06:00:19.366412+00:00",
     "last_viewed_at": "2026-06-07T06:19:52.056332+00:00",
     "patch_count": 3,
     "pinned": false,
     "state": "active",
-    "use_count": 3,
+    "use_count": 4,
     "view_count": 2
   },
   "claude-code": {
@@ -298,6 +324,19 @@
     "use_count": 1,
     "view_count": 1
   },
+  "duckduckgo-search": {
+    "archived_at": null,
+    "created_at": "2026-06-08T08:23:56.061269+00:00",
+    "created_by": null,
+    "last_patched_at": null,
+    "last_used_at": "2026-06-08T08:23:56.063979+00:00",
+    "last_viewed_at": "2026-06-08T08:23:56.061286+00:00",
+    "patch_count": 0,
+    "pinned": false,
+    "state": "active",
+    "use_count": 1,
+    "view_count": 1
+  },
   "evaluating-llms-harness": {
     "archived_at": null,
     "created_at": "2026-06-07T22:34:55.715596+00:00",
@@ -337,18 +376,31 @@
     "use_count": 0,
     "view_count": 0
   },
+  "fitness-agent": {
+    "archived_at": null,
+    "created_at": "2026-06-08T20:07:49.270930+00:00",
+    "created_by": null,
+    "last_patched_at": "2026-06-08T20:07:49.270950+00:00",
+    "last_used_at": null,
+    "last_viewed_at": null,
+    "patch_count": 1,
+    "pinned": false,
+    "state": "active",
+    "use_count": 0,
+    "view_count": 0
+  },
   "geeves-airtable": {
     "archived_at": null,
     "created_at": "2026-06-01T20:50:01.257123+00:00",
     "created_by": null,
-    "last_patched_at": "2026-06-07T20:41:36.971448+00:00",
-    "last_used_at": "2026-06-07T20:40:05.127986+00:00",
-    "last_viewed_at": "2026-06-07T20:40:05.125431+00:00",
-    "patch_count": 133,
+    "last_patched_at": "2026-06-08T20:38:06.326838+00:00",
+    "last_used_at": "2026-06-08T20:40:01.585440+00:00",
+    "last_viewed_at": "2026-06-08T20:40:01.581803+00:00",
+    "patch_count": 144,
     "pinned": false,
     "state": "active",
-    "use_count": 84,
-    "view_count": 80
+    "use_count": 92,
+    "view_count": 88
   },
   "geeves-steward": {
     "archived_at": null,
@@ -492,6 +544,19 @@
     "state": "active",
     "use_count": 2,
     "view_count": 2
+  },
+  "hermes-dev-admin": {
+    "archived_at": null,
+    "created_at": "2026-06-08T09:24:21.290350+00:00",
+    "created_by": null,
+    "last_patched_at": "2026-06-08T12:08:34.043597+00:00",
+    "last_used_at": "2026-06-08T12:03:52.211418+00:00",
+    "last_viewed_at": "2026-06-08T12:03:52.207941+00:00",
+    "patch_count": 7,
+    "pinned": false,
+    "state": "active",
+    "use_count": 6,
+    "view_count": 6
   },
   "hermes-provider-config": {
     "archived_at": null,
@@ -721,6 +786,19 @@
     "last_patched_at": null,
     "last_used_at": "2026-06-06T16:50:12.809347+00:00",
     "last_viewed_at": "2026-06-06T16:50:12.807709+00:00",
+    "patch_count": 0,
+    "pinned": false,
+    "state": "active",
+    "use_count": 1,
+    "view_count": 1
+  },
+  "mcp-integrations": {
+    "archived_at": null,
+    "created_at": "2026-06-08T07:37:01.916961+00:00",
+    "created_by": null,
+    "last_patched_at": null,
+    "last_used_at": "2026-06-08T07:37:01.922148+00:00",
+    "last_viewed_at": "2026-06-08T07:37:01.917010+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
@@ -1005,12 +1083,12 @@
     "created_at": "2026-06-06T19:48:04.776608+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-06T19:50:37.918274+00:00",
-    "last_used_at": "2026-06-07T06:19:52.063885+00:00",
+    "last_used_at": "2026-06-08T05:00:37.618928+00:00",
     "last_viewed_at": "2026-06-07T06:19:52.062397+00:00",
     "patch_count": 1,
     "pinned": false,
     "state": "active",
-    "use_count": 3,
+    "use_count": 4,
     "view_count": 2
   },
   "public-apis": {
@@ -1056,14 +1134,14 @@
     "archived_at": null,
     "created_at": "2026-06-06T08:36:22.857550+00:00",
     "created_by": null,
-    "last_patched_at": "2026-06-07T17:21:29.439536+00:00",
-    "last_used_at": "2026-06-07T17:22:32.152589+00:00",
-    "last_viewed_at": "2026-06-07T17:22:32.150316+00:00",
-    "patch_count": 5,
+    "last_patched_at": "2026-06-08T06:56:11.316706+00:00",
+    "last_used_at": "2026-06-08T20:16:04.832276+00:00",
+    "last_viewed_at": "2026-06-08T20:16:04.829389+00:00",
+    "patch_count": 6,
     "pinned": false,
     "state": "active",
-    "use_count": 5,
-    "view_count": 5
+    "use_count": 8,
+    "view_count": 8
   },
   "requesting-code-review": {
     "archived_at": null,
@@ -1142,6 +1220,19 @@
     "state": "active",
     "use_count": 0,
     "view_count": 0
+  },
+  "sleep-agent": {
+    "archived_at": null,
+    "created_at": "2026-06-08T06:06:54.353525+00:00",
+    "created_by": null,
+    "last_patched_at": "2026-06-08T06:51:27.072657+00:00",
+    "last_used_at": "2026-06-08T06:51:38.015712+00:00",
+    "last_viewed_at": "2026-06-08T06:51:38.012301+00:00",
+    "patch_count": 3,
+    "pinned": false,
+    "state": "active",
+    "use_count": 3,
+    "view_count": 3
   },
   "songsee": {
     "archived_at": null,

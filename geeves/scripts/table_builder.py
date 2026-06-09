@@ -485,6 +485,91 @@ RESTAURANT_TABLES = {
 }
 
 
+BOOKS_TABLES = {
+    "Books": {
+        "fields": [
+            {"name": "Title", "type": "text"},
+            {"name": "Author", "type": "text"},
+            {"name": "Status", "type": "select", "options": [
+                "Want to read", "Reading", "Read", "Abandoned",
+            ]},
+            {"name": "Genre", "type": "multiSelect", "options": [
+                "Fiction", "Non-fiction", "Biography", "History",
+                "Science", "Philosophy", "Self-help", "Business",
+                "Fantasy", "Sci-fi", "Thriller", "Romance", "Other",
+            ]},
+            {"name": "Date started", "type": "date"},
+            {"name": "Date finished", "type": "date"},
+            {"name": "Goodreads ID", "type": "text"},
+            {"name": "ISBN", "type": "text"},
+            {"name": "Page count", "type": "number", "precision": 0},
+            {"name": "Format", "type": "select", "options": [
+                "Hardcover", "Paperback", "eBook", "Audiobook",
+            ]},
+            {"name": "Cover image", "type": "attachment"},
+            {"name": "Notes", "type": "longText"},
+            {"name": "Source", "type": "select", "options": [
+                "Manual", "Slack", "Goodreads import",
+            ]},
+            # My rating = rating field (1-5), added after table creation
+            # Recommended by = multipleRecordLinks → People (added after creation)
+        ],
+    },
+}
+
+
+def create_books_tables():
+    """Create the Books table (reading list, book tracking, recommendations)."""
+    print("\n📚 Creating Books table via API...")
+    print()
+
+    tables = list_tables()
+    people_table = find_table(tables, "People")
+    people_table_id = people_table["id"] if people_table else None
+
+    spec = BOOKS_TABLES["Books"]
+    existing = find_table(tables, "Books")
+    if existing:
+        print(f"  ℹ️  Table 'Books' already exists (id: {existing['id']})")
+        books_id = existing["id"]
+    else:
+        # Create table without rating and link fields first (simpler types only)
+        create_fields = []
+        for f in spec["fields"]:
+            ft = FIELD_TYPE_MAP.get(f["type"], f["type"])
+            if ft in ("multipleRecordLinks",):
+                continue  # add links after table exists
+            payload = build_field_payload(f, ft)
+            if payload is not None:
+                create_fields.append(payload)
+
+        result = create_table("Books", create_fields)
+        if not result:
+            return None
+        books_id = result["id"]
+
+    # Add rating field separately (can be picky during table creation)
+    add_field(books_id, {"name": "My rating", "type": "rating"})
+
+    # Add link field to People (Recommended by)
+    if people_table_id:
+        add_field(books_id, {
+            "name": "Recommended by",
+            "type": "multipleRecordLinks",
+            "link_type": "recordLink",
+            "linked_table": people_table_id,
+        })
+        print("    ✅ Added field 'Recommended by' → People")
+    else:
+        print("    ⚠️  Skipping 'Recommended by' — People table not found")
+
+    print()
+    print("📊 Books module table IDs:")
+    print(f"   Books                    {books_id}")
+    print()
+    return books_id
+
+
 def create_weekly_digest_tables():
     """Create all Weekly Digest module tables (Intentions)."""
     print("\n📅 Creating Weekly Digest module tables via API...")
@@ -835,9 +920,17 @@ def main():
         create_restaurant_tables()
         print("\n📊 Final schema:")
         show_schema()
+    elif args[0] == "--books":
+        create_books_tables()
+        print("\n📊 Final schema:")
+        show_schema()
     elif args[0] == "--weekly":
         create_weekly_digest_tables()
         print("\n📊 Final schema:")
+        show_schema()
+    elif args[0] == "--fitness":
+        print("ℹ️  Fitness tables already exist: Workouts, Exercise Log, Cycling, Fitness Goals")
+        print("   No creation needed. Use --schema to verify.")
         show_schema()
     elif args[0] == "--module":
         if len(args) < 2:
