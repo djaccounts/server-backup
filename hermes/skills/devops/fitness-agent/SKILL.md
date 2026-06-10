@@ -1,6 +1,6 @@
 ---
 name: fitness-agent
-description: "Geeves Fitness Agent — log workouts, track exercises, and manage fitness goals in Airtable. Use when logging workouts, gym sessions, runs, cycles, swims, exercise sets/reps/weight, or when the user mentions gym, run, cycle, swim, workout, exercise, training, lifting, cardio, stretching, or fitness goals."
+description: "Geeves Fitness Agent — log workouts, track exercises, and manage fitness goals in Baserow. Use when logging workouts, gym sessions, runs, cycles, swims, exercise sets/reps/weight, or when the user mentions gym, run, cycle, swim, workout, exercise, training, lifting, cardio, stretching, or fitness goals."
 version: 1.0.0
 author: Geeves
 ---
@@ -9,14 +9,14 @@ author: Geeves
 
 Manages the `Workouts`, `Exercise Log`, `Cycling`, and `Fitness Goals` tables. Handles workout logging, exercise detail tracking, cycling ride logging, and fitness goal management.
 
-## Tables
+## Tables (Baserow)
 
 | Table | ID | Purpose |
 |-------|----|---------|
-| `Workouts` | `tblMDYF8Lkl5A15CW` | Every workout session |
-| `Exercise Log` | `tbl8MXDYZ2hajsdIk` | Per-exercise detail for gym sessions |
-| `Cycling` | `tblZ7hkoE68IRnQwV` | Cycling ride details |
-| `Fitness Goals` | `tblAM0Grin01IQmdd` | Calorie/macro/weekly targets |
+| `Workouts` | `392` | Every workout session |
+| `Exercise Log` | `393` | Per-exercise detail for gym sessions |
+| `Cycling` | `396` | Cycling ride details |
+| `Fitness Goals` | `395` | Calorie/macro/weekly targets |
 
 ## Key Fields
 
@@ -194,9 +194,40 @@ Script: `/root/Geeves/scripts/slack_capture.py`
 - "avg/average X mph" → Avg speed
 - "max/top speed X mph" → Max speed
 
+## Garmin Connect Auto-Import
+
+Script: `/root/Geeves/scripts/garmin_sync.py`
+Cron: `0d2ddb20ece8` — daily 7am UTC
+
+### Two-Garmin Deduplication
+
+David wears two Garmins simultaneously — one set to cycling mode, one to walking mode. This produces duplicate activities for the same ride. The sync script handles this:
+
+1. Fetches all activities from Garmin Connect (last 7 days)
+2. Separates into cycling-type and walking-type activities
+3. For each walking activity, checks if a cycling activity exists on the same day within ±1 mile distance
+4. If matched → walking duplicate is discarded (the cycling record is kept)
+5. Walking activities without cycling counterparts but ≥3 miles are kept (could be cycling misclassified by Garmin auto-naming)
+6. Walking activities <3 miles are filtered out (likely genuine walks)
+
+**Garmin activity type IDs — cycling:** 2, 5, 10, 19, 21, 22, 25, 143, 152, 175, 176, 197, 198
+**Garmin activity type IDs — walking:** 3, 9, 15, 16
+
+### Garmin API Quirks
+
+- `client.get_activities()` takes `start` (offset), `limit`, `activitytype` — NOT date range
+- `client.get_activities_by_date()` takes `startdate`, `enddate` — use this for date range queries
+- Garmin may return 429 rate limit errors on login — the `python-garminconnect` library auto-fallbacks (curl_cffi → requests), these warnings are normal
+- Credentials stored in `/root/.hermes/.env` as `GARMIN_EMAIL` and `GARMIN_PASSWORD`
+- Auth tokens cached at `~/.garminconnect/` after first login
+
+### Source Field
+
+When syncing from Garmin, set `Source` to `"Garmin"` in the Workouts table.
+
 ## Cron Jobs
 
-None yet. Future: weekly fitness summary in Weekly Digest.
+- `0d2ddb20ece8` — Garmin Cycling Import, daily 7am UTC
 
 ## Dependencies
 

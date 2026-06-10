@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """
-stocks_fetch.py — Fetch daily stock prices via yfinance and log to Airtable.
+stocks_fetch.py — Fetch daily stock prices via yfinance and log to Baserow.
 
 Tickers: BTC-GBP, AMZN, GOOGL, META
 Uses yfinance (Yahoo Finance), no API key required.
 
 Usage:
     python3 stocks_fetch.py              # fetch and print
-    python3 stocks_fetch.py --write      # fetch and write to Airtable
+    python3 stocks_fetch.py --write      # fetch and write to Baserow
 """
 
 import subprocess, sys, json, urllib.request, urllib.error
 from datetime import datetime, timezone
+
+sys.path.insert(0, "/root/Geeves/scripts")
+import baserow_api
 
 try:
     import yfinance as yf
@@ -19,28 +22,9 @@ except ImportError:
     print("ERROR: yfinance not installed. Run: pip install yfinance")
     sys.exit(1)
 
-ENV_PATH = "/root/.hermes/.env"
-BASE = "appzvmonQXs4x2AlL"
 TABLE = "Stock_Prices"
-
 TICKERS = ["BTC-GBP", "AMZN", "GOOGL", "META"]
 
-def get_key():
-    r = subprocess.run(["grep", "AIRTABLE_API_KEY", ENV_PATH], capture_output=True, text=True)
-    line = r.stdout.strip().split("\n")[0]
-    return line.split("=", 1)[1] if "=" in line else ""
-
-def api(method, path, data=None):
-    key = get_key()
-    url = f"https://api.airtable.com/v0/{path}"
-    body = json.dumps(data).encode() if data else None
-    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-    req = urllib.request.Request(url, data=body, headers=headers, method=method)
-    try:
-        with urllib.request.urlopen(req) as resp:
-            return json.loads(resp.read()), resp.status
-    except urllib.error.HTTPError as e:
-        return json.loads(e.read()), e.code
 
 def fetch_prices():
     """Fetch current prices for all configured tickers."""
@@ -54,15 +38,13 @@ def fetch_prices():
             price = info.last_price
             prev_close = info.previous_close
 
-            # Determine currency
             if ticker_str.endswith("-GBP"):
                 currency = "GBP"
             elif ticker_str.endswith("-USD"):
                 currency = "USD"
             else:
-                currency = "USD"  # default for equities
+                currency = "USD"
 
-            # Calculate change %
             if prev_close and prev_close != 0:
                 change_pct = round(((price - prev_close) / prev_close) * 100, 2)
             else:
@@ -81,14 +63,17 @@ def fetch_prices():
 
     return records
 
-def write_to_airtable(records):
-    """Write stock price records to Airtable (one per ticker)."""
+
+def write_to_baserow(records):
+    """Write stock price records to Baserow (one per ticker)."""
+    mapping = baserow_api.load_mapping()
     for rec in records:
-        r, status = api("POST", f"{BASE}/{TABLE}", {"fields": rec})
-        if status == 200:
-            print(f"  ✅ {rec['Ticker']}: {rec['Price']} {rec['Currency']} ({rec['Change Pct']:+.2f}%) — {r['id']}")
+        ok, row_id = baserow_api.baserow_post(mapping, TABLE, rec)
+        if ok:
+            print(f"  ✅ {rec['Ticker']}: {rec['Price']} {rec['Currency']} ({rec['Change Pct']:+.2f}%) — {row_id}")
         else:
-            print(f"  ❌ {rec['Ticker']} Airtable error: {r}")
+            print(f"  ❌ {rec['Ticker']} Baserow error: {row_id}")
+
 
 def main():
     write_mode = "--write" in sys.argv
@@ -104,10 +89,11 @@ def main():
         print(f"  {rec['Ticker']:10s}  {rec['Price']:>12,.2f} {rec['Currency']}  ({rec['Change Pct']:+.2f}%)")
 
     if write_mode:
-        print("\n  Writing to Airtable...")
-        write_to_airtable(records)
+        print("\n  Writing to Baserow...")
+        write_to_baserow(records)
     else:
-        print("\n  (dry run — add --write to save to Airtable)")
+        print("\n  (dry run — add --write to save to Baserow)")
+
 
 if __name__ == "__main__":
     main()

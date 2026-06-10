@@ -23,15 +23,15 @@
       "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 6
+        "completed": 7
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-02T15:29:19.046414+00:00",
-      "next_run_at": "2026-06-09T06:00:00+00:00",
-      "last_run_at": "2026-06-08T06:01:03.450017+00:00",
+      "next_run_at": "2026-06-10T06:00:00+00:00",
+      "last_run_at": "2026-06-09T06:02:03.775330+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -113,15 +113,15 @@
       "schedule_display": "0 2 * * *",
       "repeat": {
         "times": null,
-        "completed": 2
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T15:56:27.457927+00:00",
-      "next_run_at": "2026-06-10T02:00:00+00:00",
-      "last_run_at": "2026-06-08T02:00:29.089413+00:00",
+      "next_run_at": "2026-06-11T02:00:00+00:00",
+      "last_run_at": "2026-06-09T02:01:08.030382+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -139,7 +139,7 @@
     {
       "id": "cea50fc34ab0",
       "name": "Geeves Property Scan",
-      "prompt": "Run the Rightmove property scan to find new listings matching our search criteria.\n\nSteps:\n1. Run: python3 /root/Geeves/scripts/property_scan.py\n2. The script will search Rightmove for 3+ bed houses, \u00a3750k-\u00a31m, north of Thames, with gardens\n3. New listings are automatically stored in Airtable (Properties table)\n4. Report the results: how many new properties found, top 3 by match score with their Rightmove URLs\n\nIf the script fails or returns 0 new properties, report that too.",
+      "prompt": "Run the Rightmove property scan v2 to find new listings matching our search criteria.\n\nSteps:\n1. Run: python3 /root/Geeves/scripts/property_scan_v2.py\n2. Report the results \u2014 how many new properties found, top matches by score\n3. If any errors occur, report them immediately\n\nThe script uses uk-property-cli for fetching and handles scoring, filtering, deduplication, and Airtable storage automatically.",
       "skills": [
         "property-agent"
       ],
@@ -158,15 +158,15 @@
       "schedule_display": "0 5 * * *",
       "repeat": {
         "times": null,
-        "completed": 2
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T19:43:45.740827+00:00",
-      "next_run_at": "2026-06-09T05:00:00+00:00",
-      "last_run_at": "2026-06-08T05:01:58.946568+00:00",
+      "next_run_at": "2026-06-10T05:00:00+00:00",
+      "last_run_at": "2026-06-09T05:01:43.012871+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -233,7 +233,55 @@
       ],
       "workdir": null,
       "profile": null
+    },
+    {
+      "id": "0d2ddb20ece8",
+      "name": "Garmin Cycling Import",
+      "prompt": "Run the Garmin Connect sync to fetch recent cycling activities and store them in Airtable.\n\nSteps:\n1. Check that GARMIN_EMAIL and GARMIN_PASSWORD are set in /root/.hermes/.env\n2. Run: python3 /root/Geeves/scripts/garmin_sync.py\n3. Report the results: how many new rides synced, any errors.\n4. If authentication fails, report that Garmin credentials need to be re-entered.",
+      "skills": [
+        "baserow"
+      ],
+      "skill": "baserow",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7 * * *",
+        "display": "0 7 * * *"
+      },
+      "schedule_display": "0 7 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-09T07:15:25.963482+00:00",
+      "next_run_at": "2026-06-10T07:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7C89HKQ9",
+        "chat_name": "C0B7C89HKQ9",
+        "thread_id": "1780814299.282749"
+      },
+      "enabled_toolsets": [
+        "terminal",
+        "file"
+      ],
+      "workdir": null,
+      "profile": null
     }
   ],
-  "updated_at": "2026-06-09T02:00:49.132759+00:00"
+  "updated_at": "2026-06-10T02:00:49.852376+00:00"
 }

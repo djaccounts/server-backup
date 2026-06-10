@@ -13,14 +13,16 @@ Fetches daily data, builds an HTML digest, generates a PDF, and delivers via ema
 
 ```
 Cron (6am UTC)
-  → bulletin_fetch.py --write    (fetch all data → Airtable)
-  → build_digest_html.py --save  (read Airtable → HTML)
-  → digest_to_pdf.py             (HTML → PDF via PDFBolt)
-  → AgentMail API                (HTML body + PDF attachment → dj@djaccounts.com)
-  → Slack API                    (summary post → SLACK_HOME_CHANNEL)
+  → bulletin_fetch_parallel.py --write  (fetch all data → Baserow)
+  → build_digest_html.py --save         (read data → HTML)  [⚠️ still reads Airtable, migration pending]
+  → digest_to_pdf.py                    (HTML → PDF via PDFBolt)
+  → AgentMail API                       (HTML body + PDF attachment → dj@djaccounts.com)
+  → Slack API                           (summary post → SLACK_HOME_CHANNEL)
 ```
 
 **Single source of truth:** `build_digest_html.py` is the ONLY source for digest content. Both email body AND PDF come from the same HTML output. Never compose a separate plain text email.
+
+**⚠️ Migration status (June 2026):** All fetcher scripts (weather, stocks, fact, token_usage) now write to Baserow. `build_digest_html.py` still reads from Airtable — migration pending.
 
 ## Scripts (in order)
 
@@ -34,19 +36,20 @@ Cron (6am UTC)
 
 ## Data Sources
 
-All scripts are in `/root/Geeves/scripts/`.
+All scripts are in `/root/Geeves/scripts/`. All write to Baserow tables (migrated from Airtable June 2026).
 
-| Fetcher | Table | API | Key |
-|---------|-------|-----|-----|
-| `weather_fetch.py` | `Weather_Data` (tblFd4kAahIUozJsf) | Open-Meteo | None |
-| `stocks_fetch.py` | `Stock_Prices` (tblI1oXlNIFXrVm7f) | yfinance | None |
-| `fact_fetch.py` | `Fact_of_the_Day` (tblUTCWleQD61Ti2v) | 6 rotating sources | None |
-| `starwars_fetch.py` | `Star_Wars_Fact` (tblAvJ4PG6HbAXruj) | SWAPI.tech | None |
-| `token_usage.py` | `Token_Usage` (tbl3EjtE3YW1ZUqEv) | Hermes state.db | None |
+| Fetcher | Baserow Table | Table ID | API | Key |
+|---------|--------------|----------|-----|-----|
+| `weather_fetch.py` | `Weather_Data` | 364 | Open-Meteo | None |
+| `stocks_fetch.py` | `Stock_Prices` | 365 | yfinance | None |
+| `fact_fetch.py` | `Fact_of_the_Day` | 363 | 6 rotating sources | None |
+| `token_usage.py` | `Token_Usage` | 367 | Hermes state.db | None |
 
 **Fact rotation:** `day_of_year % 6` → 0=Wikipedia, 1=NASA, 2=Quote Garden, 3=Zen, 4=Holidays, 5=Useless Facts. Full fallback chain if primary fails.
 
 **Stock tickers:** `BTC-GBP`, `AMZN`, `GOOGL`, `META`
+
+**⚠ Baserow writes require `baserow_api.py` helper** — field names auto-resolve to `field_XXXX` IDs. Use `baserow_api.baserow_post()` for all writes.
 
 ## Email Delivery
 
@@ -125,12 +128,12 @@ def slack_post(text):
 - **Delivery:** `local`
 - **Toolsets:** `terminal`, `file`, **skills** (loads this skill)
 
-**⚠ Cron is always UTC.** Adjust schedule at DST transitions (late Oct → `0 7 * * *` for 7am GMT).
+**⚠ Cron is always UTC.** Adjust schedule at DST transitions.
 
 ## Adding a New Section
 
-1. Write a fetcher script in `/root/Geeves/scripts/` that writes to an Airtable table
-2. Add it to `bulletin_fetch.py` `SCRIPTS` list
+1. Write a fetcher script in `/root/Geeves/scripts/` that writes to a Baserow table using `baserow_api.baserow_post()`
+2. Add it to `bulletin_fetch_parallel.py` `FETCHERS` list
 3. Add a section block to `build_digest_html.py`
 4. Both email and PDF update automatically (single source of truth)
 
@@ -140,9 +143,10 @@ def slack_post(text):
 2. **execute_code blocked in cron** — Use `write_file` + `terminal` pattern for Python scripts.
 3. **Stock data may be from previous day** — yfinance returns most recent trading day's close. Expected on weekends/holidays.
 4. **Weather timeouts** — Open-Meteo can timeout on 15s limit. Digest still sends with section skipped.
-5. **Select field 422** — Writing undefined choice to singleSelect fails. Reuse existing labels.
-6. **agentmail_helper.py does NOT support attachments** — Use AgentMail REST API directly.
-7. **Digest section order** is defined in `build_digest_html.py` only. Current order: Weather → Star Wars → Fact → Property Search → Markets → Token Usage.
+5. **Baserow select option 422** — Writing undefined choice to singleSelect fails. Use exact option values.
+6. **Baserow number field `min_value`** — If Airtable import set `number_negative=False`, negative values fail. Fix via JWT PATCH to `/api/database/fields/{id}/`.
+7. **agentmail_helper.py does NOT support attachments** — Use AgentMail REST API directly.
+8. **Digest section order** is defined in `build_digest_html.py` only.
 
 ## Related Pipelines
 
@@ -151,5 +155,6 @@ def slack_post(text):
 ## Reference
 
 - `public-apis` skill — API details, rate limits, auth patterns
-- `geeves-airtable/references/bulletin-setup.md` — full setup docs, field mappings, table IDs
-- `/root/Geeves/Module_Build_Playbook.md` — standard module build process (for extending bulletin with new sections)
+- `geeves-airtable/references/bulletin-setup.md` — full setup docs, field mappings, table IDs (legacy Airtable reference)
+- `/root/Geeves/Module_Build_Playbook.md` — standard module build process
+- `/root/Geeves/baserow_mapping.json` — Baserow table/field ID mapping

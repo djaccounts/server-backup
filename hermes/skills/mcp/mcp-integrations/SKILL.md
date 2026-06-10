@@ -49,7 +49,9 @@ mcp_servers:
     timeout: 180
 ```
 
-Or use Python (avoids shell-parsing issues):
+**⚠️ Important:** `hermes config set` does NOT support nested keys under `env:` (e.g., `mcp_servers.firecrawl.env.FIRECRAWL_API_KEY` will fail with "Invalid environment variable name"). Use the Python yaml method below for reliable edits.
+
+#### Reliable Config Editing (Python yaml)
 
 ```python
 import yaml
@@ -58,13 +60,28 @@ with open("/root/.hermes/config.yaml") as f:
 config.setdefault("mcp_servers", {})["server_name"] = {
     "command": "npx",
     "args": ["-y", "package-name"],
-    "env": {"API_KEY": "value"}
+    "env": {"API_KEY": "${ENV_VAR_NAME}"},
+    "timeout": 60
 }
 with open("/root/.hermes/config.yaml", "w") as f:
     yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 ```
 
 After editing, use `/reload-mcp` — no restart needed.
+
+### Adding an MCP Server — Complete Workflow
+
+Use this checklist every time you add a new MCP server:
+
+1. **Get the API key** (if required) from the service's dashboard
+2. **Store the key in `~/.hermes/.env`**:
+   ```bash
+   echo 'SERVICE_API_KEY=your-key-here' >> ~/.hermes/.env
+   ```
+   The `.env` file is Hermes's credential store — never read it directly, never commit it.
+3. **Add the server block to `~/.hermes/config.yaml`** using the Python yaml method above. Use `${SERVICE_API_KEY}` syntax to reference the `.env` variable.
+4. **Reload**: Type `/reload-mcp` in the chat
+5. **Verify**: The new tools appear as `mcp_{server_name}_{tool_name}`
 
 ### Tool Naming Convention
 
@@ -81,8 +98,8 @@ Examples:
 |--------|---------|-------------|
 | `command` | — | Executable (stdio) |
 | `args` | `[]` | Arguments |
-| `env` | `{}` | Environment variables |
-| `url` | — | Server URL (HTTP) |
+| `env` | `{}` | Environment variables (reference `.env` vars with `${VAR_NAME}`) |
+| `url` | — | Server URL (HTTP transport) |
 | `headers` | `{}` | HTTP headers |
 | `timeout` | 120 | Per-tool timeout (seconds) |
 | `connect_timeout` | 60 | Connection timeout (seconds) |
@@ -99,6 +116,12 @@ Examples:
 1. **"MCP SDK not available"** → `pip install mcp`
 2. **"Requires HTTP transport"** → `pip install --upgrade mcp`
 3. **Tools not appearing** → Check YAML indentation, look for `mcp_{server}_{tool}` prefix pattern
+4. **`hermes config set` fails on nested `env` keys** → Use the Python yaml method instead (see above)
+5. **Server connects but tools fail** → Verify the API key resolves: `hermes config show | grep -i servername` should show the key (masked)
+
+### See Also
+
+- `references/mcp-servers-2026-06.md` — catalog of MCP servers evaluated, with status and key learnings
 
 ---
 

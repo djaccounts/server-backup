@@ -1,0 +1,4856 @@
+{
+  "database_id": 132,
+  "database_name": "Geeves",
+  "tables": {
+    "People": {
+      "id": 359,
+      "fields": {
+        "Name": {
+          "id": 3297,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Birthday": {
+          "id": 3298,
+          "name": "Birthday",
+          "type": "date",
+          "order": 1
+        },
+        "Phone": {
+          "id": 3299,
+          "name": "Phone",
+          "type": "phone_number",
+          "order": 2
+        },
+        "Email": {
+          "id": 3300,
+          "name": "Email",
+          "type": "email",
+          "order": 3
+        },
+        "How I know them": {
+          "id": 3301,
+          "name": "How I know them",
+          "type": "text",
+          "order": 4
+        },
+        "Food dislikes": {
+          "id": 3302,
+          "name": "Food dislikes",
+          "type": "long_text",
+          "order": 5
+        },
+        "Portion Notes": {
+          "id": 3303,
+          "name": "Portion Notes",
+          "type": "text",
+          "order": 6
+        },
+        "Hobbies & interests": {
+          "id": 3304,
+          "name": "Hobbies & interests",
+          "type": "long_text",
+          "order": 7
+        },
+        "Topics They Love": {
+          "id": 3305,
+          "name": "Topics They Love",
+          "type": "long_text",
+          "order": 8
+        },
+        "Topics to Avoid": {
+          "id": 3306,
+          "name": "Topics to Avoid",
+          "type": "long_text",
+          "order": 9
+        },
+        "Gift interests": {
+          "id": 3307,
+          "name": "Gift interests",
+          "type": "long_text",
+          "order": 10
+        },
+        "Social Style": {
+          "id": 3308,
+          "name": "Social Style",
+          "type": "text",
+          "order": 11
+        },
+        "Venue Preferences": {
+          "id": 3309,
+          "name": "Venue Preferences",
+          "type": "long_text",
+          "order": 12
+        },
+        "Anniversaries": {
+          "id": 3310,
+          "name": "Anniversaries",
+          "type": "long_text",
+          "order": 13
+        },
+        "Last Seen": {
+          "id": 3311,
+          "name": "Last Seen",
+          "type": "date",
+          "order": 14
+        },
+        "Relationship Notes": {
+          "id": 3312,
+          "name": "Relationship Notes",
+          "type": "long_text",
+          "order": 15
+        },
+        "Tier": {
+          "id": 3313,
+          "name": "Tier",
+          "type": "single_select",
+          "order": 16,
+          "select_options": [
+            {
+              "id": 1455,
+              "value": "Tier 4"
+            },
+            {
+              "id": 1456,
+              "value": "Tier 1"
+            },
+            {
+              "id": 1457,
+              "value": "Tier 2"
+            },
+            {
+              "id": 1458,
+              "value": "Tier 3"
+            }
+          ]
+        },
+        "Created": {
+          "id": 3314,
+          "name": "Created",
+          "type": "created_on",
+          "order": 17
+        },
+        "Last Modified": {
+          "id": 3315,
+          "name": "Last Modified",
+          "type": "last_modified",
+          "order": 18
+        },
+        "Films": {
+          "id": 3318,
+          "name": "Films",
+          "type": "link_row",
+          "order": 21,
+          "link_row_table_id": 366
+        },
+        "Person Notes": {
+          "id": 3322,
+          "name": "Person Notes",
+          "type": "link_row",
+          "order": 25,
+          "link_row_table_id": 368
+        },
+        "Conversation Log": {
+          "id": 3323,
+          "name": "Conversation Log",
+          "type": "link_row",
+          "order": 26,
+          "link_row_table_id": 369
+        },
+        "Photo": {
+          "id": 3324,
+          "name": "Photo",
+          "type": "file",
+          "order": 27
+        },
+        "Food preferences": {
+          "id": 3325,
+          "name": "Food preferences",
+          "type": "long_text",
+          "order": 28
+        },
+        "Relationship type": {
+          "id": 3326,
+          "name": "Relationship type",
+          "type": "single_select",
+          "order": 29,
+          "select_options": [
+            {
+              "id": 1459,
+              "value": "Me"
+            },
+            {
+              "id": 1460,
+              "value": "Spouse"
+            },
+            {
+              "id": 1461,
+              "value": "Family"
+            },
+            {
+              "id": 1462,
+              "value": "Close friend"
+            },
+            {
+              "id": 1463,
+              "value": "Friend"
+            },
+            {
+              "id": 1464,
+              "value": "Colleague"
+            },
+            {
+              "id": 1465,
+              "value": "Acquaintance"
+            },
+            {
+              "id": 1466,
+              "value": "Other"
+            }
+          ]
+        },
+        "Dietary reqs": {
+          "id": 3327,
+          "name": "Dietary reqs",
+          "type": "multiple_select",
+          "order": 30,
+          "select_options": [
+            {
+              "id": 1467,
+              "value": "Vegetarian"
+            },
+            {
+              "id": 1468,
+              "value": "Vegan"
+            },
+            {
+              "id": 1469,
+              "value": "Pescatarian"
+            },
+            {
+              "id": 1470,
+              "value": "Halal"
+            },
+            {
+              "id": 1471,
+              "value": "Kosher"
+            },
+            {
+              "id": 1472,
+              "value": "Gluten-free"
+            },
+            {
+              "id": 1473,
+              "value": "Dairy-free"
+            },
+            {
+              "id": 1474,
+              "value": "None"
+            }
+          ]
+        },
+        "Allergy list": {
+          "id": 3328,
+          "name": "Allergy list",
+          "type": "multiple_select",
+          "order": 31,
+          "select_options": [
+            {
+              "id": 1475,
+              "value": "Nuts"
+            },
+            {
+              "id": 1476,
+              "value": "Shellfish"
+            },
+            {
+              "id": 1477,
+              "value": "Eggs"
+            },
+            {
+              "id": 1478,
+              "value": "Dairy"
+            },
+            {
+              "id": 1479,
+              "value": "Gluten"
+            },
+            {
+              "id": 1480,
+              "value": "Soy"
+            },
+            {
+              "id": 1481,
+              "value": "Other"
+            }
+          ]
+        },
+        "Gift budget range": {
+          "id": 3329,
+          "name": "Gift budget range",
+          "type": "single_select",
+          "order": 32,
+          "select_options": [
+            {
+              "id": 1482,
+              "value": "Under \u00a320"
+            },
+            {
+              "id": 1483,
+              "value": "\u00a320\u201350"
+            },
+            {
+              "id": 1484,
+              "value": "\u00a350\u2013100"
+            },
+            {
+              "id": 1485,
+              "value": "\u00a3100+"
+            }
+          ]
+        },
+        "Typical contact frequency": {
+          "id": 3330,
+          "name": "Typical contact frequency",
+          "type": "single_select",
+          "order": 33,
+          "select_options": [
+            {
+              "id": 1486,
+              "value": "Weekly"
+            },
+            {
+              "id": 1487,
+              "value": "Monthly"
+            },
+            {
+              "id": 1488,
+              "value": "Quarterly"
+            },
+            {
+              "id": 1489,
+              "value": "Yearly"
+            },
+            {
+              "id": 1490,
+              "value": "Rarely"
+            }
+          ]
+        },
+        "Dinner Parties": {
+          "id": 3331,
+          "name": "Dinner Parties",
+          "type": "link_row",
+          "order": 34,
+          "link_row_table_id": 376
+        },
+        "Restaurant Visits": {
+          "id": 3332,
+          "name": "Restaurant Visits",
+          "type": "link_row",
+          "order": 35,
+          "link_row_table_id": 383
+        },
+        "Restaurants": {
+          "id": 3333,
+          "name": "Restaurants",
+          "type": "link_row",
+          "order": 36,
+          "link_row_table_id": 382
+        },
+        "Workouts": {
+          "id": 3334,
+          "name": "Workouts",
+          "type": "link_row",
+          "order": 37,
+          "link_row_table_id": 392
+        },
+        "Cycling": {
+          "id": 3335,
+          "name": "Cycling",
+          "type": "link_row",
+          "order": 38,
+          "link_row_table_id": 396
+        },
+        "Books": {
+          "id": 3336,
+          "name": "Books",
+          "type": "text",
+          "order": 39
+        },
+        "Books 2": {
+          "id": 3337,
+          "name": "Books 2",
+          "type": "link_row",
+          "order": 40,
+          "link_row_table_id": 398
+        }
+      }
+    },
+    "Memory_Summaries": {
+      "id": 360,
+      "fields": {
+        "Period": {
+          "id": 3338,
+          "name": "Period",
+          "type": "text",
+          "order": 0
+        },
+        "Summary": {
+          "id": 3339,
+          "name": "Summary",
+          "type": "long_text",
+          "order": 1
+        },
+        "Source Entries": {
+          "id": 3340,
+          "name": "Source Entries",
+          "type": "long_text",
+          "order": 2
+        },
+        "Created": {
+          "id": 3341,
+          "name": "Created",
+          "type": "date",
+          "order": 3
+        }
+      }
+    },
+    "Output_Log": {
+      "id": 361,
+      "fields": {
+        "Item": {
+          "id": 3342,
+          "name": "Item",
+          "type": "text",
+          "order": 0
+        },
+        "Module": {
+          "id": 3343,
+          "name": "Module",
+          "type": "text",
+          "order": 1
+        },
+        "Generated At": {
+          "id": 3344,
+          "name": "Generated At",
+          "type": "date",
+          "order": 2
+        },
+        "Content": {
+          "id": 3345,
+          "name": "Content",
+          "type": "long_text",
+          "order": 3
+        },
+        "Rating": {
+          "id": 3346,
+          "name": "Rating",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1491,
+              "value": "\u2605\u2605\u2605 Great"
+            },
+            {
+              "id": 1492,
+              "value": "\u2605\u2605 OK"
+            },
+            {
+              "id": 1493,
+              "value": "\u2605 Poor"
+            }
+          ]
+        },
+        "Feedback": {
+          "id": 3347,
+          "name": "Feedback",
+          "type": "long_text",
+          "order": 5
+        },
+        "Prompt Used": {
+          "id": 3348,
+          "name": "Prompt Used",
+          "type": "long_text",
+          "order": 6
+        }
+      }
+    },
+    "Todos": {
+      "id": 362,
+      "fields": {
+        "Task": {
+          "id": 3349,
+          "name": "Task",
+          "type": "text",
+          "order": 0
+        },
+        "Status": {
+          "id": 3350,
+          "name": "Status",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1494,
+              "value": "Todo"
+            },
+            {
+              "id": 1495,
+              "value": "In Progress"
+            },
+            {
+              "id": 1496,
+              "value": "Done"
+            },
+            {
+              "id": 1497,
+              "value": "Cancelled"
+            },
+            {
+              "id": 1498,
+              "value": "Not started"
+            }
+          ]
+        },
+        "Priority": {
+          "id": 3351,
+          "name": "Priority",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1499,
+              "value": "Low"
+            },
+            {
+              "id": 1500,
+              "value": "Medium"
+            },
+            {
+              "id": 1501,
+              "value": "High"
+            }
+          ]
+        },
+        "Due Date": {
+          "id": 3352,
+          "name": "Due Date",
+          "type": "date",
+          "order": 3
+        },
+        "Module": {
+          "id": 3353,
+          "name": "Module",
+          "type": "text",
+          "order": 4
+        },
+        "Notes": {
+          "id": 3354,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 5
+        },
+        "Completed Date": {
+          "id": 3355,
+          "name": "Completed Date",
+          "type": "date",
+          "order": 6
+        },
+        "Linked Person": {
+          "id": 3356,
+          "name": "Linked Person",
+          "type": "text",
+          "order": 7
+        },
+        "Timeframe": {
+          "id": 3357,
+          "name": "Timeframe",
+          "type": "single_select",
+          "order": 8,
+          "select_options": [
+            {
+              "id": 1502,
+              "value": "Short term"
+            },
+            {
+              "id": 1503,
+              "value": "Mid term"
+            },
+            {
+              "id": 1504,
+              "value": "Long term"
+            }
+          ]
+        },
+        "Category": {
+          "id": 3358,
+          "name": "Category",
+          "type": "single_select",
+          "order": 9,
+          "select_options": [
+            {
+              "id": 1505,
+              "value": "Personal"
+            },
+            {
+              "id": 1506,
+              "value": "Work"
+            },
+            {
+              "id": 1507,
+              "value": "Household"
+            },
+            {
+              "id": 1508,
+              "value": "Health"
+            },
+            {
+              "id": 1509,
+              "value": "Errand"
+            },
+            {
+              "id": 1510,
+              "value": "Other"
+            }
+          ]
+        },
+        "Source": {
+          "id": 3359,
+          "name": "Source",
+          "type": "single_select",
+          "order": 10,
+          "select_options": [
+            {
+              "id": 1511,
+              "value": "Manual"
+            },
+            {
+              "id": 1512,
+              "value": "Slack"
+            },
+            {
+              "id": 1513,
+              "value": "Voice"
+            },
+            {
+              "id": 1514,
+              "value": "Goal auto-gen"
+            }
+          ]
+        }
+      }
+    },
+    "Fact_of_the_Day": {
+      "id": 363,
+      "fields": {
+        "Date": {
+          "id": 3360,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Category": {
+          "id": 3361,
+          "name": "Category",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1515,
+              "value": "Wikipedia"
+            },
+            {
+              "id": 1516,
+              "value": "Numbers"
+            },
+            {
+              "id": 1517,
+              "value": "Useless Fact"
+            }
+          ]
+        },
+        "Fact": {
+          "id": 3362,
+          "name": "Fact",
+          "type": "long_text",
+          "order": 2
+        },
+        "Source URL": {
+          "id": 3363,
+          "name": "Source URL",
+          "type": "url",
+          "order": 3
+        }
+      }
+    },
+    "Weather_Data": {
+      "id": 364,
+      "fields": {
+        "Date": {
+          "id": 3364,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Location": {
+          "id": 3365,
+          "name": "Location",
+          "type": "text",
+          "order": 1
+        },
+        "Temperature C": {
+          "id": 3366,
+          "name": "Temperature C",
+          "type": "number",
+          "order": 2
+        },
+        "Feels Like C": {
+          "id": 3367,
+          "name": "Feels Like C",
+          "type": "number",
+          "order": 3
+        },
+        "Humidity Pct": {
+          "id": 3368,
+          "name": "Humidity Pct",
+          "type": "number",
+          "order": 4
+        },
+        "Wind Speed KPH": {
+          "id": 3369,
+          "name": "Wind Speed KPH",
+          "type": "number",
+          "order": 5
+        },
+        "Condition": {
+          "id": 3370,
+          "name": "Condition",
+          "type": "text",
+          "order": 6
+        },
+        "Description": {
+          "id": 3371,
+          "name": "Description",
+          "type": "long_text",
+          "order": 7
+        },
+        "High C": {
+          "id": 3372,
+          "name": "High C",
+          "type": "number",
+          "order": 8
+        },
+        "Low C": {
+          "id": 3373,
+          "name": "Low C",
+          "type": "number",
+          "order": 9
+        },
+        "Daily Condition": {
+          "id": 3374,
+          "name": "Daily Condition",
+          "type": "text",
+          "order": 10
+        },
+        "Rain Expected": {
+          "id": 3375,
+          "name": "Rain Expected",
+          "type": "text",
+          "order": 11
+        },
+        "Rain Times": {
+          "id": 3376,
+          "name": "Rain Times",
+          "type": "long_text",
+          "order": 12
+        },
+        "Precipitation MM": {
+          "id": 3377,
+          "name": "Precipitation MM",
+          "type": "number",
+          "order": 13
+        },
+        "Morning Temp C": {
+          "id": 3378,
+          "name": "Morning Temp C",
+          "type": "number",
+          "order": 14
+        },
+        "Morning Condition": {
+          "id": 3379,
+          "name": "Morning Condition",
+          "type": "text",
+          "order": 15
+        },
+        "Morning Rain Prob": {
+          "id": 3380,
+          "name": "Morning Rain Prob",
+          "type": "number",
+          "order": 16
+        },
+        "Afternoon Temp C": {
+          "id": 3381,
+          "name": "Afternoon Temp C",
+          "type": "number",
+          "order": 17
+        },
+        "Afternoon Condition": {
+          "id": 3382,
+          "name": "Afternoon Condition",
+          "type": "text",
+          "order": 18
+        },
+        "Afternoon Rain Prob": {
+          "id": 3383,
+          "name": "Afternoon Rain Prob",
+          "type": "number",
+          "order": 19
+        },
+        "Evening Temp C": {
+          "id": 3384,
+          "name": "Evening Temp C",
+          "type": "number",
+          "order": 20
+        },
+        "Evening Condition": {
+          "id": 3385,
+          "name": "Evening Condition",
+          "type": "text",
+          "order": 21
+        },
+        "Evening Rain Prob": {
+          "id": 3386,
+          "name": "Evening Rain Prob",
+          "type": "number",
+          "order": 22
+        }
+      }
+    },
+    "Stock_Prices": {
+      "id": 365,
+      "fields": {
+        "Date": {
+          "id": 3387,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Ticker": {
+          "id": 3388,
+          "name": "Ticker",
+          "type": "text",
+          "order": 1
+        },
+        "Price": {
+          "id": 3389,
+          "name": "Price",
+          "type": "number",
+          "order": 2
+        },
+        "Currency": {
+          "id": 3390,
+          "name": "Currency",
+          "type": "text",
+          "order": 3
+        },
+        "Change Pct": {
+          "id": 3391,
+          "name": "Change Pct",
+          "type": "number",
+          "order": 4
+        },
+        "Source": {
+          "id": 3392,
+          "name": "Source",
+          "type": "text",
+          "order": 5
+        }
+      }
+    },
+    "Films": {
+      "id": 366,
+      "fields": {
+        "Film Title": {
+          "id": 3393,
+          "name": "Film Title",
+          "type": "text",
+          "order": 0
+        },
+        "Year": {
+          "id": 3394,
+          "name": "Year",
+          "type": "number",
+          "order": 1
+        },
+        "Director": {
+          "id": 3395,
+          "name": "Director",
+          "type": "text",
+          "order": 2
+        },
+        "Genre": {
+          "id": 3396,
+          "name": "Genre",
+          "type": "text",
+          "order": 3
+        },
+        "IMDb Rating": {
+          "id": 3397,
+          "name": "IMDb Rating",
+          "type": "number",
+          "order": 4
+        },
+        "IMDb Votes": {
+          "id": 3398,
+          "name": "IMDb Votes",
+          "type": "number",
+          "order": 5
+        },
+        "Metascore": {
+          "id": 3399,
+          "name": "Metascore",
+          "type": "number",
+          "order": 6
+        },
+        "IMDb URL": {
+          "id": 3400,
+          "name": "IMDb URL",
+          "type": "url",
+          "order": 7
+        },
+        "My Rating": {
+          "id": 3401,
+          "name": "My Rating",
+          "type": "single_select",
+          "order": 8,
+          "select_options": [
+            {
+              "id": 1518,
+              "value": "1"
+            },
+            {
+              "id": 1519,
+              "value": "2"
+            },
+            {
+              "id": 1520,
+              "value": "3"
+            },
+            {
+              "id": 1521,
+              "value": "4"
+            },
+            {
+              "id": 1522,
+              "value": "5"
+            },
+            {
+              "id": 1523,
+              "value": "6"
+            },
+            {
+              "id": 1524,
+              "value": "7"
+            },
+            {
+              "id": 1525,
+              "value": "8"
+            },
+            {
+              "id": 1526,
+              "value": "9"
+            },
+            {
+              "id": 1527,
+              "value": "10"
+            }
+          ]
+        },
+        "Date Watched": {
+          "id": 3402,
+          "name": "Date Watched",
+          "type": "date",
+          "order": 9
+        },
+        "Personal Notes": {
+          "id": 3403,
+          "name": "Personal Notes",
+          "type": "long_text",
+          "order": 10
+        },
+        "Film Club": {
+          "id": 3404,
+          "name": "Film Club",
+          "type": "single_select",
+          "order": 11,
+          "select_options": [
+            {
+              "id": 1528,
+              "value": "Yes"
+            },
+            {
+              "id": 1529,
+              "value": "No"
+            }
+          ]
+        },
+        "Month Picked": {
+          "id": 3405,
+          "name": "Month Picked",
+          "type": "text",
+          "order": 12
+        },
+        "Watched At": {
+          "id": 3406,
+          "name": "Watched At",
+          "type": "single_select",
+          "order": 13,
+          "select_options": [
+            {
+              "id": 1530,
+              "value": "Hosted (at someone's home)"
+            },
+            {
+              "id": 1531,
+              "value": "Remote (streamed remotely)"
+            },
+            {
+              "id": 1532,
+              "value": "Cinema"
+            },
+            {
+              "id": 1533,
+              "value": "N/A"
+            }
+          ]
+        },
+        "Club Discussion Notes": {
+          "id": 3407,
+          "name": "Club Discussion Notes",
+          "type": "long_text",
+          "order": 14
+        },
+        "Member 2 Rating": {
+          "id": 3408,
+          "name": "Member 2 Rating",
+          "type": "single_select",
+          "order": 15,
+          "select_options": [
+            {
+              "id": 1534,
+              "value": "1"
+            },
+            {
+              "id": 1535,
+              "value": "2"
+            },
+            {
+              "id": 1536,
+              "value": "3"
+            },
+            {
+              "id": 1537,
+              "value": "4"
+            },
+            {
+              "id": 1538,
+              "value": "5"
+            },
+            {
+              "id": 1539,
+              "value": "6"
+            },
+            {
+              "id": 1540,
+              "value": "7"
+            },
+            {
+              "id": 1541,
+              "value": "8"
+            },
+            {
+              "id": 1542,
+              "value": "9"
+            },
+            {
+              "id": 1543,
+              "value": "10"
+            },
+            {
+              "id": 1544,
+              "value": "Not rated"
+            }
+          ]
+        },
+        "Member 2 Notes": {
+          "id": 3409,
+          "name": "Member 2 Notes",
+          "type": "long_text",
+          "order": 16
+        },
+        "Member 3 Rating": {
+          "id": 3410,
+          "name": "Member 3 Rating",
+          "type": "single_select",
+          "order": 17,
+          "select_options": [
+            {
+              "id": 1545,
+              "value": "1"
+            },
+            {
+              "id": 1546,
+              "value": "2"
+            },
+            {
+              "id": 1547,
+              "value": "3"
+            },
+            {
+              "id": 1548,
+              "value": "4"
+            },
+            {
+              "id": 1549,
+              "value": "5"
+            },
+            {
+              "id": 1550,
+              "value": "6"
+            },
+            {
+              "id": 1551,
+              "value": "7"
+            },
+            {
+              "id": 1552,
+              "value": "8"
+            },
+            {
+              "id": 1553,
+              "value": "9"
+            },
+            {
+              "id": 1554,
+              "value": "10"
+            },
+            {
+              "id": 1555,
+              "value": "Not rated"
+            }
+          ]
+        },
+        "Member 3 Notes": {
+          "id": 3411,
+          "name": "Member 3 Notes",
+          "type": "long_text",
+          "order": 18
+        },
+        "Member 4 Rating": {
+          "id": 3412,
+          "name": "Member 4 Rating",
+          "type": "single_select",
+          "order": 19,
+          "select_options": [
+            {
+              "id": 1556,
+              "value": "1"
+            },
+            {
+              "id": 1557,
+              "value": "2"
+            },
+            {
+              "id": 1558,
+              "value": "3"
+            },
+            {
+              "id": 1559,
+              "value": "4"
+            },
+            {
+              "id": 1560,
+              "value": "5"
+            },
+            {
+              "id": 1561,
+              "value": "6"
+            },
+            {
+              "id": 1562,
+              "value": "7"
+            },
+            {
+              "id": 1563,
+              "value": "8"
+            },
+            {
+              "id": 1564,
+              "value": "9"
+            },
+            {
+              "id": 1565,
+              "value": "10"
+            },
+            {
+              "id": 1566,
+              "value": "Not rated"
+            }
+          ]
+        },
+        "Member 4 Notes": {
+          "id": 3413,
+          "name": "Member 4 Notes",
+          "type": "long_text",
+          "order": 20
+        },
+        "Recommended By": {
+          "id": 3414,
+          "name": "Recommended By",
+          "type": "link_row",
+          "order": 21,
+          "link_row_table_id": 359
+        },
+        "Member 2 Name": {
+          "id": 3415,
+          "name": "Member 2 Name",
+          "type": "link_row",
+          "order": 22,
+          "link_row_table_id": 359
+        },
+        "Member 3 Name": {
+          "id": 3416,
+          "name": "Member 3 Name",
+          "type": "link_row",
+          "order": 23,
+          "link_row_table_id": 359
+        },
+        "Member 4 Name": {
+          "id": 3417,
+          "name": "Member 4 Name",
+          "type": "link_row",
+          "order": 24,
+          "link_row_table_id": 359
+        }
+      }
+    },
+    "Token_Usage": {
+      "id": 367,
+      "fields": {
+        "Date": {
+          "id": 3418,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Sessions": {
+          "id": 3419,
+          "name": "Sessions",
+          "type": "number",
+          "order": 1
+        },
+        "Input Tokens": {
+          "id": 3420,
+          "name": "Input Tokens",
+          "type": "number",
+          "order": 2
+        },
+        "Output Tokens": {
+          "id": 3421,
+          "name": "Output Tokens",
+          "type": "number",
+          "order": 3
+        },
+        "Cache Read Tokens": {
+          "id": 3422,
+          "name": "Cache Read Tokens",
+          "type": "number",
+          "order": 4
+        },
+        "Total Active Tokens": {
+          "id": 3423,
+          "name": "Total Active Tokens",
+          "type": "number",
+          "order": 5
+        },
+        "Estimated Cost USD": {
+          "id": 3424,
+          "name": "Estimated Cost USD",
+          "type": "number",
+          "order": 6
+        },
+        "Top Model": {
+          "id": 3425,
+          "name": "Top Model",
+          "type": "text",
+          "order": 7
+        },
+        "Summary": {
+          "id": 3426,
+          "name": "Summary",
+          "type": "long_text",
+          "order": 8
+        }
+      }
+    },
+    "Person Notes": {
+      "id": 368,
+      "fields": {
+        "Note": {
+          "id": 3427,
+          "name": "Note",
+          "type": "long_text",
+          "order": 0
+        },
+        "Person": {
+          "id": 3428,
+          "name": "Person",
+          "type": "link_row",
+          "order": 1,
+          "link_row_table_id": 359
+        },
+        "Source": {
+          "id": 3429,
+          "name": "Source",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1567,
+              "value": "Manual"
+            },
+            {
+              "id": 1568,
+              "value": "Slack"
+            },
+            {
+              "id": 1569,
+              "value": "Voice"
+            }
+          ]
+        },
+        "Active": {
+          "id": 3430,
+          "name": "Active",
+          "type": "boolean",
+          "order": 3
+        }
+      }
+    },
+    "Conversation Log": {
+      "id": 369,
+      "fields": {
+        "Summary": {
+          "id": 3431,
+          "name": "Summary",
+          "type": "long_text",
+          "order": 0
+        },
+        "Person": {
+          "id": 3432,
+          "name": "Person",
+          "type": "link_row",
+          "order": 1,
+          "link_row_table_id": 359
+        },
+        "Date": {
+          "id": 3433,
+          "name": "Date",
+          "type": "date",
+          "order": 2
+        },
+        "Key things to remember": {
+          "id": 3434,
+          "name": "Key things to remember",
+          "type": "long_text",
+          "order": 3
+        },
+        "Source": {
+          "id": 3435,
+          "name": "Source",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1570,
+              "value": "Manual"
+            },
+            {
+              "id": 1571,
+              "value": "Slack"
+            },
+            {
+              "id": 1572,
+              "value": "Voice"
+            }
+          ]
+        }
+      }
+    },
+    "News_Headlines": {
+      "id": 370,
+      "fields": {
+        "Date": {
+          "id": 3436,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Headline Count": {
+          "id": 3437,
+          "name": "Headline Count",
+          "type": "number",
+          "order": 1
+        },
+        "Top Headline": {
+          "id": 3438,
+          "name": "Top Headline",
+          "type": "text",
+          "order": 2
+        },
+        "Top Source": {
+          "id": 3439,
+          "name": "Top Source",
+          "type": "text",
+          "order": 3
+        },
+        "Summary": {
+          "id": 3440,
+          "name": "Summary",
+          "type": "long_text",
+          "order": 4
+        }
+      }
+    },
+    "Star_Wars_Fact": {
+      "id": 371,
+      "fields": {
+        "Date": {
+          "id": 3441,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Name": {
+          "id": 3442,
+          "name": "Name",
+          "type": "text",
+          "order": 1
+        },
+        "Height": {
+          "id": 3443,
+          "name": "Height",
+          "type": "text",
+          "order": 2
+        },
+        "Mass": {
+          "id": 3444,
+          "name": "Mass",
+          "type": "text",
+          "order": 3
+        },
+        "Hair Color": {
+          "id": 3445,
+          "name": "Hair Color",
+          "type": "text",
+          "order": 4
+        },
+        "Eye Color": {
+          "id": 3446,
+          "name": "Eye Color",
+          "type": "text",
+          "order": 5
+        },
+        "Gender": {
+          "id": 3447,
+          "name": "Gender",
+          "type": "text",
+          "order": 6
+        },
+        "Birth Year": {
+          "id": 3448,
+          "name": "Birth Year",
+          "type": "text",
+          "order": 7
+        },
+        "Homeworld": {
+          "id": 3449,
+          "name": "Homeworld",
+          "type": "text",
+          "order": 8
+        },
+        "Films Count": {
+          "id": 3450,
+          "name": "Films Count",
+          "type": "number",
+          "order": 9
+        },
+        "Fact": {
+          "id": 3451,
+          "name": "Fact",
+          "type": "long_text",
+          "order": 10
+        },
+        "Source URL": {
+          "id": 3452,
+          "name": "Source URL",
+          "type": "url",
+          "order": 11
+        }
+      }
+    },
+    "Recipe Context": {
+      "id": 372,
+      "fields": {
+        "Preference": {
+          "id": 3453,
+          "name": "Preference",
+          "type": "text",
+          "order": 0
+        },
+        "Detail": {
+          "id": 3454,
+          "name": "Detail",
+          "type": "long_text",
+          "order": 1
+        },
+        "Source": {
+          "id": 3455,
+          "name": "Source",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1573,
+              "value": "Inferred"
+            },
+            {
+              "id": 1574,
+              "value": "Manual"
+            }
+          ]
+        }
+      }
+    },
+    "Recipe Output Log": {
+      "id": 373,
+      "fields": {
+        "Output": {
+          "id": 3456,
+          "name": "Output",
+          "type": "long_text",
+          "order": 0
+        },
+        "Type": {
+          "id": 3457,
+          "name": "Type",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1575,
+              "value": "Suggestion"
+            },
+            {
+              "id": 1576,
+              "value": "Shopping List"
+            },
+            {
+              "id": 1577,
+              "value": "Meal Plan"
+            },
+            {
+              "id": 1578,
+              "value": "Dinner Party Plan"
+            },
+            {
+              "id": 1579,
+              "value": "Email"
+            },
+            {
+              "id": 1580,
+              "value": "PDF"
+            }
+          ]
+        },
+        "Rating": {
+          "id": 3458,
+          "name": "Rating",
+          "type": "number",
+          "order": 2
+        },
+        "Feedback": {
+          "id": 3459,
+          "name": "Feedback",
+          "type": "long_text",
+          "order": 3
+        },
+        "Recipe(s)": {
+          "id": 3460,
+          "name": "Recipe(s)",
+          "type": "link_row",
+          "order": 4,
+          "link_row_table_id": 379
+        }
+      }
+    },
+    "Dinner Planner": {
+      "id": 374,
+      "fields": {
+        "Date": {
+          "id": 3461,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Meal": {
+          "id": 3462,
+          "name": "Meal",
+          "type": "text",
+          "order": 1
+        },
+        "Prep notes": {
+          "id": 3463,
+          "name": "Prep notes",
+          "type": "long_text",
+          "order": 2
+        },
+        "Status": {
+          "id": 3464,
+          "name": "Status",
+          "type": "single_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1581,
+              "value": "Planned"
+            },
+            {
+              "id": 1582,
+              "value": "Shopping"
+            },
+            {
+              "id": 1583,
+              "value": "Cooking"
+            },
+            {
+              "id": 1584,
+              "value": "Done"
+            }
+          ]
+        },
+        "Recipe": {
+          "id": 3465,
+          "name": "Recipe",
+          "type": "link_row",
+          "order": 4,
+          "link_row_table_id": 379
+        }
+      }
+    },
+    "Ingredients": {
+      "id": 375,
+      "fields": {
+        "Ingredient": {
+          "id": 3466,
+          "name": "Ingredient",
+          "type": "text",
+          "order": 0
+        },
+        "Quantity": {
+          "id": 3467,
+          "name": "Quantity",
+          "type": "text",
+          "order": 1
+        },
+        "Category": {
+          "id": 3468,
+          "name": "Category",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1585,
+              "value": "Meat"
+            },
+            {
+              "id": 1586,
+              "value": "Fish"
+            },
+            {
+              "id": 1587,
+              "value": "Veg"
+            },
+            {
+              "id": 1588,
+              "value": "Fruit"
+            },
+            {
+              "id": 1589,
+              "value": "Dairy"
+            },
+            {
+              "id": 1590,
+              "value": "Grain"
+            },
+            {
+              "id": 1591,
+              "value": "Spice"
+            },
+            {
+              "id": 1592,
+              "value": "Pantry"
+            },
+            {
+              "id": 1593,
+              "value": "Other"
+            },
+            {
+              "id": 1594,
+              "value": "Eggs"
+            }
+          ]
+        },
+        "Seasonal": {
+          "id": 3469,
+          "name": "Seasonal",
+          "type": "multiple_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1595,
+              "value": "Jan"
+            },
+            {
+              "id": 1596,
+              "value": "Feb"
+            },
+            {
+              "id": 1597,
+              "value": "Mar"
+            },
+            {
+              "id": 1598,
+              "value": "Apr"
+            },
+            {
+              "id": 1599,
+              "value": "May"
+            },
+            {
+              "id": 1600,
+              "value": "Jun"
+            },
+            {
+              "id": 1601,
+              "value": "Jul"
+            },
+            {
+              "id": 1602,
+              "value": "Aug"
+            },
+            {
+              "id": 1603,
+              "value": "Sep"
+            },
+            {
+              "id": 1604,
+              "value": "Oct"
+            },
+            {
+              "id": 1605,
+              "value": "Nov"
+            },
+            {
+              "id": 1606,
+              "value": "Dec"
+            }
+          ]
+        },
+        "Recipe": {
+          "id": 3470,
+          "name": "Recipe",
+          "type": "link_row",
+          "order": 4,
+          "link_row_table_id": 379
+        }
+      }
+    },
+    "Dinner Parties": {
+      "id": 376,
+      "fields": {
+        "Event name": {
+          "id": 3471,
+          "name": "Event name",
+          "type": "text",
+          "order": 0
+        },
+        "Date": {
+          "id": 3472,
+          "name": "Date",
+          "type": "date",
+          "order": 1
+        },
+        "Dietary constraints (auto)": {
+          "id": 3473,
+          "name": "Dietary constraints (auto)",
+          "type": "long_text",
+          "order": 2
+        },
+        "Menu notes": {
+          "id": 3474,
+          "name": "Menu notes",
+          "type": "long_text",
+          "order": 3
+        },
+        "Shopping list generated": {
+          "id": 3475,
+          "name": "Shopping list generated",
+          "type": "boolean",
+          "order": 4
+        },
+        "Status": {
+          "id": 3476,
+          "name": "Status",
+          "type": "single_select",
+          "order": 5,
+          "select_options": [
+            {
+              "id": 1607,
+              "value": "Planning"
+            },
+            {
+              "id": 1608,
+              "value": "Confirmed"
+            },
+            {
+              "id": 1609,
+              "value": "Done"
+            }
+          ]
+        },
+        "Guests": {
+          "id": 3477,
+          "name": "Guests",
+          "type": "link_row",
+          "order": 6,
+          "link_row_table_id": 359
+        },
+        "Chosen recipes": {
+          "id": 3478,
+          "name": "Chosen recipes",
+          "type": "link_row",
+          "order": 7,
+          "link_row_table_id": 379
+        }
+      }
+    },
+    "Shopping List": {
+      "id": 377,
+      "fields": {
+        "Item": {
+          "id": 3479,
+          "name": "Item",
+          "type": "text",
+          "order": 0
+        },
+        "Category": {
+          "id": 3480,
+          "name": "Category",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1610,
+              "value": "Meat"
+            },
+            {
+              "id": 1611,
+              "value": "Fish"
+            },
+            {
+              "id": 1612,
+              "value": "Veg"
+            },
+            {
+              "id": 1613,
+              "value": "Fruit"
+            },
+            {
+              "id": 1614,
+              "value": "Dairy"
+            },
+            {
+              "id": 1615,
+              "value": "Grain"
+            },
+            {
+              "id": 1616,
+              "value": "Spice"
+            },
+            {
+              "id": 1617,
+              "value": "Pantry"
+            },
+            {
+              "id": 1618,
+              "value": "Household"
+            },
+            {
+              "id": 1619,
+              "value": "Other"
+            }
+          ]
+        },
+        "Quantity": {
+          "id": 3481,
+          "name": "Quantity",
+          "type": "text",
+          "order": 2
+        },
+        "Source": {
+          "id": 3482,
+          "name": "Source",
+          "type": "single_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1620,
+              "value": "Recipe"
+            },
+            {
+              "id": 1621,
+              "value": "Dinner Party"
+            },
+            {
+              "id": 1622,
+              "value": "Manual"
+            }
+          ]
+        },
+        "Purchased": {
+          "id": 3483,
+          "name": "Purchased",
+          "type": "boolean",
+          "order": 4
+        },
+        "Recipe": {
+          "id": 3484,
+          "name": "Recipe",
+          "type": "link_row",
+          "order": 5,
+          "link_row_table_id": 379
+        }
+      }
+    },
+    "Dining Preferences": {
+      "id": 378,
+      "fields": {
+        "Preference": {
+          "id": 3485,
+          "name": "Preference",
+          "type": "text",
+          "order": 0
+        },
+        "Category": {
+          "id": 3486,
+          "name": "Category",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1623,
+              "value": "Cuisine"
+            },
+            {
+              "id": 1624,
+              "value": "Dish"
+            },
+            {
+              "id": 1625,
+              "value": "Style"
+            },
+            {
+              "id": 1626,
+              "value": "Avoid"
+            },
+            {
+              "id": 1627,
+              "value": "Dietary"
+            }
+          ]
+        },
+        "Confidence": {
+          "id": 3487,
+          "name": "Confidence",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1628,
+              "value": "Strong"
+            },
+            {
+              "id": 1629,
+              "value": "Moderate"
+            },
+            {
+              "id": 1630,
+              "value": "Emerging"
+            }
+          ]
+        },
+        "Evidence": {
+          "id": 3488,
+          "name": "Evidence",
+          "type": "long_text",
+          "order": 3
+        },
+        "Source modules": {
+          "id": 3489,
+          "name": "Source modules",
+          "type": "multiple_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1631,
+              "value": "Recipes"
+            },
+            {
+              "id": 1632,
+              "value": "Meals"
+            },
+            {
+              "id": 1633,
+              "value": "People Graph"
+            }
+          ]
+        },
+        "Last updated": {
+          "id": 3490,
+          "name": "Last updated",
+          "type": "date",
+          "order": 5
+        }
+      }
+    },
+    "Recipes": {
+      "id": 379,
+      "fields": {
+        "Name": {
+          "id": 3491,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Mealie Slug": {
+          "id": 3492,
+          "name": "Mealie Slug",
+          "type": "text",
+          "order": 1
+        },
+        "Source URL": {
+          "id": 3493,
+          "name": "Source URL",
+          "type": "text",
+          "order": 2
+        },
+        "Cuisine": {
+          "id": 3494,
+          "name": "Cuisine",
+          "type": "single_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1634,
+              "value": "Italian"
+            },
+            {
+              "id": 1635,
+              "value": "Indian"
+            },
+            {
+              "id": 1636,
+              "value": "Thai"
+            },
+            {
+              "id": 1637,
+              "value": "British"
+            },
+            {
+              "id": 1638,
+              "value": "Mexican"
+            },
+            {
+              "id": 1639,
+              "value": "Chinese"
+            },
+            {
+              "id": 1640,
+              "value": "French"
+            },
+            {
+              "id": 1641,
+              "value": "Japanese"
+            },
+            {
+              "id": 1642,
+              "value": "Korean"
+            },
+            {
+              "id": 1643,
+              "value": "Other"
+            },
+            {
+              "id": 1644,
+              "value": "American"
+            }
+          ]
+        },
+        "Meal type": {
+          "id": 3495,
+          "name": "Meal type",
+          "type": "multiple_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1645,
+              "value": "Breakfast"
+            },
+            {
+              "id": 1646,
+              "value": "Lunch"
+            },
+            {
+              "id": 1647,
+              "value": "Dinner"
+            },
+            {
+              "id": 1648,
+              "value": "Side"
+            },
+            {
+              "id": 1649,
+              "value": "Dessert"
+            },
+            {
+              "id": 1650,
+              "value": "Snack"
+            }
+          ]
+        },
+        "Quality rating": {
+          "id": 3496,
+          "name": "Quality rating",
+          "type": "number",
+          "order": 5
+        },
+        "Will do again": {
+          "id": 3497,
+          "name": "Will do again",
+          "type": "single_select",
+          "order": 6,
+          "select_options": [
+            {
+              "id": 1651,
+              "value": "Never"
+            },
+            {
+              "id": 1652,
+              "value": "Rarely"
+            },
+            {
+              "id": 1653,
+              "value": "Sometimes"
+            },
+            {
+              "id": 1654,
+              "value": "Often"
+            },
+            {
+              "id": 1655,
+              "value": "Staple"
+            }
+          ]
+        },
+        "Favourite": {
+          "id": 3498,
+          "name": "Favourite",
+          "type": "boolean",
+          "order": 7
+        },
+        "Photo": {
+          "id": 3499,
+          "name": "Photo",
+          "type": "file",
+          "order": 8
+        },
+        "Notes": {
+          "id": 3500,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 9
+        },
+        "Last cooked": {
+          "id": 3501,
+          "name": "Last cooked",
+          "type": "date",
+          "order": 10
+        },
+        "Ingredients": {
+          "id": 3502,
+          "name": "Ingredients",
+          "type": "link_row",
+          "order": 11,
+          "link_row_table_id": 375
+        },
+        "Dinner Parties": {
+          "id": 3503,
+          "name": "Dinner Parties",
+          "type": "link_row",
+          "order": 12,
+          "link_row_table_id": 376
+        },
+        "Dinner Planner": {
+          "id": 3504,
+          "name": "Dinner Planner",
+          "type": "link_row",
+          "order": 13,
+          "link_row_table_id": 374
+        },
+        "Shopping List": {
+          "id": 3505,
+          "name": "Shopping List",
+          "type": "link_row",
+          "order": 14,
+          "link_row_table_id": 377
+        },
+        "Recipe Output Log": {
+          "id": 3506,
+          "name": "Recipe Output Log",
+          "type": "link_row",
+          "order": 15,
+          "link_row_table_id": 373
+        },
+        "Meals": {
+          "id": 3507,
+          "name": "Meals",
+          "type": "link_row",
+          "order": 16,
+          "link_row_table_id": 387
+        }
+      }
+    },
+    "Properties": {
+      "id": 380,
+      "fields": {
+        "Address": {
+          "id": 3508,
+          "name": "Address",
+          "type": "text",
+          "order": 0
+        },
+        "Rightmove URL": {
+          "id": 3509,
+          "name": "Rightmove URL",
+          "type": "url",
+          "order": 1
+        },
+        "Price": {
+          "id": 3510,
+          "name": "Price",
+          "type": "number",
+          "order": 2
+        },
+        "Bedrooms": {
+          "id": 3511,
+          "name": "Bedrooms",
+          "type": "number",
+          "order": 3
+        },
+        "Bathrooms": {
+          "id": 3512,
+          "name": "Bathrooms",
+          "type": "number",
+          "order": 4
+        },
+        "Property Type": {
+          "id": 3513,
+          "name": "Property Type",
+          "type": "single_select",
+          "order": 5,
+          "select_options": [
+            {
+              "id": 1656,
+              "value": "Terraced"
+            },
+            {
+              "id": 1657,
+              "value": "Semi-Detached"
+            },
+            {
+              "id": 1658,
+              "value": "Detached"
+            },
+            {
+              "id": 1659,
+              "value": "Flat"
+            },
+            {
+              "id": 1660,
+              "value": "Maisonette"
+            },
+            {
+              "id": 1661,
+              "value": "Bungalow"
+            },
+            {
+              "id": 1662,
+              "value": "Other"
+            }
+          ]
+        },
+        "Garden": {
+          "id": 3514,
+          "name": "Garden",
+          "type": "single_select",
+          "order": 6,
+          "select_options": [
+            {
+              "id": 1663,
+              "value": "Yes"
+            },
+            {
+              "id": 1664,
+              "value": "No"
+            },
+            {
+              "id": 1665,
+              "value": "Unknown"
+            }
+          ]
+        },
+        "Sq Ft": {
+          "id": 3515,
+          "name": "Sq Ft",
+          "type": "number",
+          "order": 7
+        },
+        "Tenure": {
+          "id": 3516,
+          "name": "Tenure",
+          "type": "single_select",
+          "order": 8,
+          "select_options": [
+            {
+              "id": 1666,
+              "value": "Freehold"
+            },
+            {
+              "id": 1667,
+              "value": "Leasehold"
+            },
+            {
+              "id": 1668,
+              "value": "Unknown"
+            }
+          ]
+        },
+        "EPC Rating": {
+          "id": 3517,
+          "name": "EPC Rating",
+          "type": "single_select",
+          "order": 9,
+          "select_options": [
+            {
+              "id": 1669,
+              "value": "A"
+            },
+            {
+              "id": 1670,
+              "value": "B"
+            },
+            {
+              "id": 1671,
+              "value": "C"
+            },
+            {
+              "id": 1672,
+              "value": "D"
+            },
+            {
+              "id": 1673,
+              "value": "E"
+            },
+            {
+              "id": 1674,
+              "value": "F"
+            },
+            {
+              "id": 1675,
+              "value": "G"
+            },
+            {
+              "id": 1676,
+              "value": "Unknown"
+            }
+          ]
+        },
+        "Key Features": {
+          "id": 3518,
+          "name": "Key Features",
+          "type": "long_text",
+          "order": 10
+        },
+        "Summary": {
+          "id": 3519,
+          "name": "Summary",
+          "type": "long_text",
+          "order": 11
+        },
+        "Assessment": {
+          "id": 3520,
+          "name": "Assessment",
+          "type": "long_text",
+          "order": 12
+        },
+        "Match Score": {
+          "id": 3521,
+          "name": "Match Score",
+          "type": "number",
+          "order": 13
+        },
+        "Status": {
+          "id": 3522,
+          "name": "Status",
+          "type": "single_select",
+          "order": 14,
+          "select_options": [
+            {
+              "id": 1677,
+              "value": "New"
+            },
+            {
+              "id": 1678,
+              "value": "Interested"
+            },
+            {
+              "id": 1679,
+              "value": "Viewing Booked"
+            },
+            {
+              "id": 1680,
+              "value": "Viewed"
+            },
+            {
+              "id": 1681,
+              "value": "Dismissed"
+            },
+            {
+              "id": 1682,
+              "value": "Bought"
+            }
+          ]
+        },
+        "My Notes": {
+          "id": 3523,
+          "name": "My Notes",
+          "type": "long_text",
+          "order": 15
+        },
+        "First Seen": {
+          "id": 3524,
+          "name": "First Seen",
+          "type": "date",
+          "order": 16
+        },
+        "Listing Date": {
+          "id": 3525,
+          "name": "Listing Date",
+          "type": "date",
+          "order": 17
+        },
+        "Rightmove ID": {
+          "id": 3526,
+          "name": "Rightmove ID",
+          "type": "text",
+          "order": 18
+        },
+        "Agent": {
+          "id": 3527,
+          "name": "Agent",
+          "type": "text",
+          "order": 19
+        },
+        "Feedback": {
+          "id": 3528,
+          "name": "Feedback",
+          "type": "long_text",
+          "order": 20
+        }
+      }
+    },
+    "Property Criteria": {
+      "id": 381,
+      "fields": {
+        "Criterion": {
+          "id": 3529,
+          "name": "Criterion",
+          "type": "long_text",
+          "order": 0
+        },
+        "Type": {
+          "id": 3530,
+          "name": "Type",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1683,
+              "value": "Must have"
+            },
+            {
+              "id": 1684,
+              "value": "Nice to have"
+            },
+            {
+              "id": 1685,
+              "value": "Dealbreaker"
+            },
+            {
+              "id": 1686,
+              "value": "Budget"
+            }
+          ]
+        },
+        "Active": {
+          "id": 3531,
+          "name": "Active",
+          "type": "boolean",
+          "order": 2
+        },
+        "Notes": {
+          "id": 3532,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 3
+        }
+      }
+    },
+    "Restaurants": {
+      "id": 382,
+      "fields": {
+        "Name": {
+          "id": 3533,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Cuisine": {
+          "id": 3534,
+          "name": "Cuisine",
+          "type": "multiple_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1687,
+              "value": "Italian"
+            },
+            {
+              "id": 1688,
+              "value": "Indian"
+            },
+            {
+              "id": 1689,
+              "value": "Thai"
+            },
+            {
+              "id": 1690,
+              "value": "Chinese"
+            },
+            {
+              "id": 1691,
+              "value": "Japanese"
+            },
+            {
+              "id": 1692,
+              "value": "French"
+            },
+            {
+              "id": 1693,
+              "value": "British"
+            },
+            {
+              "id": 1694,
+              "value": "Mexican"
+            },
+            {
+              "id": 1695,
+              "value": "Mediterranean"
+            },
+            {
+              "id": 1696,
+              "value": "Korean"
+            },
+            {
+              "id": 1697,
+              "value": "Vietnamese"
+            },
+            {
+              "id": 1698,
+              "value": "Spanish"
+            },
+            {
+              "id": 1699,
+              "value": "Turkish"
+            },
+            {
+              "id": 1700,
+              "value": "Other"
+            }
+          ]
+        },
+        "Address": {
+          "id": 3535,
+          "name": "Address",
+          "type": "long_text",
+          "order": 2
+        },
+        "Postcode": {
+          "id": 3536,
+          "name": "Postcode",
+          "type": "text",
+          "order": 3
+        },
+        "Phone": {
+          "id": 3537,
+          "name": "Phone",
+          "type": "text",
+          "order": 4
+        },
+        "Website": {
+          "id": 3538,
+          "name": "Website",
+          "type": "url",
+          "order": 5
+        },
+        "Maps URL": {
+          "id": 3539,
+          "name": "Maps URL",
+          "type": "url",
+          "order": 6
+        },
+        "Price Range": {
+          "id": 3540,
+          "name": "Price Range",
+          "type": "single_select",
+          "order": 7,
+          "select_options": [
+            {
+              "id": 1701,
+              "value": "\u00a3"
+            },
+            {
+              "id": 1702,
+              "value": "\u00a3\u00a3"
+            },
+            {
+              "id": 1703,
+              "value": "\u00a3\u00a3\u00a3"
+            },
+            {
+              "id": 1704,
+              "value": "\u00a3\u00a3\u00a3\u00a3"
+            }
+          ]
+        },
+        "Food Type": {
+          "id": 3541,
+          "name": "Food Type",
+          "type": "multiple_select",
+          "order": 8,
+          "select_options": [
+            {
+              "id": 1705,
+              "value": "Fine dining"
+            },
+            {
+              "id": 1706,
+              "value": "Casual"
+            },
+            {
+              "id": 1707,
+              "value": "Pub"
+            },
+            {
+              "id": 1708,
+              "value": "Cafe"
+            },
+            {
+              "id": 1709,
+              "value": "Street food"
+            },
+            {
+              "id": 1710,
+              "value": "Takeaway"
+            },
+            {
+              "id": 1711,
+              "value": "Brunch"
+            },
+            {
+              "id": 1712,
+              "value": "Roast"
+            },
+            {
+              "id": 1713,
+              "value": "Bistro"
+            },
+            {
+              "id": 1714,
+              "value": "Gastropub"
+            }
+          ]
+        },
+        "Dietary Friendly": {
+          "id": 3542,
+          "name": "Dietary Friendly",
+          "type": "multiple_select",
+          "order": 9,
+          "select_options": [
+            {
+              "id": 1715,
+              "value": "Vegetarian-friendly"
+            },
+            {
+              "id": 1716,
+              "value": "Vegan-friendly"
+            },
+            {
+              "id": 1717,
+              "value": "Gluten-free options"
+            },
+            {
+              "id": 1718,
+              "value": "Halal"
+            },
+            {
+              "id": 1719,
+              "value": "Kosher"
+            }
+          ]
+        },
+        "Ambience": {
+          "id": 3543,
+          "name": "Ambience",
+          "type": "multiple_select",
+          "order": 10,
+          "select_options": [
+            {
+              "id": 1720,
+              "value": "Romantic"
+            },
+            {
+              "id": 1721,
+              "value": "Family-friendly"
+            },
+            {
+              "id": 1722,
+              "value": "Quiet"
+            },
+            {
+              "id": 1723,
+              "value": "Lively"
+            },
+            {
+              "id": 1724,
+              "value": "Outdoor seating"
+            },
+            {
+              "id": 1725,
+              "value": "BYOB"
+            },
+            {
+              "id": 1726,
+              "value": "Dog-friendly"
+            },
+            {
+              "id": 1727,
+              "value": "Date night"
+            }
+          ]
+        },
+        "Google Rating": {
+          "id": 3544,
+          "name": "Google Rating",
+          "type": "number",
+          "order": 11
+        },
+        "Google Review Count": {
+          "id": 3545,
+          "name": "Google Review Count",
+          "type": "number",
+          "order": 12
+        },
+        "Google Price Level": {
+          "id": 3546,
+          "name": "Google Price Level",
+          "type": "number",
+          "order": 13
+        },
+        "Google Types": {
+          "id": 3547,
+          "name": "Google Types",
+          "type": "long_text",
+          "order": 14
+        },
+        "Review Summary": {
+          "id": 3548,
+          "name": "Review Summary",
+          "type": "long_text",
+          "order": 15
+        },
+        "Alignment Score": {
+          "id": 3549,
+          "name": "Alignment Score",
+          "type": "single_select",
+          "order": 16,
+          "select_options": [
+            {
+              "id": 1728,
+              "value": "Strong match"
+            },
+            {
+              "id": 1729,
+              "value": "Moderate"
+            },
+            {
+              "id": 1730,
+              "value": "Weak"
+            },
+            {
+              "id": 1731,
+              "value": "Unknown"
+            }
+          ]
+        },
+        "Alignment Notes": {
+          "id": 3550,
+          "name": "Alignment Notes",
+          "type": "long_text",
+          "order": 17
+        },
+        "Source": {
+          "id": 3551,
+          "name": "Source",
+          "type": "single_select",
+          "order": 18,
+          "select_options": [
+            {
+              "id": 1732,
+              "value": "We went"
+            },
+            {
+              "id": 1733,
+              "value": "Recommended"
+            },
+            {
+              "id": 1734,
+              "value": "Found online"
+            },
+            {
+              "id": 1735,
+              "value": "Want to try"
+            }
+          ]
+        },
+        "Status": {
+          "id": 3552,
+          "name": "Status",
+          "type": "single_select",
+          "order": 19,
+          "select_options": [
+            {
+              "id": 1736,
+              "value": "Want to go"
+            },
+            {
+              "id": 1737,
+              "value": "Been \u2014 loved it"
+            },
+            {
+              "id": 1738,
+              "value": "Been \u2014 liked it"
+            },
+            {
+              "id": 1739,
+              "value": "Been \u2014 meh"
+            },
+            {
+              "id": 1740,
+              "value": "Been \u2014 avoid"
+            }
+          ]
+        },
+        "Overall Rating": {
+          "id": 3553,
+          "name": "Overall Rating",
+          "type": "single_select",
+          "order": 20,
+          "select_options": [
+            {
+              "id": 1741,
+              "value": "1"
+            },
+            {
+              "id": 1742,
+              "value": "2"
+            },
+            {
+              "id": 1743,
+              "value": "3"
+            },
+            {
+              "id": 1744,
+              "value": "4"
+            },
+            {
+              "id": 1745,
+              "value": "5"
+            },
+            {
+              "id": 1746,
+              "value": "6"
+            },
+            {
+              "id": 1747,
+              "value": "7"
+            },
+            {
+              "id": 1748,
+              "value": "8"
+            },
+            {
+              "id": 1749,
+              "value": "9"
+            },
+            {
+              "id": 1750,
+              "value": "10"
+            }
+          ]
+        },
+        "Times Visited": {
+          "id": 3554,
+          "name": "Times Visited",
+          "type": "number",
+          "order": 21
+        },
+        "Last Visited": {
+          "id": 3555,
+          "name": "Last Visited",
+          "type": "date",
+          "order": 22
+        },
+        "Photo": {
+          "id": 3556,
+          "name": "Photo",
+          "type": "file",
+          "order": 23
+        },
+        "Notes": {
+          "id": 3557,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 24
+        },
+        "Restaurant Visits": {
+          "id": 3558,
+          "name": "Restaurant Visits",
+          "type": "link_row",
+          "order": 25,
+          "link_row_table_id": 383
+        },
+        "Recommended By": {
+          "id": 3559,
+          "name": "Recommended By",
+          "type": "link_row",
+          "order": 26,
+          "link_row_table_id": 359
+        }
+      }
+    },
+    "Restaurant Visits": {
+      "id": 383,
+      "fields": {
+        "Date": {
+          "id": 3560,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Dishes Ordered": {
+          "id": 3561,
+          "name": "Dishes Ordered",
+          "type": "long_text",
+          "order": 1
+        },
+        "Dish Ratings": {
+          "id": 3562,
+          "name": "Dish Ratings",
+          "type": "long_text",
+          "order": 2
+        },
+        "Service Rating": {
+          "id": 3563,
+          "name": "Service Rating",
+          "type": "single_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1751,
+              "value": "1"
+            },
+            {
+              "id": 1752,
+              "value": "2"
+            },
+            {
+              "id": 1753,
+              "value": "3"
+            },
+            {
+              "id": 1754,
+              "value": "4"
+            },
+            {
+              "id": 1755,
+              "value": "5"
+            },
+            {
+              "id": 1756,
+              "value": "6"
+            },
+            {
+              "id": 1757,
+              "value": "7"
+            },
+            {
+              "id": 1758,
+              "value": "8"
+            },
+            {
+              "id": 1759,
+              "value": "9"
+            },
+            {
+              "id": 1760,
+              "value": "10"
+            }
+          ]
+        },
+        "Ambience Rating": {
+          "id": 3564,
+          "name": "Ambience Rating",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1761,
+              "value": "1"
+            },
+            {
+              "id": 1762,
+              "value": "2"
+            },
+            {
+              "id": 1763,
+              "value": "3"
+            },
+            {
+              "id": 1764,
+              "value": "4"
+            },
+            {
+              "id": 1765,
+              "value": "5"
+            },
+            {
+              "id": 1766,
+              "value": "6"
+            },
+            {
+              "id": 1767,
+              "value": "7"
+            },
+            {
+              "id": 1768,
+              "value": "8"
+            },
+            {
+              "id": 1769,
+              "value": "9"
+            },
+            {
+              "id": 1770,
+              "value": "10"
+            }
+          ]
+        },
+        "Value Rating": {
+          "id": 3565,
+          "name": "Value Rating",
+          "type": "single_select",
+          "order": 5,
+          "select_options": [
+            {
+              "id": 1771,
+              "value": "1"
+            },
+            {
+              "id": 1772,
+              "value": "2"
+            },
+            {
+              "id": 1773,
+              "value": "3"
+            },
+            {
+              "id": 1774,
+              "value": "4"
+            },
+            {
+              "id": 1775,
+              "value": "5"
+            },
+            {
+              "id": 1776,
+              "value": "6"
+            },
+            {
+              "id": 1777,
+              "value": "7"
+            },
+            {
+              "id": 1778,
+              "value": "8"
+            },
+            {
+              "id": 1779,
+              "value": "9"
+            },
+            {
+              "id": 1780,
+              "value": "10"
+            }
+          ]
+        },
+        "Overall Rating": {
+          "id": 3566,
+          "name": "Overall Rating",
+          "type": "single_select",
+          "order": 6,
+          "select_options": [
+            {
+              "id": 1781,
+              "value": "1"
+            },
+            {
+              "id": 1782,
+              "value": "2"
+            },
+            {
+              "id": 1783,
+              "value": "3"
+            },
+            {
+              "id": 1784,
+              "value": "4"
+            },
+            {
+              "id": 1785,
+              "value": "5"
+            },
+            {
+              "id": 1786,
+              "value": "6"
+            },
+            {
+              "id": 1787,
+              "value": "7"
+            },
+            {
+              "id": 1788,
+              "value": "8"
+            },
+            {
+              "id": 1789,
+              "value": "9"
+            },
+            {
+              "id": 1790,
+              "value": "10"
+            }
+          ]
+        },
+        "Wife's Rating": {
+          "id": 3567,
+          "name": "Wife's Rating",
+          "type": "single_select",
+          "order": 7,
+          "select_options": [
+            {
+              "id": 1791,
+              "value": "1"
+            },
+            {
+              "id": 1792,
+              "value": "2"
+            },
+            {
+              "id": 1793,
+              "value": "3"
+            },
+            {
+              "id": 1794,
+              "value": "4"
+            },
+            {
+              "id": 1795,
+              "value": "5"
+            },
+            {
+              "id": 1796,
+              "value": "6"
+            },
+            {
+              "id": 1797,
+              "value": "7"
+            },
+            {
+              "id": 1798,
+              "value": "8"
+            },
+            {
+              "id": 1799,
+              "value": "9"
+            },
+            {
+              "id": 1800,
+              "value": "10"
+            }
+          ]
+        },
+        "Wife's Notes": {
+          "id": 3568,
+          "name": "Wife's Notes",
+          "type": "long_text",
+          "order": 8
+        },
+        "Would Return": {
+          "id": 3569,
+          "name": "Would Return",
+          "type": "single_select",
+          "order": 9,
+          "select_options": [
+            {
+              "id": 1801,
+              "value": "Definitely"
+            },
+            {
+              "id": 1802,
+              "value": "Maybe"
+            },
+            {
+              "id": 1803,
+              "value": "No"
+            }
+          ]
+        },
+        "Best Dish": {
+          "id": 3570,
+          "name": "Best Dish",
+          "type": "text",
+          "order": 10
+        },
+        "Worst Dish": {
+          "id": 3571,
+          "name": "Worst Dish",
+          "type": "text",
+          "order": 11
+        },
+        "Cost Total": {
+          "id": 3572,
+          "name": "Cost Total",
+          "type": "number",
+          "order": 12
+        },
+        "Cost Per Head": {
+          "id": 3573,
+          "name": "Cost Per Head",
+          "type": "number",
+          "order": 13
+        },
+        "Occasion": {
+          "id": 3574,
+          "name": "Occasion",
+          "type": "single_select",
+          "order": 14,
+          "select_options": [
+            {
+              "id": 1804,
+              "value": "Date night"
+            },
+            {
+              "id": 1805,
+              "value": "Family meal"
+            },
+            {
+              "id": 1806,
+              "value": "Friends"
+            },
+            {
+              "id": 1807,
+              "value": "Birthday"
+            },
+            {
+              "id": 1808,
+              "value": "Casual"
+            },
+            {
+              "id": 1809,
+              "value": "Business"
+            },
+            {
+              "id": 1810,
+              "value": "Anniversary"
+            }
+          ]
+        },
+        "Photo": {
+          "id": 3575,
+          "name": "Photo",
+          "type": "file",
+          "order": 15
+        },
+        "Notes": {
+          "id": 3576,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 16
+        },
+        "Source": {
+          "id": 3577,
+          "name": "Source",
+          "type": "single_select",
+          "order": 17,
+          "select_options": [
+            {
+              "id": 1811,
+              "value": "Slack"
+            },
+            {
+              "id": 1812,
+              "value": "Manual"
+            }
+          ]
+        },
+        "Restaurant": {
+          "id": 3578,
+          "name": "Restaurant",
+          "type": "link_row",
+          "order": 18,
+          "link_row_table_id": 382
+        },
+        "People": {
+          "id": 3579,
+          "name": "People",
+          "type": "link_row",
+          "order": 19,
+          "link_row_table_id": 359
+        }
+      }
+    },
+    "News Sources": {
+      "id": 384,
+      "fields": {
+        "Source name": {
+          "id": 3580,
+          "name": "Source name",
+          "type": "text",
+          "order": 0
+        },
+        "Feed URL": {
+          "id": 3581,
+          "name": "Feed URL",
+          "type": "text",
+          "order": 1
+        },
+        "Category": {
+          "id": 3582,
+          "name": "Category",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1813,
+              "value": "Science"
+            },
+            {
+              "id": 1814,
+              "value": "Tech"
+            },
+            {
+              "id": 1815,
+              "value": "Culture"
+            },
+            {
+              "id": 1816,
+              "value": "London"
+            },
+            {
+              "id": 1817,
+              "value": "World"
+            },
+            {
+              "id": 1818,
+              "value": "Other"
+            }
+          ]
+        },
+        "Active": {
+          "id": 3583,
+          "name": "Active",
+          "type": "boolean",
+          "order": 3
+        }
+      }
+    },
+    "Habits": {
+      "id": 385,
+      "fields": {
+        "Habit": {
+          "id": 3584,
+          "name": "Habit",
+          "type": "text",
+          "order": 0
+        },
+        "Frequency target": {
+          "id": 3585,
+          "name": "Frequency target",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1819,
+              "value": "Daily"
+            },
+            {
+              "id": 1820,
+              "value": "Weekdays"
+            },
+            {
+              "id": 1821,
+              "value": "3x week"
+            },
+            {
+              "id": 1822,
+              "value": "Weekly"
+            }
+          ]
+        },
+        "Category": {
+          "id": 3586,
+          "name": "Category",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1823,
+              "value": "Health"
+            },
+            {
+              "id": 1824,
+              "value": "Learning"
+            },
+            {
+              "id": 1825,
+              "value": "Mindfulness"
+            },
+            {
+              "id": 1826,
+              "value": "Household"
+            },
+            {
+              "id": 1827,
+              "value": "Other"
+            }
+          ]
+        },
+        "Active": {
+          "id": 3587,
+          "name": "Active",
+          "type": "boolean",
+          "order": 3
+        },
+        "Habit Log": {
+          "id": 3588,
+          "name": "Habit Log",
+          "type": "link_row",
+          "order": 4,
+          "link_row_table_id": 388
+        }
+      }
+    },
+    "Daily Nutrition Summary": {
+      "id": 386,
+      "fields": {
+        "Date": {
+          "id": 3589,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Total calories": {
+          "id": 3590,
+          "name": "Total calories",
+          "type": "number",
+          "order": 1
+        },
+        "Total protein": {
+          "id": 3591,
+          "name": "Total protein",
+          "type": "number",
+          "order": 2
+        },
+        "Total carbs": {
+          "id": 3592,
+          "name": "Total carbs",
+          "type": "number",
+          "order": 3
+        },
+        "Total fat": {
+          "id": 3593,
+          "name": "Total fat",
+          "type": "number",
+          "order": 4
+        }
+      }
+    },
+    "Meals": {
+      "id": 387,
+      "fields": {
+        "Description": {
+          "id": 3594,
+          "name": "Description",
+          "type": "text",
+          "order": 0
+        },
+        "Date": {
+          "id": 3595,
+          "name": "Date",
+          "type": "date",
+          "order": 1
+        },
+        "Meal type": {
+          "id": 3596,
+          "name": "Meal type",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1828,
+              "value": "Breakfast"
+            },
+            {
+              "id": 1829,
+              "value": "Lunch"
+            },
+            {
+              "id": 1830,
+              "value": "Dinner"
+            },
+            {
+              "id": 1831,
+              "value": "Snack"
+            }
+          ]
+        },
+        "Calories (est)": {
+          "id": 3597,
+          "name": "Calories (est)",
+          "type": "number",
+          "order": 3
+        },
+        "Protein (g)": {
+          "id": 3598,
+          "name": "Protein (g)",
+          "type": "number",
+          "order": 4
+        },
+        "Carbs (g)": {
+          "id": 3599,
+          "name": "Carbs (g)",
+          "type": "number",
+          "order": 5
+        },
+        "Fat (g)": {
+          "id": 3600,
+          "name": "Fat (g)",
+          "type": "number",
+          "order": 6
+        },
+        "Accuracy": {
+          "id": 3601,
+          "name": "Accuracy",
+          "type": "single_select",
+          "order": 7,
+          "select_options": [
+            {
+              "id": 1832,
+              "value": "Estimated"
+            },
+            {
+              "id": 1833,
+              "value": "Barcode"
+            },
+            {
+              "id": 1834,
+              "value": "From recipe"
+            }
+          ]
+        },
+        "Source": {
+          "id": 3602,
+          "name": "Source",
+          "type": "single_select",
+          "order": 8,
+          "select_options": [
+            {
+              "id": 1835,
+              "value": "Manual"
+            },
+            {
+              "id": 1836,
+              "value": "Slack"
+            },
+            {
+              "id": 1837,
+              "value": "Voice"
+            }
+          ]
+        },
+        "Logged": {
+          "id": 3603,
+          "name": "Logged",
+          "type": "date",
+          "order": 9
+        },
+        "From recipe": {
+          "id": 3604,
+          "name": "From recipe",
+          "type": "link_row",
+          "order": 10,
+          "link_row_table_id": 379
+        }
+      }
+    },
+    "Habit Log": {
+      "id": 388,
+      "fields": {
+        "Date": {
+          "id": 3605,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Habit": {
+          "id": 3606,
+          "name": "Habit",
+          "type": "link_row",
+          "order": 1,
+          "link_row_table_id": 385
+        },
+        "Completed": {
+          "id": 3607,
+          "name": "Completed",
+          "type": "boolean",
+          "order": 2
+        },
+        "Logged": {
+          "id": 3608,
+          "name": "Logged",
+          "type": "date",
+          "order": 3
+        }
+      }
+    },
+    "Sleep Log": {
+      "id": 389,
+      "fields": {
+        "Date": {
+          "id": 3609,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Bedtime": {
+          "id": 3610,
+          "name": "Bedtime",
+          "type": "text",
+          "order": 1
+        },
+        "Wake time": {
+          "id": 3611,
+          "name": "Wake time",
+          "type": "text",
+          "order": 2
+        },
+        "Hours slept": {
+          "id": 3612,
+          "name": "Hours slept",
+          "type": "number",
+          "order": 3
+        },
+        "Quality": {
+          "id": 3613,
+          "name": "Quality",
+          "type": "rating",
+          "order": 4
+        },
+        "Notes": {
+          "id": 3614,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 5
+        },
+        "Logged": {
+          "id": 3615,
+          "name": "Logged",
+          "type": "date",
+          "order": 6
+        },
+        "Night bathroom visits": {
+          "id": 3616,
+          "name": "Night bathroom visits",
+          "type": "number",
+          "order": 7
+        },
+        "Night awake time (mins)": {
+          "id": 3617,
+          "name": "Night awake time (mins)",
+          "type": "number",
+          "order": 8
+        }
+      }
+    },
+    "Digest Log": {
+      "id": 390,
+      "fields": {
+        "Date": {
+          "id": 3618,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Type": {
+          "id": 3619,
+          "name": "Type",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1838,
+              "value": "Morning"
+            },
+            {
+              "id": 1839,
+              "value": "Weekly"
+            },
+            {
+              "id": 1840,
+              "value": "Monthly"
+            }
+          ]
+        },
+        "Content": {
+          "id": 3620,
+          "name": "Content",
+          "type": "long_text",
+          "order": 2
+        },
+        "Delivered via": {
+          "id": 3621,
+          "name": "Delivered via",
+          "type": "single_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1841,
+              "value": "Email"
+            },
+            {
+              "id": 1842,
+              "value": "Slack"
+            }
+          ]
+        },
+        "Delivery status": {
+          "id": 3622,
+          "name": "Delivery status",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1843,
+              "value": "Sent"
+            },
+            {
+              "id": 1844,
+              "value": "Failed"
+            }
+          ]
+        },
+        "Sections included": {
+          "id": 3623,
+          "name": "Sections included",
+          "type": "long_text",
+          "order": 5
+        }
+      }
+    },
+    "Word List": {
+      "id": 391,
+      "fields": {
+        "Word": {
+          "id": 3624,
+          "name": "Word",
+          "type": "text",
+          "order": 0
+        },
+        "Pronunciation": {
+          "id": 3625,
+          "name": "Pronunciation",
+          "type": "text",
+          "order": 1
+        },
+        "Meaning": {
+          "id": 3626,
+          "name": "Meaning",
+          "type": "text",
+          "order": 2
+        },
+        "Example sentence": {
+          "id": 3627,
+          "name": "Example sentence",
+          "type": "long_text",
+          "order": 3
+        },
+        "Part of speech": {
+          "id": 3628,
+          "name": "Part of speech",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1845,
+              "value": "Noun"
+            },
+            {
+              "id": 1846,
+              "value": "Verb"
+            },
+            {
+              "id": 1847,
+              "value": "Adjective"
+            },
+            {
+              "id": 1848,
+              "value": "Adverb"
+            },
+            {
+              "id": 1849,
+              "value": "Phrase"
+            }
+          ]
+        },
+        "Used": {
+          "id": 3629,
+          "name": "Used",
+          "type": "boolean",
+          "order": 5
+        },
+        "Date used": {
+          "id": 3630,
+          "name": "Date used",
+          "type": "date",
+          "order": 6
+        },
+        "Difficulty": {
+          "id": 3631,
+          "name": "Difficulty",
+          "type": "single_select",
+          "order": 7,
+          "select_options": [
+            {
+              "id": 1850,
+              "value": "Beginner"
+            },
+            {
+              "id": 1851,
+              "value": "Intermediate"
+            },
+            {
+              "id": 1852,
+              "value": "Advanced"
+            }
+          ]
+        }
+      }
+    },
+    "Workouts": {
+      "id": 392,
+      "fields": {
+        "Date": {
+          "id": 3632,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Type": {
+          "id": 3633,
+          "name": "Type",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1853,
+              "value": "Gym"
+            },
+            {
+              "id": 1854,
+              "value": "Run"
+            },
+            {
+              "id": 1855,
+              "value": "Cycle"
+            },
+            {
+              "id": 1856,
+              "value": "Walk"
+            },
+            {
+              "id": 1857,
+              "value": "Swim"
+            },
+            {
+              "id": 1858,
+              "value": "Yoga"
+            },
+            {
+              "id": 1859,
+              "value": "Class"
+            },
+            {
+              "id": 1860,
+              "value": "Other"
+            }
+          ]
+        },
+        "Duration (mins)": {
+          "id": 3634,
+          "name": "Duration (mins)",
+          "type": "number",
+          "order": 2
+        },
+        "Distance (km)": {
+          "id": 3635,
+          "name": "Distance (km)",
+          "type": "number",
+          "order": 3
+        },
+        "Energy level": {
+          "id": 3636,
+          "name": "Energy level",
+          "type": "rating",
+          "order": 4
+        },
+        "Perceived difficulty": {
+          "id": 3637,
+          "name": "Perceived difficulty",
+          "type": "rating",
+          "order": 5
+        },
+        "Notes": {
+          "id": 3638,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 6
+        },
+        "Source": {
+          "id": 3639,
+          "name": "Source",
+          "type": "single_select",
+          "order": 7,
+          "select_options": [
+            {
+              "id": 1861,
+              "value": "Manual"
+            },
+            {
+              "id": 1862,
+              "value": "Slack"
+            },
+            {
+              "id": 1863,
+              "value": "Voice"
+            },
+            {
+              "id": 1864,
+              "value": "Strava"
+            },
+            {
+              "id": 1865,
+              "value": "Google Fit"
+            },
+            {
+              "id": 1950,
+              "value": "Garmin"
+            }
+          ]
+        },
+        "Exercise Log": {
+          "id": 3640,
+          "name": "Exercise Log",
+          "type": "link_row",
+          "order": 8,
+          "link_row_table_id": 393
+        },
+        "Logged": {
+          "id": 3641,
+          "name": "Logged",
+          "type": "date",
+          "order": 9
+        },
+        "People": {
+          "id": 3642,
+          "name": "People",
+          "type": "link_row",
+          "order": 10,
+          "link_row_table_id": 359
+        },
+        "Cycling": {
+          "id": 3643,
+          "name": "Cycling",
+          "type": "link_row",
+          "order": 11,
+          "link_row_table_id": 396
+        }
+      }
+    },
+    "Exercise Log": {
+      "id": 393,
+      "fields": {
+        "Exercise": {
+          "id": 3644,
+          "name": "Exercise",
+          "type": "text",
+          "order": 0
+        },
+        "Workout": {
+          "id": 3645,
+          "name": "Workout",
+          "type": "link_row",
+          "order": 1,
+          "link_row_table_id": 392
+        },
+        "Sets": {
+          "id": 3646,
+          "name": "Sets",
+          "type": "number",
+          "order": 2
+        },
+        "Reps": {
+          "id": 3647,
+          "name": "Reps",
+          "type": "text",
+          "order": 3
+        },
+        "Weight (kg)": {
+          "id": 3648,
+          "name": "Weight (kg)",
+          "type": "text",
+          "order": 4
+        }
+      }
+    },
+    "Input Log": {
+      "id": 394,
+      "fields": {
+        "Raw message": {
+          "id": 3649,
+          "name": "Raw message",
+          "type": "long_text",
+          "order": 0
+        },
+        "Channel": {
+          "id": 3650,
+          "name": "Channel",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1866,
+              "value": "Slack"
+            },
+            {
+              "id": 1867,
+              "value": "Voice"
+            },
+            {
+              "id": 1868,
+              "value": "WhatsApp"
+            },
+            {
+              "id": 1869,
+              "value": "Telegram"
+            },
+            {
+              "id": 1870,
+              "value": "Email"
+            },
+            {
+              "id": 1871,
+              "value": "Other"
+            }
+          ]
+        },
+        "Message type": {
+          "id": 3651,
+          "name": "Message type",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1872,
+              "value": "Text"
+            },
+            {
+              "id": 1873,
+              "value": "Voice note"
+            }
+          ]
+        },
+        "Transcription": {
+          "id": 3652,
+          "name": "Transcription",
+          "type": "long_text",
+          "order": 3
+        },
+        "Interpreted intent": {
+          "id": 3653,
+          "name": "Interpreted intent",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1874,
+              "value": "Log meal"
+            },
+            {
+              "id": 1875,
+              "value": "Log workout"
+            },
+            {
+              "id": 1876,
+              "value": "Add person note"
+            },
+            {
+              "id": 1877,
+              "value": "Add todo"
+            },
+            {
+              "id": 1878,
+              "value": "Add gift idea"
+            },
+            {
+              "id": 1879,
+              "value": "Journal"
+            },
+            {
+              "id": 1880,
+              "value": "Other"
+            }
+          ]
+        },
+        "Routed to": {
+          "id": 3654,
+          "name": "Routed to",
+          "type": "text",
+          "order": 5
+        },
+        "Status": {
+          "id": 3655,
+          "name": "Status",
+          "type": "single_select",
+          "order": 6,
+          "select_options": [
+            {
+              "id": 1881,
+              "value": "Success"
+            },
+            {
+              "id": 1882,
+              "value": "Failed"
+            },
+            {
+              "id": 1883,
+              "value": "Needs review"
+            }
+          ]
+        },
+        "Detail": {
+          "id": 3656,
+          "name": "Detail",
+          "type": "long_text",
+          "order": 7
+        }
+      }
+    },
+    "Fitness Goals": {
+      "id": 395,
+      "fields": {
+        "Goal type": {
+          "id": 3657,
+          "name": "Goal type",
+          "type": "text",
+          "order": 0
+        },
+        "Goal type select": {
+          "id": 3658,
+          "name": "Goal type select",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1884,
+              "value": "Cut"
+            },
+            {
+              "id": 1885,
+              "value": "Bulk"
+            },
+            {
+              "id": 1886,
+              "value": "Maintain"
+            },
+            {
+              "id": 1887,
+              "value": "Endurance"
+            },
+            {
+              "id": 1888,
+              "value": "Strength"
+            }
+          ]
+        },
+        "Daily calorie target": {
+          "id": 3659,
+          "name": "Daily calorie target",
+          "type": "number",
+          "order": 2
+        },
+        "Daily protein target (g)": {
+          "id": 3660,
+          "name": "Daily protein target (g)",
+          "type": "number",
+          "order": 3
+        },
+        "Weekly workout target": {
+          "id": 3661,
+          "name": "Weekly workout target",
+          "type": "number",
+          "order": 4
+        },
+        "Start date": {
+          "id": 3662,
+          "name": "Start date",
+          "type": "date",
+          "order": 5
+        },
+        "Active": {
+          "id": 3663,
+          "name": "Active",
+          "type": "boolean",
+          "order": 6
+        },
+        "Notes": {
+          "id": 3664,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 7
+        }
+      }
+    },
+    "Cycling": {
+      "id": 396,
+      "fields": {
+        "Date": {
+          "id": 3665,
+          "name": "Date",
+          "type": "date",
+          "order": 0
+        },
+        "Workout": {
+          "id": 3666,
+          "name": "Workout",
+          "type": "link_row",
+          "order": 1,
+          "link_row_table_id": 392
+        },
+        "Route": {
+          "id": 3667,
+          "name": "Route",
+          "type": "text",
+          "order": 2
+        },
+        "Distance (miles)": {
+          "id": 3668,
+          "name": "Distance (miles)",
+          "type": "number",
+          "order": 3
+        },
+        "Duration (mins)": {
+          "id": 3669,
+          "name": "Duration (mins)",
+          "type": "number",
+          "order": 4
+        },
+        "Elevation gain (m)": {
+          "id": 3670,
+          "name": "Elevation gain (m)",
+          "type": "number",
+          "order": 5
+        },
+        "Avg speed (mph)": {
+          "id": 3671,
+          "name": "Avg speed (mph)",
+          "type": "number",
+          "order": 6
+        },
+        "Max speed (mph)": {
+          "id": 3672,
+          "name": "Max speed (mph)",
+          "type": "number",
+          "order": 7
+        },
+        "Ride type": {
+          "id": 3673,
+          "name": "Ride type",
+          "type": "single_select",
+          "order": 8,
+          "select_options": [
+            {
+              "id": 1889,
+              "value": "Road"
+            },
+            {
+              "id": 1890,
+              "value": "Gravel"
+            },
+            {
+              "id": 1891,
+              "value": "MTB"
+            },
+            {
+              "id": 1892,
+              "value": "Turbo"
+            },
+            {
+              "id": 1893,
+              "value": "Commute"
+            }
+          ]
+        },
+        "Bike used": {
+          "id": 3674,
+          "name": "Bike used",
+          "type": "text",
+          "order": 9
+        },
+        "Source": {
+          "id": 3675,
+          "name": "Source",
+          "type": "single_select",
+          "order": 10,
+          "select_options": [
+            {
+              "id": 1894,
+              "value": "Strava"
+            },
+            {
+              "id": 1895,
+              "value": "Garmin"
+            },
+            {
+              "id": 1896,
+              "value": "Manual"
+            }
+          ]
+        },
+        "People": {
+          "id": 3676,
+          "name": "People",
+          "type": "link_row",
+          "order": 11,
+          "link_row_table_id": 359
+        },
+        "Avg heart rate": {
+          "id": 3677,
+          "name": "Avg heart rate",
+          "type": "number",
+          "order": 12
+        },
+        "Max heart rate": {
+          "id": 3678,
+          "name": "Max heart rate",
+          "type": "number",
+          "order": 13
+        },
+        "Avg power (W)": {
+          "id": 3679,
+          "name": "Avg power (W)",
+          "type": "number",
+          "order": 14
+        },
+        "Calories burned": {
+          "id": 3680,
+          "name": "Calories burned",
+          "type": "number",
+          "order": 15
+        },
+        "Strava URL": {
+          "id": 3681,
+          "name": "Strava URL",
+          "type": "url",
+          "order": 16
+        },
+        "Notes": {
+          "id": 3682,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 17
+        },
+        "Logged": {
+          "id": 3683,
+          "name": "Logged",
+          "type": "date",
+          "order": 18
+        }
+      }
+    },
+    "Intentions": {
+      "id": 397,
+      "fields": {
+        "Intention": {
+          "id": 3684,
+          "name": "Intention",
+          "type": "text",
+          "order": 0
+        },
+        "Week starting": {
+          "id": 3685,
+          "name": "Week starting",
+          "type": "date",
+          "order": 1
+        },
+        "Type": {
+          "id": 3686,
+          "name": "Type",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1897,
+              "value": "Accomplish"
+            },
+            {
+              "id": 1898,
+              "value": "Let go of"
+            },
+            {
+              "id": 1899,
+              "value": "Focus"
+            }
+          ]
+        },
+        "Status": {
+          "id": 3687,
+          "name": "Status",
+          "type": "single_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1900,
+              "value": "Set"
+            },
+            {
+              "id": 1901,
+              "value": "Achieved"
+            },
+            {
+              "id": 1902,
+              "value": "Missed"
+            },
+            {
+              "id": 1903,
+              "value": "Carried over"
+            }
+          ]
+        },
+        "Source": {
+          "id": 3688,
+          "name": "Source",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1904,
+              "value": "Suggested"
+            },
+            {
+              "id": 1905,
+              "value": "Manual"
+            }
+          ]
+        },
+        "Reflection": {
+          "id": 3689,
+          "name": "Reflection",
+          "type": "long_text",
+          "order": 5
+        }
+      }
+    },
+    "Books": {
+      "id": 398,
+      "fields": {
+        "Title": {
+          "id": 3690,
+          "name": "Title",
+          "type": "text",
+          "order": 0
+        },
+        "Author": {
+          "id": 3691,
+          "name": "Author",
+          "type": "text",
+          "order": 1
+        },
+        "Status": {
+          "id": 3692,
+          "name": "Status",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1906,
+              "value": "Want to read"
+            },
+            {
+              "id": 1907,
+              "value": "Reading"
+            },
+            {
+              "id": 1908,
+              "value": "Read"
+            },
+            {
+              "id": 1909,
+              "value": "Abandoned"
+            }
+          ]
+        },
+        "Genre": {
+          "id": 3693,
+          "name": "Genre",
+          "type": "multiple_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1910,
+              "value": "Fiction"
+            },
+            {
+              "id": 1911,
+              "value": "Non-fiction"
+            },
+            {
+              "id": 1912,
+              "value": "Biography"
+            },
+            {
+              "id": 1913,
+              "value": "History"
+            },
+            {
+              "id": 1914,
+              "value": "Science"
+            },
+            {
+              "id": 1915,
+              "value": "Philosophy"
+            },
+            {
+              "id": 1916,
+              "value": "Self-help"
+            },
+            {
+              "id": 1917,
+              "value": "Business"
+            },
+            {
+              "id": 1918,
+              "value": "Fantasy"
+            },
+            {
+              "id": 1919,
+              "value": "Sci-fi"
+            },
+            {
+              "id": 1920,
+              "value": "Thriller"
+            },
+            {
+              "id": 1921,
+              "value": "Romance"
+            },
+            {
+              "id": 1922,
+              "value": "Other"
+            }
+          ]
+        },
+        "Date started": {
+          "id": 3694,
+          "name": "Date started",
+          "type": "date",
+          "order": 4
+        },
+        "Date finished": {
+          "id": 3695,
+          "name": "Date finished",
+          "type": "date",
+          "order": 5
+        },
+        "Goodreads ID": {
+          "id": 3696,
+          "name": "Goodreads ID",
+          "type": "text",
+          "order": 6
+        },
+        "ISBN": {
+          "id": 3697,
+          "name": "ISBN",
+          "type": "text",
+          "order": 7
+        },
+        "Page count": {
+          "id": 3698,
+          "name": "Page count",
+          "type": "number",
+          "order": 8
+        },
+        "Format": {
+          "id": 3699,
+          "name": "Format",
+          "type": "single_select",
+          "order": 9,
+          "select_options": [
+            {
+              "id": 1923,
+              "value": "Hardcover"
+            },
+            {
+              "id": 1924,
+              "value": "Paperback"
+            },
+            {
+              "id": 1925,
+              "value": "eBook"
+            },
+            {
+              "id": 1926,
+              "value": "Audiobook"
+            }
+          ]
+        },
+        "Cover image": {
+          "id": 3700,
+          "name": "Cover image",
+          "type": "file",
+          "order": 10
+        },
+        "Notes": {
+          "id": 3701,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 11
+        },
+        "Source": {
+          "id": 3702,
+          "name": "Source",
+          "type": "single_select",
+          "order": 12,
+          "select_options": [
+            {
+              "id": 1927,
+              "value": "Manual"
+            },
+            {
+              "id": 1928,
+              "value": "Slack"
+            },
+            {
+              "id": 1929,
+              "value": "Goodreads import"
+            }
+          ]
+        },
+        "My rating": {
+          "id": 3703,
+          "name": "My rating",
+          "type": "rating",
+          "order": 13
+        },
+        "Recommended by": {
+          "id": 3704,
+          "name": "Recommended by",
+          "type": "link_row",
+          "order": 14,
+          "link_row_table_id": 359
+        },
+        "Goodreads Rating": {
+          "id": 3729,
+          "name": "Goodreads Rating",
+          "type": "number",
+          "order": 15
+        },
+        "Goodreads Votes": {
+          "id": 3730,
+          "name": "Goodreads Votes",
+          "type": "number",
+          "order": 16
+        }
+      }
+    },
+    "Airtable import report": {
+      "id": 399,
+      "fields": {
+        "Object name": {
+          "id": 3705,
+          "name": "Object name",
+          "type": "text",
+          "order": 0
+        },
+        "Scope": {
+          "id": 3706,
+          "name": "Scope",
+          "type": "single_select",
+          "order": 1,
+          "select_options": [
+            {
+              "id": 1930,
+              "value": "Field"
+            },
+            {
+              "id": 1931,
+              "value": "Cell"
+            },
+            {
+              "id": 1932,
+              "value": "View"
+            },
+            {
+              "id": 1933,
+              "value": "View sort"
+            },
+            {
+              "id": 1934,
+              "value": "View group by"
+            },
+            {
+              "id": 1935,
+              "value": "View filter"
+            },
+            {
+              "id": 1936,
+              "value": "View color"
+            },
+            {
+              "id": 1937,
+              "value": "Automations"
+            },
+            {
+              "id": 1938,
+              "value": "Interfaces"
+            }
+          ]
+        },
+        "Table": {
+          "id": 3707,
+          "name": "Table",
+          "type": "single_select",
+          "order": 2,
+          "select_options": [
+            {
+              "id": 1939,
+              "value": "Books"
+            },
+            {
+              "id": 1940,
+              "value": "Sleep Log"
+            },
+            {
+              "id": 1941,
+              "value": "Workouts"
+            },
+            {
+              "id": 1942,
+              "value": "People"
+            }
+          ]
+        },
+        "Error type": {
+          "id": 3708,
+          "name": "Error type",
+          "type": "single_select",
+          "order": 3,
+          "select_options": [
+            {
+              "id": 1943,
+              "value": "Unsupported feature"
+            },
+            {
+              "id": 1944,
+              "value": "Data type mismatch"
+            },
+            {
+              "id": 1945,
+              "value": "Other"
+            }
+          ]
+        },
+        "Message": {
+          "id": 3709,
+          "name": "Message",
+          "type": "long_text",
+          "order": 4
+        }
+      }
+    }
+  }
+}

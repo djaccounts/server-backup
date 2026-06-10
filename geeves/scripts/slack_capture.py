@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-slack_capture.py — Geeves Slack → Airtable Capture Loop
+slack_capture.py — Geeves Slack → Baserow Capture Loop
 
 Reads Slack messages (from stdin or file), classifies them, and writes
-structured data directly to the correct Airtable table. No intermediate
+structured data directly to the correct Baserow table. No intermediate
 raw-message table — one message produces one useful record.
 
 Usage:
@@ -14,92 +14,56 @@ Usage:
 import subprocess, json, sys, os, re, datetime
 import urllib.request, urllib.error, urllib.parse
 
+# Add scripts dir to path so we can import baserow_api
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import baserow_api
+
 ENV_PATH = os.path.expanduser("~/.hermes/.env")
-BASE = "appzvmonQXs4x2AlL"
-
-# Table IDs (from Airtable metadata)
-TABLES = {
-    "People":           "tbl1WMPtQhWYW7bTI",
-    "Todos":            "tblTcdZQ9AIltQDfu",
-    "Memory_Summaries": "tblXH4eCLwM8S30cn",
-    "Output_Log":       "tbldJT41dAAX1WTkC",
-    # Recipe module tables (IDs filled in after table_builder.py --recipe)
-    "Recipes":          "tblehBgzRMa2Xucjd",
-    "Ingredients":      "tblNsgbYHNK8xWnB7",
-    "Dinner_Parties":   "tblwbQrIu3nUWDz3G",
-    "Dinner_Planner":   "tblnts17CCckLJoUQ",
-    "Shopping_List":    "tbldvpIO91xi72a0K",
-    "Recipe_Context":   "tblJRsw77kbCFyoz9",
-    "Recipe_Output_Log":"tblYaJTAZDZzBkcwH",
-    "Dining_Preferences":"tblzzGIF7yPf37NG5",
-    # Restaurant module tables
-    "Restaurants":         "tblvpSxjeoCQvjotM",
-    "Restaurant_Visits":   "tblf2k6uAHLW7mA4b",
-    # Meals module
-    "Meals":               "tblzEBw7Whoomb63E",
-    # Fitness module
-    "Workouts":            "tblMDYF8Lkl5A15CW",
-    "Exercise Log":        "tbl8MXDYZ2hajsdIk",
-    "Cycling":             "tblZ7hkoE68IRnQwV",
-    "Fitness Goals":       "tblAM0Grin01IQmdd",
-    # Sleep/Habits module
-    "Sleep Log":           "tblTZchsmcXXernI0",
-    "Habits":              "tblS6SryrC3RnRl1L",
-    "Habit Log":           "tbl3YRZ1yoQ7kRPIT",
-    # People module
-    "Person Notes":        "tbl6hnxzXXmWFkVfh",
-    "Conversation Log":    "tbl2dbgksA9XveLcx",
-    # Books module
-    "Books":               "tblUfRTBkCMLUe2pY",
-}
+MAPPING_PATH = "/root/Geeves/baserow_mapping.json"
 
 
-# ── Airtable helpers ────────────────────────────────────────────────────────────
-
-def get_key():
-    r = subprocess.run(["grep", "AIRTABLE_API_KEY", ENV_PATH], capture_output=True, text=True)
-    line = r.stdout.strip().split("\n")[0]
-    return line.split("=", 1)[1] if "=" in line else ""
-
-
-def api(method, path, data=None):
-    key = get_key()
-    if not key:
-        print("ERROR: AIRTABLE_API_KEY not found", file=sys.stderr)
-        sys.exit(1)
-    url = f"https://api.airtable.com/v0/{path}"
-    body = json.dumps(data).encode() if data else None
-    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-    req = urllib.request.Request(url, data=body, headers=headers, method=method)
-    try:
-        with urllib.request.urlopen(req) as resp:
-            return json.loads(resp.read()), resp.status
-    except urllib.error.HTTPError as e:
-        return json.loads(e.read()), e.code
+def load_mapping():
+    if not os.path.exists(MAPPING_PATH):
+        return None
+    with open(MAPPING_PATH) as f:
+        return json.load(f)
 
 
-def q(s):
-    return urllib.parse.quote(s, safe="")
+MAPPING = load_mapping()
 
 
-def airtable_post(table, fields):
-    r, status = api("POST", f"{BASE}/{q(table)}", {"fields": fields})
-    if status == 200:
-        return True, r.get("id", "")
+# ── Baserow helpers ─────────────────────────────────────────────────────────────
+
+def baserow_post(table, fields):
+    """Create a row in Baserow. Returns (success, row_id)."""
+    ok, result = baserow_api.baserow_post(MAPPING, table, fields)
+    if ok:
+        return True, result
     return False, ""
 
 
-def airtable_patch(table, record_id, fields):
-    _, status = api("PATCH", f"{BASE}/{q(table)}/{record_id}", {"fields": fields})
-    return status == 200
+def baserow_patch(table, row_id, fields):
+    """Update a row in Baserow."""
+    return baserow_api.baserow_patch(MAPPING, table, row_id, fields)
 
 
 def find_person(name):
-    formula = f"{{Name}}='{name}'"
-    r, status = api("GET", f"{BASE}/People?filterByFormula={q(formula)}&maxRecords=5")
-    if status == 200:
-        records = r.get("records", [])
-        return records[0] if records else None
+    """Find a person by name in Baserow."""
+    if not name:
+        return None
+    results = baserow_api.baserow_search(MAPPING, "People", name)
+    if results:
+        return results[0]
+    return None
+
+
+def find_restaurant(name):
+    """Find a restaurant by name in Baserow."""
+    if not name:
+        return None
+    results = baserow_api.baserow_search(MAPPING, "Restaurants", name)
+    if results:
+        return results[0]
     return None
 
 
@@ -131,7 +95,6 @@ CATEGORY_RULES = [
         r"\bdinner\s+party\b", r"\bplan\s+(a\s+)?dinner\b",
         r"\bfavourite\s+recipe\b", r"\brecipe\s+request\b",
         r"\bmealie\b",
-        # Pasting raw recipe text patterns
         r"\bINGREDIENTS\b", r"\bINSTRUCTIONS\b", r"\bPREP\s*TIME\b",
         r"\bcups?\s+(of\s+)?(flour|sugar|butter|milk|oil)\b",
         r"\btablespoons?\s+(of\s+)?\w+\b", r"\bteaspoons?\s+(of\s+)?\w+\b",
@@ -217,7 +180,6 @@ def classify_message(text):
 # ── Extraction helpers ──────────────────────────────────────────────────────────
 
 def extract_name(text):
-    """Try to extract a person's name from a message."""
     normalized = re.sub(r"\b(she|he|they|we|I)'s\b", r"\1 is", text, flags=re.IGNORECASE)
     normalized = re.sub(r"\b(she|he|they|we|I)'ve\b", r"\1 have", normalized, flags=re.IGNORECASE)
 
@@ -245,7 +207,6 @@ def extract_name(text):
         if m:
             name = m.group(group).strip()
             if name and name[0].isupper() and name.lower() not in skip and len(name) > 1:
-                # If multi-word and second word is lowercase, take first word only
                 words = name.split()
                 if len(words) > 1 and words[1][0].islower():
                     name = words[0]
@@ -255,7 +216,7 @@ def extract_name(text):
 
 
 def extract_todo_task(text):
-    text = re.sub(r"^(todo|task|remind me|don't forget|follow up)\s*[:\-]?\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"^(todo|task|remind me|don't forget|follow up)\s*[:\\-]?\s*", "", text, flags=re.IGNORECASE)
     return text.strip()
 
 
@@ -286,11 +247,10 @@ def handle_person_note(msg, dry_run=False):
     if name:
         existing = find_person(name)
         if existing:
-            # Create a Person Notes record linked to this person
             if dry_run:
                 print(f"  [DRY RUN] Would create person note for {name}: {text[:60]}")
                 return True
-            ok, _ = airtable_post("Person Notes", {
+            ok, _ = baserow_post("Person Notes", {
                 "Note": text,
                 "Person": [existing["id"]],
                 "Source": "Slack",
@@ -299,17 +259,15 @@ def handle_person_note(msg, dry_run=False):
                 print(f"  ✅ Created person note for {name}")
             return ok
         else:
-            # Person doesn't exist — create them with Tier 4
             if dry_run:
                 print(f"  [DRY RUN] Would create new person: {name}")
                 return True
-            ok, pid = airtable_post("People", {
+            ok, pid = baserow_post("People", {
                 "Name": name,
                 "Tier": "Tier 4",
             })
             if ok:
-                # Also create a Person Note with the context
-                airtable_post("Person Notes", {
+                baserow_post("Person Notes", {
                     "Note": f"Added via Slack: {text}",
                     "Person": [pid],
                     "Source": "Slack",
@@ -317,16 +275,16 @@ def handle_person_note(msg, dry_run=False):
                 print(f"  ✅ Created new person: {name}")
             return ok
     else:
-        # No name found — store as memory note
         print(f"  ℹ️  No name extracted — storing as memory note")
         if dry_run:
             return True
-        return airtable_post("Memory_Summaries", {
+        ok, _ = baserow_post("Memory Summaries", {
             "Period": "Ad-hoc",
             "Summary": text,
             "Source Entries": f"[{ts}] {text}",
             "Created": today,
         })
+        return ok
 
 
 def handle_todo(msg, dry_run=False):
@@ -339,7 +297,7 @@ def handle_todo(msg, dry_run=False):
     if dry_run:
         print(f"  [DRY RUN] Would create todo: {json.dumps(fields)}")
         return True
-    ok, _ = airtable_post("Todos", fields)
+    ok, _ = baserow_post("Todos", fields)
     if ok:
         print(f"  ✅ Created todo: {task[:60]}")
     return ok
@@ -351,48 +309,46 @@ def handle_memory(msg, dry_run=False):
     if dry_run:
         print(f"  [DRY RUN] Would store memory note")
         return True
-    return airtable_post("Memory_Summaries", {
+    ok, _ = baserow_post("Memory Summaries", {
         "Period": "Ad-hoc",
         "Summary": text,
         "Source Entries": f"[{ts}] {text}",
-        "Created": datetime.date.today()[0].isoformat(),
+        "Created": datetime.date.today().isoformat(),
     })
+    return ok
 
 
 def handle_module_request(msg, dry_run=False):
     text = msg.get("text", "")
     if dry_run:
-        print(f"  [DRY RUN] Would log module request to Output_Log")
+        print(f"  [DRY RUN] Would log module request to Output Log")
         return True
-    return airtable_post("Output_Log", {
+    ok, _ = baserow_post("Output Log", {
         "Item": text[:100],
         "Module": "General",
-        "Generated At": datetime.date.today()[0].isoformat(),
+        "Generated At": datetime.date.today().isoformat(),
         "Content": text,
     })
+    return ok
 
 
 def handle_recipe(msg, dry_run=False):
-    """Handle recipe-related messages — log to Output_Log for Hermes to process."""
     text = msg.get("text", "")
     if dry_run:
-        print(f"  [DRY RUN] Would log recipe request to Output_Log (Module=Recipe)")
+        print(f"  [DRY RUN] Would log recipe request to Output Log (Module=Recipe)")
         return True
-    return airtable_post("Output_Log", {
+    ok, _ = baserow_post("Output Log", {
         "Item": text[:100],
         "Module": "Recipe",
-        "Generated At": datetime.date.today()[0].isoformat(),
+        "Generated At": datetime.date.today().isoformat(),
         "Content": text,
     })
+    return ok
 
 
 def handle_meal(msg, dry_run=False):
-    """Handle meal logging messages — log to Meals table."""
     text = msg.get("text", "")
-    ts = msg.get("ts", "")
     today = datetime.date.today().isoformat()
-
-    # Extract what was eaten — remove common prefixes
     description = text
     prefixes = [
         r"(?i)^i ate\s+", r"(?i)^i had\s+", r"(?i)^i've had\s+",
@@ -404,9 +360,8 @@ def handle_meal(msg, dry_run=False):
     for prefix in prefixes:
         description = re.sub(prefix, "", description).strip()
 
-    # Detect meal type from context
     text_lower = text.lower()
-    meal_type = "Snack"  # default
+    meal_type = "Snack"
     if re.search(r"\b(breakfast|morning)\b", text_lower):
         meal_type = "Breakfast"
     elif re.search(r"\b(lunch|midday)\b", text_lower):
@@ -416,7 +371,6 @@ def handle_meal(msg, dry_run=False):
     elif re.search(r"\b(snack|afternoon)\b", text_lower):
         meal_type = "Snack"
 
-    # Time-based fallback for meal type
     if meal_type == "Snack":
         hour = datetime.datetime.now().hour
         if hour < 11:
@@ -430,26 +384,22 @@ def handle_meal(msg, dry_run=False):
         print(f"  [DRY RUN] Would log meal: {description[:60]} (type={meal_type})")
         return True
 
-    return airtable_post("Meals", {
+    ok, _ = baserow_post("Meals", {
         "Description": description[:200],
         "Date": today,
         "Meal type": meal_type,
         "Accuracy": "Estimated",
         "Source": "Slack",
     })
+    return ok
 
-
-# ── Sleep/Habit helpers ──────────────────────────────────────────────────────────
 
 def handle_sleep_habit(msg, dry_run=False):
-    """Handle sleep logging and habit tracking messages."""
     text = msg.get("text", "")
     today = datetime.date.today().isoformat()
     text_lower = text.lower()
 
-    # Check if this is a sleep log message
     if re.search(r"\b(slept|sleep|bed|woke|wake)\b", text_lower):
-        # Extract bedtime
         bedtime = None
         m = re.search(r"(?:went to bed|bed at|slept at)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", text_lower)
         if m:
@@ -459,7 +409,6 @@ def handle_sleep_habit(msg, dry_run=False):
             if m:
                 bedtime = m.group(1).strip()
 
-        # Extract wake time
         wake_time = None
         m = re.search(r"(?:woke|wake)\s+(?:at\s+)?(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)", text_lower)
         if m:
@@ -469,15 +418,13 @@ def handle_sleep_habit(msg, dry_run=False):
             if m:
                 wake_time = m.group(1).strip()
 
-        # Extract hours slept
         hours = None
         m = re.search(r"(\d+(?:\.\d+)?)\s*hours?\s*(?:of\s+)?(?:sleep|slept)", text_lower)
         if m:
             hours = float(m.group(1))
 
-        # Extract quality
         quality = None
-        m = re.search(r"(?:quality|rated?|rating)\s+(\d)\s*/?\s*5?", text_lower)
+        m = re.search(r"(?:quality|rated?|rating)\s+(\d)\s*/?5?", text_lower)
         if m:
             quality = int(m.group(1))
 
@@ -494,13 +441,12 @@ def handle_sleep_habit(msg, dry_run=False):
             fields["Hours slept"] = hours
         if quality:
             fields["Quality"] = quality
-        if len(fields) > 1:  # More than just Date
-            return airtable_post("Sleep Log", fields)
+        if len(fields) > 1:
+            ok, _ = baserow_post("Sleep Log", fields)
+            return ok
         return False
 
-    # Check if this is a habit message
     if re.search(r"\b(habit|completed|did my|logged|routine|streak)\b", text_lower):
-        # Extract habit name
         habit_name = None
         m = re.search(r"(?:did my|completed|logged)\s+(.+?)(?:\s*$|\s+(?:habit|today|streak))", text_lower)
         if m:
@@ -511,38 +457,32 @@ def handle_sleep_habit(msg, dry_run=False):
             return True
 
         if habit_name:
-            # Find or create the habit
-            formula = f"{{Habit}}='{habit_name}'"
-            r, status = api("GET", f"{BASE}/Habits?filterByFormula={q(formula)}&maxRecords=1")
+            results = baserow_api.baserow_search(MAPPING, "Habits", habit_name)
             habit_id = None
-            if status == 200 and r.get("records"):
-                habit_id = r["records"][0]["id"]
+            if results:
+                habit_id = results[0]["id"]
             else:
-                # Create the habit
-                hr, hs = api("POST", f"{BASE}/Habits", {"fields": {"Habit": habit_name, "Active": True}})
-                if hs == 200:
-                    habit_id = hr.get("id")
+                ok, hid = baserow_post("Habits", {"Habit": habit_name, "Active": True})
+                if ok:
+                    habit_id = hid
 
             if habit_id:
-                return airtable_post("Habit Log", {
+                ok, _ = baserow_post("Habit Log", {
                     "Date": today,
                     "Habit": [habit_id],
                     "Completed": True,
                 })
+                return ok
         return False
 
     return False
 
 
-# ── Fitness helpers ─────────────────────────────────────────────────────────────
-
 def handle_fitness(msg, dry_run=False):
-    """Handle workout logging, gym sessions, cycling, and fitness goals."""
     text = msg.get("text", "")
     today = datetime.date.today().isoformat()
     text_lower = text.lower()
 
-    # Detect workout type
     workout_type = "Other"
     if re.search(r"\b(gym|lift|weights|bench|squat|deadlift|press|hiit)\b", text_lower):
         workout_type = "Gym"
@@ -559,7 +499,6 @@ def handle_fitness(msg, dry_run=False):
     elif re.search(r"\b(class|session|peloton)\b", text_lower):
         workout_type = "Class"
 
-    # Extract duration
     duration = None
     m = re.search(r"(\d+)\s*(?:min|mins|minutes)\b", text_lower)
     if m:
@@ -569,7 +508,6 @@ def handle_fitness(msg, dry_run=False):
         if m:
             duration = int(m.group(1)) * 60
 
-    # Extract distance
     distance = None
     m = re.search(r"(\d+(?:\.\d+)?)\s*(?:km|kilomet)", text_lower)
     if m:
@@ -579,20 +517,18 @@ def handle_fitness(msg, dry_run=False):
         if m:
             distance = round(float(m.group(1)) * 1.609, 1)
 
-    # Extract energy level
     energy = None
     m = re.search(r"(?:energy|felt|feeling)\s+(\d)\s*/?5", text_lower)
     if m:
         energy = int(m.group(1))
 
-    # Extract difficulty
     difficulty = None
     m = re.search(r"(?:difficulty|hard|tough)\s+(\d)\s*/?5", text_lower)
     if m:
         difficulty = int(m.group(1))
 
     if dry_run:
-        print(f"  [DRY RUN] Would log workout: type={workout_type}, dur={distance}, dist={distance}, energy={energy}, diff={difficulty}")
+        print(f"  [DRY RUN] Would log workout: type={workout_type}, dur={duration}, dist={distance}")
         return True
 
     fields = {"Date": today, "Type": workout_type, "Source": "Slack"}
@@ -605,7 +541,6 @@ def handle_fitness(msg, dry_run=False):
     if difficulty:
         fields["Perceived difficulty"] = difficulty
 
-    # Cycle rides get a linked Cycling record
     if workout_type == "Cycle":
         ride_type = "Road"
         for rt, label in [("gravel", "Gravel"), ("mtb", "MTB"), ("turbo", "Turbo"), ("commute", "Commute")]:
@@ -629,7 +564,7 @@ def handle_fitness(msg, dry_run=False):
         if m:
             bike = m.group(1).strip()
 
-        ok, workout_id = airtable_post("Workouts", {**fields, "Notes": text[:500]})
+        ok, workout_id = baserow_post("Workouts", {**fields, "Notes": text[:500]})
         if ok:
             cycling_fields = {"Date": today, "Workout": [workout_id], "Ride type": ride_type}
             if distance:
@@ -644,20 +579,19 @@ def handle_fitness(msg, dry_run=False):
                 cycling_fields["Max speed (mph)"] = max_speed
             if bike:
                 cycling_fields["Bike used"] = bike.capitalize()
-            airtable_post("Cycling", cycling_fields)
+            baserow_post("Cycling", cycling_fields)
             dist_str = f"{distance}km " if distance else ""
             print(f"  ✅ Logged cycle ride: {dist_str}{ride_type}")
             return True
         return False
 
-    # Gym sessions: extract exercises
     if workout_type == "Gym":
         exercises = _extract_exercises(text)
         if exercises:
-            ok, workout_id = airtable_post("Workouts", {**fields, "Notes": text[:500]})
+            ok, workout_id = baserow_post("Workouts", {**fields, "Notes": text[:500]})
             if ok:
                 for ex in exercises:
-                    airtable_post("Exercise Log", {
+                    baserow_post("Exercise Log", {
                         "Exercise": ex["name"],
                         "Workout": [workout_id],
                         "Sets": ex.get("sets"),
@@ -668,8 +602,7 @@ def handle_fitness(msg, dry_run=False):
                 return True
             return False
 
-    # Default: just log the workout
-    ok, _ = airtable_post("Workouts", {**fields, "Notes": text[:500]})
+    ok, _ = baserow_post("Workouts", {**fields, "Notes": text[:500]})
     if ok:
         type_str = workout_type if workout_type != "Other" else "workout"
         dur_str = f", {duration}min" if duration else ""
@@ -679,20 +612,13 @@ def handle_fitness(msg, dry_run=False):
 
 
 def _extract_exercises(text):
-    """Extract exercise names, sets, reps, weight from gym session text."""
     exercises = []
     text_lower = text.lower()
-
-    # Pattern: "sets x reps exercise" or "exercise: sets x reps at weight kg"
     patterns = [
-        # "3x8 bench press at 60kg"
         r'(\d+)\s*x\s*(\d+)\s+(?:at\s+\d+(?:\.\d+)?\s*kg\s+)?([\w\s]+?)(?:\s+at\s+(\d+(?:\.\d+)?)\s*kg)?(?:\s*[,\.;]|$)',
-        # "bench press: 3x8 at 60kg"
         r'([\w\s]+?):\s*(\d+)\s*x\s*(?:\d+\s*,\s*)*(?:\d+)\s*(?:at\s+(\d+(?:\.\d+)?)\s*kg)?',
-        # "3 sets of 8 bench press at 60kg"
         r'(\d+)\s+sets?\s+(?:of\s+)?(\d+)\s+(?:reps?\s+)?([\w\s]+?)(?:\s+at\s+(\d+(?:\.\d+)?)\s*kg)?(?:\s*[,\.;]|$)',
     ]
-
     known_exercises = [
         "bench press", "squat", "deadlift", "overhead press", "ohp",
         "barbell row", "pull ups", "pullups", "lat pulldown", "leg press",
@@ -701,7 +627,6 @@ def _extract_exercises(text):
         "incline bench", "decline bench", "dumbbell press", "cable row",
         "face pull", "shrugs", "dips", "crunches", "plank",
     ]
-
     found_names = set()
     for pattern in patterns:
         for m in re.finditer(pattern, text_lower):
@@ -709,32 +634,27 @@ def _extract_exercises(text):
             if len(groups) < 3:
                 continue
             if "set" in groups[0] or groups[0].isdigit() and int(groups[0]) > 30:
-                # Pattern 1 or 3: sets, reps, name, weight
                 sets = int(groups[0])
                 reps = groups[1]
                 name = groups[2].strip().title()[:50]
                 weight = f"{groups[3]}kg" if len(groups) > 3 and groups[3] else None
             else:
-                # Pattern 2: name, sets, weight
                 name = groups[0].strip().title()[:50]
                 sets = int(groups[1]) if groups[1] else None
                 reps = None
                 weight = f"{groups[2]}kg" if len(groups) > 2 and groups[2] else None
-
             if name and len(name) > 2 and name not in found_names:
                 found_names.add(name)
                 exercises.append({"name": name, "sets": sets, "reps": reps, "weight": weight})
-
     if exercises:
         return exercises
-
-    # Fallback: just match known exercise names
     for ex in known_exercises:
         if ex in text_lower:
             if ex not in found_names:
                 found_names.add(ex)
                 exercises.append({"name": ex.title(), "sets": None, "reps": None, "weight": None})
     return exercises
+
 
 def get_omdb_key():
     r = subprocess.run(["grep", "OMDB_API_KEY", ENV_PATH], capture_output=True, text=True)
@@ -774,7 +694,7 @@ def extract_film_title(text):
                 "the", "about", "like", "really", "very", "by", "as", "so",
                 "if", "or", "up", "out", "off", "not", "just", "also", "list",
                 "remote", "remotely", "online", "zoom"}
-    m = re.search(r'["\u201c\u201d\']([A-Z][^"\']{1,60})["\u201c\u201d\']', text)
+    m = re.search(r'["\u201c\u201d\']([A-Z][^\"\']{1,60})["\u201c\u201d\']', text)
     if m:
         return m.group(1).strip()
     patterns = [
@@ -802,26 +722,20 @@ def extract_film_title(text):
 
 
 def extract_rating(text):
-    """Extract a rating and convert to 1-10 scale."""
-    # Star unicode characters (★★★★★ = 5 stars → 10/10)
     m = re.search(r'((?:★){1,5})', text)
     if m:
         star_map = {5: '10', 4: '8', 3: '6', 2: '4', 1: '2'}
         return star_map.get(m.group(1).count('★'), None)
-    # X/5 format → double for 10-point scale
     m = re.search(r'(\d(?:\.\d)?)\s*/\s*5', text)
     if m:
         val = float(m.group(1))
         return str(min(int(val * 2), 10))
-    # X/10 format
     m = re.search(r'(\d{1,2})(?:\.\d)?\s*/\s*10', text)
     if m:
         return str(min(int(m.group(1)), 10))
-    # "rated X" or "gave it X" or "scored X" (assume out of 10)
     m = re.search(r'(?:rated?|gave|scored?)\s+(?:it\s+)?(\d(?:\.\d)?)\s*(?:out of\s+(?:5|10))?', text, re.IGNORECASE)
     if m:
         val = float(m.group(1))
-        # If it's out of 5, double it
         if 'out of 5' in text.lower() or val <= 5:
             return str(min(int(val * 2), 10))
         return str(min(int(val), 10))
@@ -861,14 +775,15 @@ def handle_film_club(msg, dry_run=False):
 
     if not film_title:
         if dry_run:
-            print(f"  [DRY RUN] Would log film club note to Output_Log")
+            print(f"  [DRY RUN] Would log film club note to Output Log")
             return True
-        return airtable_post("Output_Log", {
+        ok, _ = baserow_post("Output Log", {
             "Item": "Film Club note",
             "Module": "FilmClub",
-            "Generated At": datetime.date.today()[0].isoformat(),
+            "Generated At": datetime.date.today().isoformat(),
             "Content": text,
         })
+        return ok
 
     print(f"   🔍 IMDb lookup: '{film_title}'...")
     imdb = imdb_lookup(film_title)
@@ -904,19 +819,16 @@ def handle_film_club(msg, dry_run=False):
         print(f"  [DRY RUN] Would create Films: {json.dumps(fields, indent=2)[:300]}")
         return True
 
-    ok, _ = airtable_post("Films", fields)
+    ok, _ = baserow_post("Films", fields)
     if ok:
         print(f"  ✅ Films record created")
     return ok
 
 
 def handle_restaurant(msg, dry_run=False):
-    """Handle restaurant-related messages — create Restaurants and Restaurant Visits records."""
     text = msg.get("text", "")
-    ts = msg.get("ts", "")
     today = datetime.date.today().isoformat()
 
-    # Extract restaurant name
     restaurant_name = extract_restaurant_name(text)
     rating = extract_rating(text)
     wife_rating = extract_wife_rating(text)
@@ -927,21 +839,19 @@ def handle_restaurant(msg, dry_run=False):
     print(f"   🍽️ Restaurant: {restaurant_name or 'unknown'} | Rating: {rating or '—'} | Wife: {wife_rating or '—'} | Return: {would_return or '—'}")
 
     if not restaurant_name:
-        # Can't identify restaurant — log for Hermes to handle
         if dry_run:
-            print(f"  [DRY RUN] Would log restaurant note to Output_Log")
+            print(f"  [DRY RUN] Would log restaurant note to Output Log")
             return True
-        return airtable_post("Output_Log", {
+        ok, _ = baserow_post("Output Log", {
             "Item": text[:100],
             "Module": "Restaurant",
             "Generated At": today,
             "Content": text,
-        })[0]
+        })
+        return ok
 
-    # Build Google search URL for the restaurant
     maps_url = f"https://www.google.com/search?q={urllib.parse.quote(restaurant_name + ' restaurant London')}"
 
-    # Find or create restaurant record
     existing = find_restaurant(restaurant_name)
     if existing:
         restaurant_id = existing["id"]
@@ -954,15 +864,14 @@ def handle_restaurant(msg, dry_run=False):
             print(f"  [DRY RUN] Would create restaurant: {json.dumps(fields)}")
             restaurant_id = "dry_run_id"
         else:
-            ok, rid = airtable_post("Restaurants", fields)
+            ok, rid = baserow_post("Restaurants", fields)
             if ok:
                 restaurant_id = rid
                 print(f"  ✅ Created restaurant: {restaurant_name}")
             else:
                 print(f"  ❌ Failed to create restaurant")
-                return True  # still try to log visit
+                return True
 
-    # Create visit record
     visit_fields = {"Date": today, "Source": "Slack"}
     if restaurant_id and restaurant_id != "dry_run_id":
         visit_fields["Restaurant"] = [restaurant_id]
@@ -981,16 +890,14 @@ def handle_restaurant(msg, dry_run=False):
         print(f"  [DRY RUN] Would create visit: {json.dumps(visit_fields)}")
         return True
 
-    ok, _ = airtable_post("Restaurant_Visits", visit_fields)
+    ok, _ = baserow_post("Restaurant Visits", visit_fields)
     if ok:
         print(f"  ✅ Created restaurant visit for: {restaurant_name}")
     return ok
 
 
 def extract_restaurant_name(text):
-    """Extract restaurant name from a message."""
-    # Quoted names
-    m = re.search(r'["\u201c\u201d\']([A-Z][^"\']{2,60})["\u201c\u201d\']', text)
+    m = re.search(r'["\u201c\u201d\']([A-Z][^\"\']{2,60})["\u201c\u201d\']', text)
     if m:
         return m.group(1).strip()
 
@@ -1027,7 +934,6 @@ def extract_restaurant_name(text):
 
 
 def extract_wife_rating(text):
-    """Extract wife's rating from message."""
     m = re.search(r"(?:wife|she)\s+(?:rated|gave|scored)\s+(?:it\s+)?(\d(?:\.\d)?)\s*(?:/|out of)\s*(?:5|10)", text, re.IGNORECASE)
     if m:
         val = float(m.group(1))
@@ -1052,20 +958,16 @@ def extract_would_return(text):
 
 
 def handle_books(msg, dry_run=False):
-    """Handle book-related messages — add to reading list, log finished books, track reading."""
     import re as _re
     text = msg.get("text", "")
     today = datetime.date.today().isoformat()
     text_lower = text.lower()
 
-    # Extract title — look for quoted text or text after "book" / "add" / "reading"
     title = None
-    # Try quoted title first
     m = _re.search(r'"([^"]+)"', text)
     if m:
         title = m.group(1).strip()
     else:
-        # Try patterns like "add X to my list" or "finished X" or "reading X"
         for pattern in [
             _re.compile(r'(?:add|finished|reading|started|just read|want to read|recommend(?:ed)?)\s+(?:the\s+)?(?:book\s+)?["\u201c]?([^"\u201d]+?)["\u201d]?\s+(?:to my|to the|from|by|today|this year|$)', _re.IGNORECASE),
             _re.compile(r'(?:book|novel)\s+(?:called|named|titled)\s+["\u201c]?([^"\u201d]+)["\u201d]?', _re.IGNORECASE),
@@ -1078,14 +980,12 @@ def handle_books(msg, dry_run=False):
                     title = candidate
                     break
 
-    # Extract author
     author = None
     m = _re.search(r'(?:by|author)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', text)
     if m:
         author = m.group(1).strip()
 
-    # Determine status — order matters! More specific patterns first.
-    status = "Want to read"  # default
+    status = "Want to read"
     if _re.search(r'\b(finished|just read|completed)\b', text_lower):
         status = "Read"
     elif _re.search(r'\b(gave up|stopped|abandoned|quit)\b', text_lower):
@@ -1099,21 +999,18 @@ def handle_books(msg, dry_run=False):
     elif _re.search(r'\breading\b', text_lower):
         status = "Reading"
 
-    # Extract rating
     rating = None
     m = _re.search(r'(?:rated?|rating|gave)\s+(?:it\s+)?(\d+(?:\.\d+)?)\s*/?\s*(?:5|10)?', text_lower)
     if m:
         val = float(m.group(1))
-        if val > 5:  # Assume 10-point scale
+        if val > 5:
             val = val / 2
         rating = min(5, max(1, round(val)))
     else:
-        # Look for star emojis or X/5 patterns
         m = _re.search(r'(\d+)\s*/\s*5', text)
         if m:
             rating = min(5, max(1, int(m.group(1))))
 
-    # Build fields
     fields = {}
     if title:
         fields["Title"] = title[:200]
@@ -1136,14 +1033,13 @@ def handle_books(msg, dry_run=False):
         print(f"  [DRY RUN] Would create book record: {json.dumps(fields)}")
         return True
 
-    ok, _ = airtable_post("Books", fields)
+    ok, _ = baserow_post("Books", fields)
     if ok:
         print(f"  ✅ Book: '{title}' → {status}" + (f" ({rating}★)" if rating else ""))
     return ok
 
 
 def extract_cost(text):
-    """Extract total cost from message."""
     m = re.search(r'(?:bill|cost|total|spent|was)\s+(?:£|GBP\s+)(\d{2,4})(?:\.\d{2})?', text, re.IGNORECASE)
     if m:
         return float(m.group(1))
@@ -1154,33 +1050,11 @@ def extract_cost(text):
 
 
 def extract_dishes(text):
-    """Extract dishes ordered from message."""
     m = re.search(r'(?:had|ordered|ate|tried)\s+(?:the\s+)?(.+?)(?:\.|,|;|\band\b)', text, re.IGNORECASE)
     if m:
         dishes = m.group(1).strip()
         if len(dishes) > 5 and len(dishes) < 200:
             return dishes
-    return None
-
-
-def find_restaurant(name):
-    """Find a restaurant by name (fuzzy match)."""
-    if not name:
-        return None
-    # Try exact match first
-    formula = f"{{Name}}='{name}'"
-    r, status = api("GET", f"{BASE}/Restaurants?filterByFormula={q(formula)}&maxRecords=5")
-    if status == 200:
-        records = r.get("records", [])
-        if records:
-            return records[0]
-    # Try contains match
-    formula = f"FIND('{name}', {{Name}})>0"
-    r, status = api("GET", f"{BASE}/Restaurants?filterByFormula={q(formula)}&maxRecords=5")
-    if status == 200:
-        records = r.get("records", [])
-        if records:
-            return records[0]
     return None
 
 

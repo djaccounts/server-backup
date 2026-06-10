@@ -18,6 +18,8 @@ import json
 import subprocess
 import sys
 import time
+import urllib.request
+import urllib.error
 from datetime import datetime, timedelta
 
 # ── Config ──────────────────────────────────────────────────────────────────
@@ -207,7 +209,6 @@ def create_cycling_record(activity, detail, workout_id=None):
     data = {"fields": fields}
     result = airtable_request("POST", CYCLING_TABLE, data)
     return result
-
 
 def main():
     days = 7

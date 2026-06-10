@@ -1,121 +1,189 @@
 #!/usr/bin/env python3
 """
-Geeves Airtable Table Builder
+Geeves Baserow Table Builder
 
-Creates tables and fields in the Geeves Airtable base via the REST API.
+Creates tables and fields in the Geeves Baserow database via the Platform API.
 
-IMPORTANT: The Airtable API can CREATE tables and fields but CANNOT delete them.
-If a table has the wrong schema, you must delete it manually in the Airtable
-web UI first, then run this script to recreate it correctly.
+IMPORTANT: The Baserow Platform API can CREATE and DELETE tables and fields.
+If a table has the wrong schema, you can delete it via API and recreate it.
 
 Usage:
     python3 table_builder.py                    # show current schema
     python3 table_builder.py --fix              # create/fix core tables
-    python3 table_builder.py --module DinnerParty  # scaffold a new module
+    python3 table_builder.py --module <Name>    # scaffold a new module
     python3 table_builder.py --check            # verify schema matches spec
+    python3 table_builder.py --delete-table <name>  # delete a table
 """
-import subprocess, json, sys, urllib.request, urllib.error
+import subprocess, json, sys, urllib.request, urllib.error, urllib.parse
 
-BASE = "appzvmonQXs4x2AlL"
+DB_ID = 132
+BASE_URL = "http://77.68.33.121"
+ENV_PATH = "/root/.hermes/.env"
 
+# Baserow field type names (Platform API)
 FIELD_TYPE_MAP = {
-    "text": "singleLineText",
-    "longText": "multilineText",
+    "text": "text",
+    "longText": "long_text",
     "date": "date",
-    "select": "singleSelect",
-    "multiSelect": "multipleSelects",
+    "select": "single_select",
+    "multiSelect": "multiple_select",
     "number": "number",
-    "checkbox": "checkbox",
+    "checkbox": "boolean",
     "email": "email",
-    "phone": "phoneNumber",
+    "phone": "phone_number",
     "url": "url",
-    "link": "multipleRecordLinks",
-    "createdTime": "createdTime",
-    "lastModifiedTime": "lastModifiedTime",
-    "attachment": "multipleAttachments",
-    "user": "singleCollaborator",
+    "link": "link_row",
+    "createdTime": "created_on",
+    "lastModifiedTime": "last_modified",
+    "attachment": "file",
+    "user": "created_by",
+    "rating": "rating",
 }
 
-# Fields that can't be set via API (auto-managed by Airtable)
-AUTO_FIELDS = {"createdTime", "lastModifiedTime"}
+# Fields that are auto-managed by Baserow (skip during creation)
+AUTO_FIELDS = {"created_on", "last_modified", "created_by", "last_modified_by", "id"}
+
+# Color palette for select options (cycles through)
+SELECT_COLORS = [
+    "red-light", "orange-light", "yellow-light", "green-light",
+    "blue-light", "purple-light", "pink-light", "gray-light",
+]
 
 
-def get_key():
-    r = subprocess.run(["grep", "AIRTABLE_API_KEY", "/root/.hermes/.env"], capture_output=True, text=True)
+def get_api_token():
+    """Get the database API token from .env (for row operations)."""
+    r = subprocess.run(["grep", "BASEROW_API_TOKEN", ENV_PATH], capture_output=True, text=True)
     line = r.stdout.strip().split("\n")[0]
     return line.split("=", 1)[1] if "=" in line else ""
 
 
-def api(method, path, data=None):
-    key = get_key()
-    if not key:
-        print("ERROR: AIRTABLE_API_KEY not found")
+def get_jwt_token():
+    """Get a JWT token for Platform API operations (table/field CRUD)."""
+    email = "daverj1987@gmail.com"
+    password = "TempPass123!"
+    data = json.dumps({"email": email, "password": password}).encode()
+    headers = {"Content-Type": "application/json"}
+    req = urllib.request.Request(f"{BASE_URL}/api/user/token-auth/", data=data, headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read())
+            return result.get("token", "")
+    except Exception as e:
+        print(f"ERROR: Failed to get JWT token: {e}")
+        return ""
+
+
+def api(method, path, data=None, jwt=None):
+    """Make a Platform API request using JWT auth."""
+    token = jwt or get_jwt_token()
+    if not token:
+        print("ERROR: No JWT token available")
         sys.exit(1)
-    url = f"https://api.airtable.com/v0/{path}"
+    url = BASE_URL + path
     body = json.dumps(data).encode() if data else None
-    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"JWT {token}", "Content-Type": "application/json"}
     req = urllib.request.Request(url, data=body, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(req) as resp:
-            return json.loads(resp.read()), resp.status
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            resp_body = resp.read()
+            if resp.status == 204 or not resp_body:
+                return {}
+            return json.loads(resp_body)
     except urllib.error.HTTPError as e:
-        return json.loads(e.read()), e.code
+        err_body = e.read().decode()
+        try:
+            err = json.loads(err_body)
+        except Exception:
+            err = {"raw": err_body[:500]}
+        return {"error": e.code, "detail": err}
+
+
+def api_db(method, path, data=None):
+    """Make a Database API request using token auth (for row operations)."""
+    token = get_api_token()
+    if not token:
+        print("ERROR: No API token available")
+        sys.exit(1)
+    url = BASE_URL + path
+    body = json.dumps(data).encode() if data else None
+    headers = {"Authorization": f"Token {token}", "Content-Type": "application/json"}
+    req = urllib.request.Request(url, data=body, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            resp_body = resp.read()
+            if resp.status == 204 or not resp_body:
+                return {}
+            return json.loads(resp_body)
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode()
+        try:
+            err = json.loads(err_body)
+        except Exception:
+            err = {"raw": err_body[:500]}
+        return {"error": e.code, "detail": err}
 
 
 def list_tables():
-    r, status = api("GET", f"meta/bases/{BASE}/tables")
-    if status == 200:
-        return r.get("tables", [])
+    """List all tables in the database."""
+    r = api("GET", f"/api/database/tables/database/{DB_ID}/")
+    if isinstance(r, list):
+        return r
     print(f"Error listing tables: {r}")
     return []
 
 
+def list_fields(table_id):
+    """List all fields in a table."""
+    r = api("GET", f"/api/database/fields/table/{table_id}/")
+    if isinstance(r, list):
+        return r
+    print(f"Error listing fields for table {table_id}: {r}")
+    return []
+
+
 def build_field_payload(field_def, ft):
-    """Build the payload for creating a field via Airtable API."""
+    """Build the payload for creating a field via Baserow Platform API."""
     if ft in AUTO_FIELDS:
         return None  # skip auto fields
 
     payload = {"name": field_def["name"], "type": ft}
 
-    if ft == "singleSelect" and "options" in field_def:
-        choices = [{"name": o} for o in field_def["options"]]
-        payload["options"] = {"choices": choices}
+    if ft == "single_select" and "options" in field_def:
+        choices = []
+        for i, o in enumerate(field_def["options"]):
+            color = SELECT_COLORS[i % len(SELECT_COLORS)]
+            choices.append({"value": o, "color": color})
+        payload["select_options"] = choices
 
-    if ft == "multipleSelects" and "options" in field_def:
-        choices = [{"name": o} for o in field_def["options"]]
-        payload["options"] = {"choices": choices}
+    if ft == "multiple_select" and "options" in field_def:
+        choices = []
+        for i, o in enumerate(field_def["options"]):
+            color = SELECT_COLORS[i % len(SELECT_COLORS)]
+            choices.append({"value": o, "color": color})
+        payload["select_options"] = choices
 
-    if ft == "multipleRecordLinks" and "linked_table" in field_def:
-        payload["options"] = {"linkedTableId": field_def["linked_table"]}
+    if ft == "link_row" and "linked_table" in field_def:
+        payload["link_row_table_id"] = field_def["linked_table"]
 
-    # Date fields require format options when creating
     if ft == "date":
-        payload["options"] = {"dateFormat": {"name": "local"}}
+        payload["date_format"] = "ISO"
+        payload["date_include_time"] = False
+        payload["date_show_tzinfo"] = False
 
-    # Number fields require precision options when creating
     if ft == "number":
-        precision = field_def.get("precision", 0)
-        payload["options"] = {"precision": precision}
+        payload["number_decimal_places"] = field_def.get("precision", 0)
+        payload["number_negative"] = field_def.get("negative", True)
 
-    # Checkbox fields require options during table creation
-    if ft == "checkbox":
-        payload["options"] = {"icon": "check", "color": "greenBright"}
+    if ft == "rating":
+        payload["max_value"] = field_def.get("max_value", 5)
 
     return payload
 
 
-def create_table(name, fields):
-    """Create a table with the given fields."""
-    create_fields = []
-    for f in fields:
-        ft = FIELD_TYPE_MAP.get(f["type"], f["type"])
-        payload = build_field_payload(f, ft)
-        if payload is None:
-            continue
-        create_fields.append(payload)
-
-    r, status = api("POST", f"meta/bases/{BASE}/tables", {"name": name, "fields": create_fields})
-    if status == 200:
+def create_table(name, jwt=None):
+    """Create a new table (empty, no fields)."""
+    r = api("POST", f"/api/database/tables/database/{DB_ID}/", {"name": name}, jwt=jwt)
+    if "id" in r:
         print(f"  ✅ Created table '{name}' (id: {r['id']})")
         return r
     else:
@@ -123,20 +191,40 @@ def create_table(name, fields):
         return None
 
 
-def add_field(table_id, field_def):
+def delete_table(table_id, jwt=None):
+    """Delete a table by ID."""
+    r = api("DELETE", f"/api/database/tables/{table_id}/", jwt=jwt)
+    if isinstance(r, dict) and "error" in r:
+        print(f"  ❌ Failed to delete table {table_id}: {json.dumps(r)}")
+        return False
+    print(f"  🗑️  Deleted table {table_id}")
+    return True
+
+
+def add_field(table_id, field_def, jwt=None):
     """Add a field to an existing table."""
     ft = FIELD_TYPE_MAP.get(field_def["type"], field_def["type"])
     payload = build_field_payload(field_def, ft)
     if payload is None:
         return True  # skip auto fields
 
-    r, status = api("POST", f"meta/bases/{BASE}/tables/{table_id}/fields", payload)
-    if status == 200:
+    r = api("POST", f"/api/database/fields/table/{table_id}/", payload, jwt=jwt)
+    if "id" in r:
         print(f"    ✅ Added field '{field_def['name']}' ({ft})")
         return True
     else:
         print(f"    ❌ Failed to add '{field_def['name']}': {json.dumps(r)}")
         return False
+
+
+def delete_field(field_id, jwt=None):
+    """Delete a field by ID."""
+    r = api("DELETE", f"/api/database/fields/{field_id}/", jwt=jwt)
+    if isinstance(r, dict) and "error" in r:
+        print(f"    ❌ Failed to delete field {field_id}: {json.dumps(r)}")
+        return False
+    print(f"    🗑️  Deleted field {field_id}")
+    return True
 
 
 def find_table(tables, name):
@@ -146,7 +234,18 @@ def find_table(tables, name):
     return None
 
 
+def find_field(fields, name):
+    for f in fields:
+        if f["name"].lower() == name.lower():
+            return f
+    return None
+
+
 # ── Table definitions ─────────────────────────────────────────────────────────
+# These mirror the original Airtable definitions but use Baserow types.
+# Link fields use "linked_table" with the Baserow table ID.
+# Since all 41 tables already exist, these are for reference and new modules.
+
 BULLETIN_TABLES = {
     "Weather_Data": {
         "fields": [
@@ -188,7 +287,7 @@ CORE_TABLES = {
             {"name": "Priority", "type": "select", "options": ["Low", "Medium", "High"]},
             {"name": "Due Date", "type": "date"},
             {"name": "Module", "type": "text"},
-            {"name": "Linked Person", "type": "multipleRecordLinks", "link_type": "recordLink"},
+            {"name": "Linked Person", "type": "link"},
             {"name": "Notes", "type": "longText"},
             {"name": "Created", "type": "createdTime"},
             {"name": "Completed Date", "type": "date"},
@@ -219,7 +318,6 @@ CORE_TABLES = {
 FILM_TABLES = {
     "Films": {
         "fields": [
-            # Core film info
             {"name": "Film Title", "type": "text"},
             {"name": "Year", "type": "number", "precision": 0},
             {"name": "Director", "type": "text"},
@@ -228,16 +326,13 @@ FILM_TABLES = {
             {"name": "IMDb Votes", "type": "number", "precision": 0},
             {"name": "Metascore", "type": "number", "precision": 0},
             {"name": "IMDb URL", "type": "url"},
-            # Your personal rating
             {"name": "My Rating", "type": "select", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
             {"name": "Date Watched", "type": "date"},
             {"name": "Personal Notes", "type": "longText"},
-            # Film Club info
             {"name": "Film Club", "type": "select", "options": ["Yes", "No"]},
             {"name": "Month Picked", "type": "text"},
             {"name": "Watched At", "type": "select", "options": ["Hosted (at someone's home)", "Remote (streamed remotely)", "Cinema", "N/A"]},
             {"name": "Club Discussion Notes", "type": "longText"},
-            # Other people's ratings
             {"name": "Member 2 Rating", "type": "select", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Not rated"]},
             {"name": "Member 2 Notes", "type": "longText"},
             {"name": "Member 3 Rating", "type": "select", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Not rated"]},
@@ -270,8 +365,6 @@ RECIPE_TABLES = {
             {"name": "Photo", "type": "attachment"},
             {"name": "Notes", "type": "longText"},
             {"name": "Last cooked", "type": "date"},
-            # Times cooked = rollup from Meals (added when Meals table exists)
-            # Ingredients = multipleRecordLinks → added after Ingredients table exists
         ],
     },
     "Ingredients": {
@@ -286,7 +379,6 @@ RECIPE_TABLES = {
                 "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
             ]},
-            # Recipe = multipleRecordLinks → added after Recipes table exists
         ],
     },
     "Dinner Parties": {
@@ -299,8 +391,6 @@ RECIPE_TABLES = {
             {"name": "Status", "type": "select", "options": [
                 "Planning", "Confirmed", "Done",
             ]},
-            # Guests = multipleRecordLinks → People (added after creation)
-            # Chosen recipes = multipleRecordLinks → Recipes (added after creation)
         ],
     },
     "Dinner Planner": {
@@ -311,7 +401,6 @@ RECIPE_TABLES = {
             {"name": "Status", "type": "select", "options": [
                 "Planned", "Shopping", "Cooking", "Done",
             ]},
-            # Recipe = multipleRecordLinks → Recipes (added after creation)
         ],
     },
     "Shopping List": {
@@ -326,7 +415,6 @@ RECIPE_TABLES = {
                 "Recipe", "Dinner Party", "Manual",
             ]},
             {"name": "Purchased", "type": "checkbox"},
-            # Recipe = multipleRecordLinks → Recipes (added after creation)
         ],
     },
     "Recipe Context": {
@@ -345,7 +433,6 @@ RECIPE_TABLES = {
             ]},
             {"name": "Rating", "type": "number", "precision": 1},
             {"name": "Feedback", "type": "longText"},
-            # Recipe(s) = multipleRecordLinks → Recipes (added after creation)
         ],
     },
     "Dining Preferences": {
@@ -382,7 +469,6 @@ WEEKLY_DIGEST_TABLES = {
                 "Suggested", "Manual",
             ]},
             {"name": "Reflection", "type": "longText"},
-            # Created = createdTime — auto, not created via API
         ],
     },
 }
@@ -440,7 +526,6 @@ RESTAURANT_TABLES = {
             {"name": "Last Visited", "type": "date"},
             {"name": "Photo", "type": "attachment"},
             {"name": "Notes", "type": "longText"},
-            # Recommended By = multipleRecordLinks → People (added after creation)
         ],
     },
     "Restaurant Visits": {
@@ -478,8 +563,6 @@ RESTAURANT_TABLES = {
             {"name": "Photo", "type": "attachment"},
             {"name": "Notes", "type": "longText"},
             {"name": "Source", "type": "select", "options": ["Slack", "Manual"]},
-            # Restaurant = multipleRecordLinks → Restaurants (added after creation)
-            # People = multipleRecordLinks → People (added after creation)
         ],
     },
 }
@@ -511,16 +594,66 @@ BOOKS_TABLES = {
             {"name": "Source", "type": "select", "options": [
                 "Manual", "Slack", "Goodreads import",
             ]},
-            # My rating = rating field (1-5), added after table creation
-            # Recommended by = multipleRecordLinks → People (added after creation)
         ],
     },
 }
 
 
-def create_books_tables():
-    """Create the Books table (reading list, book tracking, recommendations)."""
-    print("\n📚 Creating Books table via API...")
+# ── Module creation functions ─────────────────────────────────────────────────
+# These create tables with all fields including link fields.
+# Link fields reference existing tables by Baserow table ID.
+
+def resolve_link_table_id(table_name):
+    """Resolve a table name to its Baserow ID from the existing database."""
+    tables = list_tables()
+    t = find_table(tables, table_name)
+    return t["id"] if t else None
+
+
+def create_module_table(table_name, spec, link_resolutions=None, jwt=None):
+    """
+    Create a single table with all its fields.
+    link_resolutions: dict of {field_name: target_table_name} for link fields.
+    """
+    tables = list_tables()
+    existing = find_table(tables, table_name)
+    if existing:
+        print(f"  ℹ️  Table '{table_name}' already exists (id: {existing['id']})")
+        return existing["id"]
+
+    # Create the table
+    result = create_table(table_name, jwt=jwt)
+    if not result:
+        return None
+    table_id = result["id"]
+
+    # Add non-link fields first
+    link_fields = []
+    for f in spec["fields"]:
+        ft = FIELD_TYPE_MAP.get(f["type"], f["type"])
+        if ft == "link_row":
+            link_fields.append(f)
+        else:
+            add_field(table_id, f, jwt=jwt)
+
+    # Add link fields (now that the table exists)
+    for f in link_fields:
+        target_name = (link_resolutions or {}).get(f["name"])
+        if target_name:
+            target_id = resolve_link_table_id(target_name)
+            if target_id:
+                add_field(table_id, {**f, "linked_table": target_id}, jwt=jwt)
+            else:
+                print(f"    ⚠️  Skipping '{f['name']}' — target table '{target_name}' not found")
+        else:
+            print(f"    Skipping '{f['name']}' - no link target specified")
+
+    return table_id
+
+
+def create_books_tables(jwt=None):
+    """Create the Books table."""
+    print("\n📚 Creating Books table...")
     print()
 
     tables = list_tables()
@@ -533,33 +666,25 @@ def create_books_tables():
         print(f"  ℹ️  Table 'Books' already exists (id: {existing['id']})")
         books_id = existing["id"]
     else:
-        # Create table without rating and link fields first (simpler types only)
-        create_fields = []
-        for f in spec["fields"]:
-            ft = FIELD_TYPE_MAP.get(f["type"], f["type"])
-            if ft in ("multipleRecordLinks",):
-                continue  # add links after table exists
-            payload = build_field_payload(f, ft)
-            if payload is not None:
-                create_fields.append(payload)
-
-        result = create_table("Books", create_fields)
+        # Create table without link fields
+        non_link = [f for f in spec["fields"] if f["type"] != "link"]
+        result = create_table("Books", jwt=jwt)
         if not result:
             return None
         books_id = result["id"]
+        for f in non_link:
+            add_field(books_id, f, jwt=jwt)
 
-    # Add rating field separately (can be picky during table creation)
-    add_field(books_id, {"name": "My rating", "type": "rating"})
+    # Add rating field separately
+    add_field(books_id, {"name": "My rating", "type": "rating", "max_value": 10}, jwt=jwt)
 
-    # Add link field to People (Recommended by)
+    # Add link field to People
     if people_table_id:
         add_field(books_id, {
             "name": "Recommended by",
-            "type": "multipleRecordLinks",
-            "link_type": "recordLink",
+            "type": "link",
             "linked_table": people_table_id,
-        })
-        print("    ✅ Added field 'Recommended by' → People")
+        }, jwt=jwt)
     else:
         print("    ⚠️  Skipping 'Recommended by' — People table not found")
 
@@ -570,9 +695,9 @@ def create_books_tables():
     return books_id
 
 
-def create_weekly_digest_tables():
+def create_weekly_digest_tables(jwt=None):
     """Create all Weekly Digest module tables (Intentions)."""
-    print("\n📅 Creating Weekly Digest module tables via API...")
+    print("\n📅 Creating Weekly Digest module tables...")
     print()
 
     tables = list_tables()
@@ -583,9 +708,11 @@ def create_weekly_digest_tables():
             print(f"  ℹ️  Table '{table_name}' already exists (id: {existing['id']})")
             continue
 
-        normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
-        result = create_table(table_name, normal_fields)
+        non_link = [f for f in spec["fields"] if f["type"] != "link"]
+        result = create_table(table_name, jwt=jwt)
         if result:
+            for f in non_link:
+                add_field(result["id"], f, jwt=jwt)
             print(f"    ✅ Created '{table_name}' (id: {result['id']})")
         print()
 
@@ -597,20 +724,19 @@ def create_weekly_digest_tables():
     print()
 
 
-def create_restaurant_tables():
-    """Create all Restaurant module tables (Restaurants, Restaurant Visits)."""
-    print("\n🍽️  Creating Restaurant module tables via API...")
+def create_restaurant_tables(jwt=None):
+    """Create all Restaurant module tables."""
+    print("\n🍽️  Creating Restaurant module tables...")
     print()
 
     tables = list_tables()
     people_table = find_table(tables, "People")
     people_table_id = people_table["id"] if people_table else None
 
-    # Phase 1: Create base tables (without link fields)
     table_ids = {}
-    restaurant_table_order = ["Restaurant Visits", "Restaurants"]
+    table_order = ["Restaurant Visits", "Restaurants"]
 
-    for table_name in restaurant_table_order:
+    for table_name in table_order:
         spec = RESTAURANT_TABLES[table_name]
         existing = find_table(tables, table_name)
         if existing:
@@ -618,24 +744,23 @@ def create_restaurant_tables():
             table_ids[table_name] = existing["id"]
             continue
 
-        normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
-        result = create_table(table_name, normal_fields)
+        non_link = [f for f in spec["fields"] if f["type"] != "link"]
+        result = create_table(table_name, jwt=jwt)
         if result:
             table_ids[table_name] = result["id"]
+            for f in non_link:
+                add_field(result["id"], f, jwt=jwt)
             print(f"    ✅ Created '{table_name}' (id: {result['id']})")
         print()
 
-    # Phase 2: Add link fields
+    # Add link fields
     restaurants_id = table_ids.get("Restaurants")
     visits_id = table_ids.get("Restaurant Visits")
 
     link_ops = [
-        # Restaurant Visits → Restaurants
-        (visits_id, "Restaurant", "multipleRecordLinks", restaurants_id),
-        # Restaurant Visits → People
-        (visits_id, "People", "multipleRecordLinks", people_table_id),
-        # Restaurants → People (Recommended By)
-        (restaurants_id, "Recommended By", "multipleRecordLinks", people_table_id),
+        (visits_id, "Restaurant", "link", restaurants_id),
+        (visits_id, "People", "link", people_table_id),
+        (restaurants_id, "Recommended By", "link", people_table_id),
     ]
 
     for table_id, field_name, field_type, linked_id in link_ops:
@@ -643,10 +768,8 @@ def create_restaurant_tables():
             add_field(table_id, {
                 "name": field_name,
                 "type": field_type,
-                "link_type": "recordLink",
                 "linked_table": linked_id,
-            })
-            print(f"    ✅ Added field '{field_name}' → linked table")
+            }, jwt=jwt)
         elif table_id:
             print(f"    ⚠️  Skipping '{field_name}' — linked table not found")
 
@@ -657,9 +780,9 @@ def create_restaurant_tables():
     print()
 
 
-def create_films_table():
-    """Create the Films table (master film diary + film club)."""
-    print("🎬 Creating Films table via API...")
+def create_films_table(jwt=None):
+    """Create the Films table."""
+    print("🎬 Creating Films table...")
     print()
 
     tables = list_tables()
@@ -672,52 +795,47 @@ def create_films_table():
         print(f"  ℹ️  Table 'Films' already exists (id: {existing['id']})")
         return
 
-    # Separate link fields from normal fields
-    normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
-    result = create_table("Films", normal_fields)
+    non_link = [f for f in spec["fields"] if f["type"] != "link"]
+    result = create_table("Films", jwt=jwt)
     if not result:
         return
 
+    for f in non_link:
+        add_field(result["id"], f, jwt=jwt)
+
     # Add link fields to People
     link_fields = [
-        {"name": "Recommended By", "type": "multipleRecordLinks", "link_type": "recordLink"},
-        {"name": "Member 2 Name", "type": "multipleRecordLinks", "link_type": "recordLink"},
-        {"name": "Member 3 Name", "type": "multipleRecordLinks", "link_type": "recordLink"},
-        {"name": "Member 4 Name", "type": "multipleRecordLinks", "link_type": "recordLink"},
+        {"name": "Recommended By", "type": "link"},
+        {"name": "Member 2 Name", "type": "link"},
+        {"name": "Member 3 Name", "type": "link"},
+        {"name": "Member 4 Name", "type": "link"},
     ]
     for f in link_fields:
         if people_table_id:
-            add_field(result["id"], {**f, "linked_table": people_table_id})
-            print(f"    ✅ Added field '{f['name']}' → People")
+            add_field(result["id"], {**f, "linked_table": people_table_id}, jwt=jwt)
         else:
             print(f"    ⚠️  Skipping '{f['name']}' — People table not found")
 
     print()
 
 
-def create_recipe_tables():
-    """Create all Recipe module tables (Recipes, Ingredients, Dinner Parties, etc.)."""
-    print("\n🍳 Creating Recipe module tables via API...")
+def create_recipe_tables(jwt=None):
+    """Create all Recipe module tables."""
+    print("\n🍳 Creating Recipe module tables...")
     print()
 
     tables = list_tables()
     people_table = find_table(tables, "People")
     people_table_id = people_table["id"] if people_table else None
 
-    # Phase 1: Create all base tables (without link fields)
     table_ids = {}
-    recipe_table_order = [
-        "Recipe Context",
-        "Recipe Output Log",
-        "Ingredients",
-        "Dinner Parties",
-        "Dinner Planner",
-        "Shopping List",
-        "Dining Preferences",
-        "Recipes",  # Recipes last so we can link Ingredients → Recipes
+    table_order = [
+        "Recipe Context", "Recipe Output Log", "Ingredients",
+        "Dinner Parties", "Dinner Planner", "Shopping List",
+        "Dining Preferences", "Recipes",
     ]
 
-    for table_name in recipe_table_order:
+    for table_name in table_order:
         spec = RECIPE_TABLES[table_name]
         existing = find_table(tables, table_name)
         if existing:
@@ -725,18 +843,16 @@ def create_recipe_tables():
             table_ids[table_name] = existing["id"]
             continue
 
-        normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
-        result = create_table(table_name, normal_fields)
+        non_link = [f for f in spec["fields"] if f["type"] != "link"]
+        result = create_table(table_name, jwt=jwt)
         if result:
             table_ids[table_name] = result["id"]
+            for f in non_link:
+                add_field(result["id"], f, jwt=jwt)
             print(f"    ✅ Created '{table_name}' (id: {result['id']})")
         print()
 
-    # Phase 2: Add link fields (now that all tables exist)
-    if not table_ids:
-        print("  ⚠️  No recipe tables created — skipping link fields")
-        return
-
+    # Add link fields
     recipes_id = table_ids.get("Recipes")
     ingredients_id = table_ids.get("Ingredients")
     dinner_parties_id = table_ids.get("Dinner Parties")
@@ -745,20 +861,13 @@ def create_recipe_tables():
     output_log_id = table_ids.get("Recipe Output Log")
 
     link_ops = [
-        # Ingredients → Recipes
-        (ingredients_id, "Recipe", "multipleRecordLinks", recipes_id),
-        # Recipes → Ingredients
-        (recipes_id, "Ingredients", "multipleRecordLinks", ingredients_id),
-        # Dinner Parties → People
-        (dinner_parties_id, "Guests", "multipleRecordLinks", people_table_id),
-        # Dinner Parties → Recipes
-        (dinner_parties_id, "Chosen recipes", "multipleRecordLinks", recipes_id),
-        # Dinner Planner → Recipes
-        (dinner_planner_id, "Recipe", "multipleRecordLinks", recipes_id),
-        # Shopping List → Recipes
-        (shopping_list_id, "Recipe", "multipleRecordLinks", recipes_id),
-        # Recipe Output Log → Recipes
-        (output_log_id, "Recipe(s)", "multipleRecordLinks", recipes_id),
+        (ingredients_id, "Recipe", "link", recipes_id),
+        (recipes_id, "Ingredients", "link", ingredients_id),
+        (dinner_parties_id, "Guests", "link", people_table_id),
+        (dinner_parties_id, "Chosen recipes", "link", recipes_id),
+        (dinner_planner_id, "Recipe", "link", recipes_id),
+        (shopping_list_id, "Recipe", "link", recipes_id),
+        (output_log_id, "Recipe(s)", "link", recipes_id),
     ]
 
     for table_id, field_name, field_type, linked_id in link_ops:
@@ -766,10 +875,8 @@ def create_recipe_tables():
             add_field(table_id, {
                 "name": field_name,
                 "type": field_type,
-                "link_type": "recordLink",
                 "linked_table": linked_id,
-            })
-            print(f"    ✅ Added field '{field_name}' → linked table")
+            }, jwt=jwt)
         elif table_id:
             print(f"    ⚠️  Skipping '{field_name}' — linked table not found")
 
@@ -780,9 +887,9 @@ def create_recipe_tables():
     print()
 
 
-def fix_core_tables():
-    """Create the 3 core tables. Assumes they've been deleted from web UI."""
-    print("🔧 Creating core tables via API...")
+def fix_core_tables(jwt=None):
+    """Create the 3 core tables."""
+    print("🔧 Creating core tables...")
     print()
 
     tables = list_tables()
@@ -795,27 +902,28 @@ def fix_core_tables():
             print(f"  ℹ️  Table '{table_name}' already exists (id: {existing['id']})")
             continue
 
-        # Separate link fields (need table ID) from normal fields
-        normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
-        link_fields = [f for f in spec["fields"] if f.get("link_type") == "recordLink"]
+        non_link = [f for f in spec["fields"] if f["type"] != "link"]
+        link_fields = [f for f in spec["fields"] if f["type"] == "link"]
 
-        result = create_table(table_name, normal_fields)
+        result = create_table(table_name, jwt=jwt)
         if not result:
             continue
 
-        # Add link fields with the People table ID
+        for f in non_link:
+            add_field(result["id"], f, jwt=jwt)
+
         for f in link_fields:
             if people_table_id:
-                add_field(result["id"], {**f, "linked_table": people_table_id})
+                add_field(result["id"], {**f, "linked_table": people_table_id}, jwt=jwt)
             else:
                 print(f"    ⚠️  Skipping '{f['name']}' — People table not found")
 
         print()
 
 
-def create_bulletin_tables():
-    """Create the 3 daily bulletin tables (Weather, Stocks, Facts)."""
-    print("📰 Creating bulletin tables via API...")
+def create_bulletin_tables(jwt=None):
+    """Create the 3 daily bulletin tables."""
+    print("📰 Creating bulletin tables...")
     print()
 
     tables = list_tables()
@@ -826,20 +934,17 @@ def create_bulletin_tables():
             print(f"  ℹ️  Table '{table_name}' already exists (id: {existing['id']})")
             continue
 
-        normal_fields = [f for f in spec["fields"] if f.get("link_type") != "recordLink"]
-        link_fields = [f for f in spec["fields"] if f.get("link_type") == "recordLink"]
-
-        result = create_table(table_name, normal_fields)
-        if not result:
-            continue
-
-        for f in link_fields:
-            print(f"    ⚠️  Skipping link field '{f['name']}' — no linked table")
-
+        non_link = [f for f in spec["fields"] if f["type"] != "link"]
+        result = create_table(table_name, jwt=jwt)
+        if result:
+            for f in non_link:
+                add_field(result["id"], f, jwt=jwt)
+            print(f"    ✅ Created '{table_name}' (id: {result['id']})")
         print()
 
 
-def scaffold_module(module_name):
+def scaffold_module(module_name, jwt=None):
+    """Scaffold a new module with Data, Context, and Log tables."""
     prefix = module_name.replace(" ", "")
 
     tables = list_tables()
@@ -874,58 +979,111 @@ def scaffold_module(module_name):
         if existing:
             print(f"  ℹ️  Table '{table_name}' already exists, skipping")
             continue
-        create_table(table_name, fields)
+        result = create_table(table_name, jwt=jwt)
+        if result:
+            for f in fields:
+                add_field(result["id"], f, jwt=jwt)
         print()
 
 
 def show_schema():
+    """Display the full database schema."""
     tables = list_tables()
     print(f"\n{'='*60}")
-    print(f"Geeves Base Schema ({len(tables)} tables)")
+    print(f"Geeves Database Schema ({len(tables)} tables)")
     print(f"{'='*60}")
     for t in tables:
         print(f"\n  📋 {t['name']}  (id: {t['id']})")
-        for f in t.get("fields", []):
+        fields = list_fields(t["id"])
+        for f in fields:
             opts = ""
-            if "options" in f and "choices" in f.get("options", {}):
-                choices = [c["name"] for c in f["options"]["choices"]]
+            if f.get("select_options"):
+                choices = [o["value"] for o in f["select_options"]]
                 opts = f"  → {choices}"
-            print(f"     {f['id']:22s}  {f['name']:28s}  {f['type']}{opts}")
+            link = ""
+            if f.get("link_row_table_id"):
+                link = f" → table {f['link_row_table_id']}"
+            print(f"     {f['id']:6d}  {f['name']:28s}  {f['type']}{opts}{link}")
+
+
+def check_schema():
+    """Verify existing schema matches expected definitions."""
+    print("\n🔍 Checking schema...")
+    tables = list_tables()
+    issues = []
+
+    all_defs = {}
+    all_defs.update(BULLETIN_TABLES)
+    all_defs.update(CORE_TABLES)
+    all_defs.update(FILM_TABLES)
+    all_defs.update(RECIPE_TABLES)
+    all_defs.update(WEEKLY_DIGEST_TABLES)
+    all_defs.update(RESTAURANT_TABLES)
+    all_defs.update(BOOKS_TABLES)
+
+    for table_name, spec in all_defs.items():
+        t = find_table(tables, table_name)
+        if not t:
+            issues.append(f"  ❌ Missing table: {table_name}")
+            continue
+
+        fields = list_fields(t["id"])
+        for fdef in spec["fields"]:
+            ft = FIELD_TYPE_MAP.get(fdef["type"], fdef["type"])
+            if ft in AUTO_FIELDS:
+                continue
+            f = find_field(fields, fdef["name"])
+            if not f:
+                issues.append(f"  ❌ {table_name}: missing field '{fdef['name']}'")
+            elif f["type"] != ft:
+                issues.append(f"  ⚠️  {table_name}.{fdef['name']}: expected {ft}, got {f['type']}")
+
+    if issues:
+        print(f"\n{len(issues)} issues found:")
+        for i in issues:
+            print(i)
+    else:
+        print("  ✅ All tables and fields match expected schema")
 
 
 def main():
     args = sys.argv[1:]
+    jwt = get_jwt_token()
 
     if not args or args[0] == "--schema":
         show_schema()
         return
 
+    if args[0] == "--check":
+        check_schema()
+        return
+
     if args[0] == "--fix":
-        fix_core_tables()
+        fix_core_tables(jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--bulletin":
-        create_bulletin_tables()
+        create_bulletin_tables(jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--films":
-        create_films_table()
+        create_films_table(jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--recipe":
-        create_recipe_tables()
+        create_recipe_tables(jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--restaurant":
-        create_restaurant_tables()
+        create_restaurant_tables(jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--books":
-        create_books_tables()
+        create_books_tables(jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--weekly":
-        create_weekly_digest_tables()
+        create_weekly_digest_tables(jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
     elif args[0] == "--fitness":
@@ -936,9 +1094,23 @@ def main():
         if len(args) < 2:
             print("Usage: --module <ModuleName>")
             sys.exit(1)
-        scaffold_module(args[1])
+        scaffold_module(args[1], jwt=jwt)
         print("\n📊 Final schema:")
         show_schema()
+    elif args[0] == "--delete-table":
+        if len(args) < 2:
+            print("Usage: --delete-table <name|id>")
+            sys.exit(1)
+        target = args[1]
+        if target.isdigit():
+            delete_table(int(target), jwt=jwt)
+        else:
+            tables = list_tables()
+            t = find_table(tables, target)
+            if t:
+                delete_table(t["id"], jwt=jwt)
+            else:
+                print(f"Table '{target}' not found")
     else:
         print(__doc__)
         sys.exit(0)

@@ -1,7 +1,7 @@
 ---
 name: books-agent
 description: "Geeves Books Agent — manage reading list, track books, log reading progress, handle book recommendations from people. Use when adding books, updating reading status, logging finished books, looking up book info, or handling book-related Slack messages."
-version: 1.0.0
+version: 1.1.0
 author: Geeves
 ---
 
@@ -28,6 +28,8 @@ Geeves Books module — track what you're reading, what you want to read, and wh
 | `Date finished` | date | When you completed it |
 | `Recommended by` | multipleRecordLinks → People | Who suggested this book |
 | `Goodreads ID` | singleLineText | Goodreads reference ID |
+| `Goodreads Rating` | number | Goodreads average rating (e.g. 4.29) |
+| `Goodreads Votes` | number | Number of Goodreads ratings (e.g. 1674646) |
 | `ISBN` | singleLineText | ISBN for lookups |
 | `Page count` | number | Total pages |
 | `Format` | singleSelect | Hardcover / Paperback / eBook / Audiobook |
@@ -92,10 +94,25 @@ When user asks about a book they should read or wants info:
 
 ### Goodreads Integration
 
-The Goodreads API was deprecated in 2020. Workarounds:
-- **CSV Import:** User exports Goodreads library → import script processes CSV → batch create records
-- **Web scraping:** Search Goodreads by title/ISBN → extract metadata (rating, description, cover URL)
-- **Manual link:** Store Goodreads ID or URL for reference
+The Goodreads API was deprecated in 2020. Two working approaches:
+
+**1. `web_extract` tool (preferred for enrichment):**
+Goodreads search results and book pages are JS-rendered — `curl`/`urllib` return empty HTML. The `web_extract` tool uses a headless browser and returns full rendered content including ratings, vote counts, and genre shelves.
+
+Pattern for batch enrichment:
+```
+web_extract(urls=["https://www.goodreads.com/search?q=Title+Author&search_type=books", ...])
+```
+Returns structured markdown with rating, votes, and genres for each result. Parse the output and update Airtable records.
+
+**2. Direct book page fetch (for single lookups):**
+A known Goodreads book URL (e.g. `https://www.goodreads.com/book/show/44767458-dune`) returns full HTML via `urllib` with proper headers. Extract `ratingValue` and `ratingCount` from JSON-LD or meta tags.
+
+**Scripts:**
+- `scripts/books_goodreads_enrich.py` — batch enrichment: fetches Goodreads rating/votes/genre for each book via direct page scraping. Run with `--dry-run` first, then `--limit 5` to test, then full run.
+- `books_update_goodreads_data.py` — one-shot batch update with pre-collected data (used for initial bulk import).
+
+**Important:** Goodreads search pages are JS-rendered and return empty HTML via curl/urllib. Use the `web_extract` tool to search Goodreads, or use direct book page URLs (`https://www.goodreads.com/book/show/{id}`) which do work via urllib.
 
 For CSV import, create a script at `/root/Geeves/scripts/books_goodreads_import.py` that:
 1. Reads the Goodreads export CSV

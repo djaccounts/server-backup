@@ -9,7 +9,7 @@ max(latencies).
 
 Usage:
     python3 bulletin_fetch_parallel.py              # fetch all, print
-    python3 bulletin_fetch_parallel.py --write      # fetch all + write to Airtable
+    python3 bulletin_fetch_parallel.py --write      # fetch all + write to Baserow
 """
 
 import subprocess, sys, json, time
@@ -53,7 +53,7 @@ def main():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     print(f"⚡ Parallel bulletin fetch — {today}")
-    print(f"   Mode: {'write to Airtable' if write_mode else 'dry run'}")
+    print(f"   Mode: {'write to Baserow' if write_mode else 'dry run'}")
     print(f"   Fetchers: {len(FETCHERS)}")
     print()
 
@@ -103,7 +103,6 @@ def main():
     # Summary
     print("═" * 40)
     print(f"⏱  Total time: {overall_elapsed:.2f}s (parallel)")
-    # Estimate sequential time for comparison
     sequential = sum(r["elapsed"] for r in results)
     print(f"   Sequential would be: {sequential:.2f}s")
     if sequential > 0:
@@ -112,9 +111,9 @@ def main():
 
     if all_ok:
         if write_mode:
-            print("✅ All bulletin data written to Airtable.")
+            print("✅ All bulletin data written to Baserow.")
         else:
-            print("⚠️  Dry run — add --write to save to Airtable.")
+            print("⚠️  Dry run — add --write to save to Baserow.")
     else:
         print("⚠️  Some fetchers failed — see errors above.")
 

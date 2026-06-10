@@ -3398,6 +3398,18 @@
           "purpose": "Who recommended this book",
           "status": "active",
           "links_to": "tbl1WMPtQhWYW7bTI"
+        },
+        "fldAjIxoiI0wYoWqM": {
+          "name": "Goodreads Rating",
+          "type": "number",
+          "purpose": "Goodreads Rating",
+          "status": "active"
+        },
+        "fldSFdJSUTJKxNH3W": {
+          "name": "Goodreads Votes",
+          "type": "number",
+          "purpose": "Goodreads Votes",
+          "status": "active"
         }
       },
       "cross_module_links": {

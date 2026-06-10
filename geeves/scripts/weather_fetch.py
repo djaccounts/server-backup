@@ -1,42 +1,27 @@
 #!/usr/bin/env python3
 """
-weather_fetch.py — Fetch London weather from Open-Meteo and log to Airtable.
+weather_fetch.py — Fetch London weather from Open-Meteo and log to Baserow.
 
 Open-Meteo is free, no API key required.
 https://open-meteo.com/en/docs
 
 Usage:
     python3 weather_fetch.py              # fetch and print
-    python3 weather_fetch.py --write      # fetch and write to Airtable
+    python3 weather_fetch.py --write      # fetch and write to Baserow
 """
 
 import subprocess, sys, json, urllib.request, urllib.error
 from datetime import datetime, timezone, timedelta
 
+sys.path.insert(0, "/root/Geeves/scripts")
+import baserow_api
+
 ENV_PATH = "/root/.hermes/.env"
-BASE = "appzvmonQXs4x2AlL"
 TABLE = "Weather_Data"
 
 # London coordinates
 LAT = 51.5074
 LON = -0.1278
-
-def get_key():
-    r = subprocess.run(["grep", "AIRTABLE_API_KEY", ENV_PATH], capture_output=True, text=True)
-    line = r.stdout.strip().split("\n")[0]
-    return line.split("=", 1)[1] if "=" in line else ""
-
-def api(method, path, data=None):
-    key = get_key()
-    url = f"https://api.airtable.com/v0/{path}"
-    body = json.dumps(data).encode() if data else None
-    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-    req = urllib.request.Request(url, data=body, headers=headers, method=method)
-    try:
-        with urllib.request.urlopen(req) as resp:
-            return json.loads(resp.read()), resp.status
-    except urllib.error.HTTPError as e:
-        return json.loads(e.read()), e.code
 
 # WMO Weather interpretation codes
 CONDITIONS = {
@@ -55,6 +40,7 @@ CONDITIONS = {
 
 # Codes that involve rain
 RAIN_CODES = {51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99}
+
 
 def fetch_weather():
     """Fetch current weather + daily forecast + hourly rain data from Open-Meteo."""
@@ -81,7 +67,6 @@ def fetch_weather():
     wind = current["wind_speed_10m"]
     code = current["weather_code"]
 
-    # Daily highs and lows
     temp_max = daily["temperature_2m_max"][0]
     temp_min = daily["temperature_2m_min"][0]
     daily_code = daily["weather_code"][0]
@@ -93,22 +78,18 @@ def fetch_weather():
     # Determine rain times from hourly data
     rain_periods = []
     now = datetime.now(timezone.utc)
-    today_str = now.strftime("%Y-%m-%d")
 
     for i, ts in enumerate(hourly["time"]):
-        # Parse the hourly timestamp (ISO format, may or may not have tz info)
         try:
             hour_dt = datetime.fromisoformat(ts)
         except Exception:
             continue
         if hour_dt.tzinfo is None:
             hour_dt = hour_dt.replace(tzinfo=timezone.utc)
-        
-        # Only look at future hours today
+
         if hour_dt < now:
             continue
-        # Stop if we've moved past today (London time)
-        london_offset = timedelta(hours=1)  # BST in summer
+        london_offset = timedelta(hours=1)
         london_date = (hour_dt + london_offset).strftime("%Y-%m-%d")
         if london_date != (now + london_offset).strftime("%Y-%m-%d"):
             break
@@ -126,10 +107,8 @@ def fetch_weather():
                 "prob": h_prob,
             })
 
-    # Build rain description
     rain_desc = ""
     if rain_periods:
-        # Group consecutive hours into periods
         groups = []
         current_group = [rain_periods[0]]
         for rp in rain_periods[1:]:
@@ -156,12 +135,12 @@ def fetch_weather():
 
     today = now.strftime("%Y-%m-%d")
 
-    # === MORNING / AFTERNOON / EVENING SPLITS ===
+    # Morning / Afternoon / Evening splits
     morning_temps = []
     afternoon_temps = []
     evening_temps = []
 
-    london_offset = timedelta(hours=1)  # BST; Open-Meteo returns Europe/London times
+    london_offset = timedelta(hours=1)
 
     for i, ts in enumerate(hourly["time"]):
         hour_dt = datetime.fromisoformat(ts)
@@ -230,13 +209,15 @@ def fetch_weather():
         "Description": description,
     }
 
-def write_to_airtable(record):
-    """Write a weather record to Airtable."""
-    r, status = api("POST", f"{BASE}/{TABLE}", {"fields": record})
-    if status == 200:
-        print(f"  ✅ Written to Airtable (record {r['id']})")
+
+def write_to_baserow(record):
+    """Write a weather record to Baserow."""
+    ok, row_id = baserow_api.baserow_post(baserow_api.load_mapping(), TABLE, record)
+    if ok:
+        print(f"  ✅ Written to Baserow (record {row_id})")
     else:
-        print(f"  ❌ Airtable error: {r}")
+        print(f"  ❌ Baserow error: {row_id}")
+
 
 def main():
     write_mode = "--write" in sys.argv
@@ -265,9 +246,10 @@ def main():
     print(f"  Evening (18-22): {record['Evening Temp C']}°C — {record['Evening Condition']} (rain {record['Evening Rain Prob']}%)")
 
     if write_mode:
-        write_to_airtable(record)
+        write_to_baserow(record)
     else:
-        print("\n  (dry run — add --write to save to Airtable)")
+        print("\n  (dry run — add --write to save to Baserow)")
+
 
 if __name__ == "__main__":
     main()

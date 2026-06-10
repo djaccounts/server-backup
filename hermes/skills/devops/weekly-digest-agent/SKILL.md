@@ -11,23 +11,16 @@ Fetches the past 7 days of data from across Geeves modules, composes a reflectiv
 
 ## Architecture
 
-```
-Cron (Sunday 8pm UTC)
-  → weekly_digest_fetch.py       (fetch week's data → Airtable)
-  → build_weekly_digest_html.py  (read Airtable → HTML)
-  → digest_to_pdf.py             (HTML → PDF via PDFBolt)
-  → AgentMail API                (HTML body + PDF attachment → dj@djaccounts.com)
-  → Slack API                    (summary post → SLACK_HOME_CHANNEL)
-```
-
-**Single source of truth:** `build_weekly_digest_html.py` is the ONLY source for digest content. Both email body AND PDF come from the same HTML output.
+```\nCron (Sunday 8pm UTC)\n  → weekly_digest_fetch.py       (fetch week's data → Baserow)\n  → build_weekly_digest_html.py  (read Baserow → HTML)  [⚠️ still reads Airtable, migration pending]\n  → digest_to_pdf.py             (HTML → PDF via PDFBolt)\n  → AgentMail API                (HTML body + PDF attachment → dj@djaccounts.com)\n  → Slack API                    (summary post → SLACK_HOME_CHANNEL)\n```\n\n**Single source of truth:** `build_weekly_digest_html.py` is the ONLY source for digest content. Both email body AND PDF come from the same HTML output.\n\n**⚠️ Migration status (June 2026):** `weekly_digest_fetch.py` still reads from Airtable. `build_weekly_digest_html.py` still reads from Airtable. Migration pending.
 
 ## Table(s)
 
-| Table | ID | Purpose |
-|-------|----|---------|
-| `Intentions` | `tbl62rEmak92HLXX2` | Weekly intentions — set, track, reflect |
-| `Digest Log` | `tblmihsXrU8sIg4mY` | Digest email log (Type = Weekly) |
+| Table | Baserow ID | Purpose |
+|-------|-----------|---------|
+| `Intentions` | 397 | Weekly intentions — set, track, reflect |
+| `Digest Log` | 390 | Digest email log (Type = Weekly) |
+
+**All data is in Baserow** (migrated from Airtable June 2026). Use `baserow_api.py` for all CRUD operations.
 
 ## Key Fields
 
@@ -55,21 +48,21 @@ The weekly digest pulls from all active Phase 2+ modules:
 | Meals | `Meals` | Meals logged, nutrition summary |
 | Intentions | `Intentions` | Last week's intentions: achieved/missed |
 
-## Airtable CRUD
+## Baserow CRUD
 
-Use `/root/Geeves/scripts/airtable_api.py`:
+Use `/root/Geeves/scripts/baserow_api.py` for all operations:
 
 ```bash
 # Create intention
-python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "Intentions" \
+python3 /root/Geeves/scripts/baserow_api.py create-row Intentions \
   '{"Intention": "Go to the gym 3x", "Week starting": "2026-06-09", "Type": "Accomplish", "Status": "Set", "Source": "Suggested"}'
 
-# List this week's intentions
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Intentions"
+# List intentions
+python3 /root/Geeves/scripts/baserow_api.py list-rows Intentions
 
-# Update intention status
-python3 /root/Geeves/scripts/airtable_api.py update-record appzvmonQXs4x2AlL "Intentions" "<record_id>" \
-  '{"Status": "Achieved", "Reflection": "Made it to the gym 3 times this week!"}'
+# Update intention
+python3 /root/Geeves/scripts/baserow_api.py update-row Intentions <row_id> \
+  '{"Status": "Achieved", "Reflection": "Made it to the gym 3 times!"}'
 ```
 
 ## Workflows
@@ -143,8 +136,8 @@ This module depends on data from other modules. The more modules that are active
 ## Standing Rules
 
 - All schema changes go through steward (`geeves-steward` skill)
-- Registry: `/root/Geeves/schema_registry.json`
-- Get David's explicit approval before creating any Airtable table
+- Registry: `/root/Geeves/baserow_mapping.json`
+- Get David's explicit approval before creating any Baserow table
 - Thread decisions supersede reference docs
 - Update this skill when conversation changes a decision
 

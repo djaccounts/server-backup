@@ -7,6 +7,39 @@ author: Geeves
 
 # Geeves — Airtable CRUD + Table Builder
 
+**⚠️ LEGACY — MIGRATION TO BASEROW COMPLETE (June 2026):** The Geeves project has migrated from Airtable to Baserow. This skill is kept for reference only. **Use the `baserow` skill for all database operations.** See `baserow/references/airtable-migration-runbook.md` for migration details.
+
+**Migration status (June 2026) — ✅ COMPLETE:**
+- ✅ All data migrated to Baserow (41 tables, all row counts verified)
+- ✅ Data reconciliation done (Properties, Books, Workouts, Cycling re-imported)
+- ✅ 35/40 tables match Airtable exactly; 5 have expected diffs (Baserow has newer live data from scripts)
+- ✅ All scripts migrated (`baserow_api.py`, `slack_capture.py`, all fetch scripts)
+- ✅ Cron jobs updated to use Baserow
+- ✅ `table_builder.py` — rewritten for Baserow Platform API
+- ✅ Module skills — updated to reference Baserow
+- **Airtable is now the stale copy. Baserow is the system of record.**
+
+**When to use this skill:**
+- Reference for old Airtable table IDs and field definitions
+- Schema migration patterns
+- Understanding legacy code
+
+**When to use `baserow` skill instead:**
+- **ALL** new database operations
+- Creating/updating records
+- Schema changes
+- Building new modules
+
+**When to use this skill:**
+- Legacy Airtable operations during migration period
+- Reference for existing Airtable table IDs and field definitions
+- Schema migration patterns
+
+**When to use `baserow` skill instead:**
+- All new database operations
+- Creating/updating records
+- Schema changes on Baserow
+
 Core Airtable operations for the Geeves project. Two helper scripts:
 - `/root/Geeves/scripts/airtable_api.py` — CRUD operations on records
 - `/root/Geeves/scripts/table_builder.py` — create tables and fields via Metadata API
@@ -188,6 +221,7 @@ When creating tables with many fields, the API may reject complex field combinat
 - **⚠ filterByFormula does NOT work for multipleRecordLinks fields** — Formula filters like `{Recipe}='recXXX'` silently return empty results for link fields. **Workaround:** fetch all records (or use a large `maxRecords` value) and filter locally in Python by checking `record['fields'].get('LinkFieldName', [])`. This is slower but is the only reliable approach.
 - Rate limit: 5 req/sec per base, 10 records per batch create
 - API **cannot** detect if a table has wrong schema — always use `--schema` first, then delete + recreate in web UI if needed
+- **⚠ Metadata API field listing endpoint returns 404:** `GET meta/bases/{baseId}/tables/{tableId}/fields` returns 404 Not Found. To list fields for a specific table, use `GET meta/bases/{baseId}/tables` (returns all tables with their fields) and filter client-side by table name or ID.
 
 ### ⚠ URL-Encode Table Names With Spaces
 Airtable table names containing spaces (e.g., `Sleep Log`, `Habit Log`, `Recipe Context`, `Exercise Log`, `Daily Nutrition Summary`, `Property Criteria`, etc.) **must be URL-encoded** when used in REST API paths. Using the raw name in a URL path raises `http.client.InvalidURL: URL can't contain control characters`.
@@ -308,7 +342,7 @@ Some modules need domain-specific fields and external API integration rather tha
 || **Restaurants** | `Restaurants`, `Restaurant Visits` | See below | SerpApi Google Maps (free tier 250/mo). **Full restaurant workflows, visit logging, and recommendations: see `restaurants-agent` skill.** |
 || **Weekly Digest** | `Intentions` | `tbl62rEmak92HLXX2` | Weekly intentions — set, track, reflect. Sunday 8pm UTC cron. **Full weekly digest pipeline: see `weekly-digest-agent` skill.** |
 || **Books** | `Books` | `tblUfRTBkCMLUe2pY` | Reading list, book tracking, Goodreads references, people-graph recommendations. **Full books workflows: see `books-agent` skill.** |
-|| **Fitness** | `Workouts`, `Exercise Log`, `Cycling`, `Fitness Goals` | See below | Slack capture for workout logging, gym sessions, cycling rides. **Full fitness workflows: see `fitness-agent` skill.** |
+|| **Fitness** | `Workouts`, `Exercise Log`, `Cycling`, `Fitness Goals` | See below | Slack capture for workout logging, gym sessions, cycling rides. **Garmin Connect auto-import for cycling (daily 7am cron). Full fitness workflows: see `fitness-agent` skill. Garmin integration details: `references/garmin-connect.md`. |
 
 **Recipe App table IDs:**
 
@@ -478,6 +512,17 @@ Fact source rotates by day-of-year (day % 6): 0=Wikipedia, 1=NASA, 2=Quote Garde
 - Cron delivery: `deliver='origin'` sends the agent's final response back to the current chat. Omit for same same behavior.
 - **⚠ `execute_code` is BLOCKED in cron jobs** — the sandbox is denied when no user is present. Use `write_file` to create a `.py` script in `/tmp/`, then `terminal` to run it. This is the standard pattern for cron Python work.
 - **⚠ `execute_code` is BLOCKED in cron jobs** — the sandbox is denied when no user is present. Use `write_file` to create a `.py` script in `/tmp/`, then `terminal` to run it. This is the standard pattern for cron Python work.
+
+## External Web Scraping — JS-Rendered Pages
+
+Some websites (Goodreads, etc.) are fully JS-rendered SPAs that return empty HTML via `curl`/`urllib`. The `web_extract` tool uses a headless browser and works correctly.
+
+**Pattern:** When scraping fails with empty HTML, try `web_extract(urls=[...])` instead. It returns structured markdown with the rendered page content.
+
+**Goodreads specifically:**
+- Search pages: JS-rendered, use `web_extract`
+- Direct book pages (`/book/show/{id}`): work via `urllib` with proper headers
+- Extract `ratingValue` and `ratingCount` from JSON-LD or meta tags in the HTML
 
 ## Restore & Migration Gotchas
 

@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-06T12:00:00Z",
+  "last_updated": "2026-06-18T00:00:00Z",
   "modules": {
     "people_graph": {
       "phase": 1,
@@ -198,6 +198,15 @@
       "cron_jobs": [],
       "slack_capture": false,
       "notes": "Not yet built. Depends on Recipes, Gifts, Wardrobe modules."
+    },
+    "quick_capture": {
+      "phase": "post-baserow",
+      "status": "planned",
+      "skill": null,
+      "tables": ["Quick Capture"],
+      "cron_jobs": [],
+      "slack_capture": true,
+      "notes": "Lightweight non-urgent want-to-buy/idea list. Gift ideas, household, things to remember. Adjacent to Todos but not urgent. Schema designed June 2026 — awaiting Baserow transfer. See planning/quick-capture-module.md"
     },
     "language_learning": {
       "phase": 5,
