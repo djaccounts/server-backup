@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-recipe_sync.py — Mealie → Airtable Recipe Sync
+recipe_sync.py — Mealie → Baserow Recipe Sync
 
-Fetches a recipe from Mealie by slug, creates/updates the Airtable Recipes
+Fetches a recipe from Mealie by slug, creates/updates the Baserow Recipes
 record and linked Ingredient records.
 
 Usage:
@@ -10,23 +10,26 @@ Usage:
     python3 recipe_sync.py horiatiki-greek-village-salad-1
 
 Environment:
-    AIRTABLE_API_KEY — read from ~/.hermes/.env
+    BASEROW_API_TOKEN — read from ~/.hermes/.env
     MEALIE_URL        — defaults to http://localhost:9925
+
+Baserow tables:
+    Recipes (id: 379), Ingredients (id: 375), database ID: 132
 """
 import subprocess, json, sys, os, re
 import urllib.request, urllib.error, urllib.parse
 
 ENV_PATH = os.path.expanduser("~/.hermes/.env")
-BASE = "appzvmonQXs4x2AlL"
 MEALIE_URL = os.environ.get("MEALIE_URL", "http://localhost:9925")
+BASEROW_URL = "http://77.68.33.121"
 
-# Airtable table IDs
-TABLE_RECIPES = "tblehBgzRMa2Xucjd"
-TABLE_INGREDIENTS = "tblNsgbYHNK8xWnB7"
+# Baserow table IDs
+TABLE_RECIPES = 379
+TABLE_INGREDIENTS = 375
 
 
-def get_key():
-    r = subprocess.run(["grep", "AIRTABLE_API_KEY", ENV_PATH], capture_output=True, text=True)
+def get_baserow_token():
+    r = subprocess.run(["grep", "BASEROW_API_TOKEN", ENV_PATH], capture_output=True, text=True)
     line = r.stdout.strip().split("\n")[0]
     return line.split("=", 1)[1] if "=" in line else ""
 
@@ -55,97 +58,82 @@ def mealie_get(path, token):
         return json.loads(resp.read())
 
 
-def airtable_get(table, formula=""):
-    """GET from Airtable with optional filter."""
-    key = get_key()
-    url = f"https://api.airtable.com/v0/{BASE}/{table}"
-    if formula:
-        url += f"?filterByFormula={urllib.parse.quote(formula, safe='')}"
-    req = urllib.request.Request(url, headers={
-        "Authorization": f"Bearer {key}",
-        "Content-Type": "application/json",
-    })
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+def baserow_get_all(table_id, token):
+    """Get all rows from a Baserow table with pagination."""
+    all_rows = []
+    page = 1
+    while True:
+        url = f"{BASEROW_URL}/api/database/rows/table/{table_id}/?page={page}&size=100"
+        req = urllib.request.Request(url, headers={"Authorization": f"Token {token}"})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read())
+        results = data.get("results", [])
+        all_rows.extend(results)
+        if not data.get("next"):
+            break
+        page += 1
+    return all_rows
 
 
-def airtable_post(table, fields):
-    """POST to Airtable."""
-    key = get_key()
-    data = json.dumps({"fields": fields}).encode()
-    req = urllib.request.Request(
-        f"https://api.airtable.com/v0/{BASE}/{table}",
-        data=data,
-        headers={
-            "Authorization": f"Bearer {key}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
+def baserow_post(table_id, fields):
+    """POST to Baserow using the baserow_api helper for field resolution."""
+    fields_json = json.dumps(fields)
+    result = subprocess.run(
+        ["python3", "/root/Geeves/scripts/baserow_api.py", "create-row",
+         str(table_id), fields_json],
+        capture_output=True, text=True, timeout=30
     )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+    if result.returncode == 0 and result.stdout.strip():
+        stdout = result.stdout.strip()
+        if "Created: row" in stdout:
+            row_id = int(stdout.split("Created: row")[1].strip())
+            return {"id": row_id}
+    return None
 
 
-def airtable_patch(table, record_id, fields):
-    """PATCH an Airtable record."""
-    key = get_key()
-    data = json.dumps({"fields": fields}).encode()
-    req = urllib.request.Request(
-        f"https://api.airtable.com/v0/{BASE}/{table}/{record_id}",
-        data=data,
-        headers={
-            "Authorization": f"Bearer {key}",
-            "Content-Type": "application/json",
-        },
-        method="PATCH",
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+def baserow_delete(table_id, row_id):
+    """Delete a row from Baserow."""
+    token = get_baserow_token()
+    url = f"{BASEROW_URL}/api/database/rows/table/{table_id}/{row_id}/"
+    req = urllib.request.Request(url, method="DELETE",
+                                 headers={"Authorization": f"Token {token}"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return resp.status == 204
+    except Exception:
+        return False
 
 
 def categorize_ingredient(name):
     """LLM-free heuristic categorization of ingredients."""
     name_lower = name.lower()
 
-    # Eggs (check before Dairy since "egg" can match dairy keywords)
     if any(w in name_lower for w in ["egg", "eggs"]):
         return "Eggs"
-
-    # Meat
     if any(w in name_lower for w in ["chicken", "beef", "pork", "lamb", "turkey", "duck",
                                        "bacon", "sausage", "steak", "mince", "ham", "prosciutto",
                                        "salami", "chorizo", "pancetta", "veal", "venison"]):
         return "Meat"
-
-    # Fish
     if any(w in name_lower for w in ["salmon", "tuna", "cod", "haddock", "prawn", "shrimp",
                                        "fish", "anchovy", "sardine", "mackerel", "trout",
                                        "sea bass", "scallop", "mussel", "clam", "lobster", "crab",
                                        "octopus", "squid", "calamari"]):
         return "Fish"
-
-    # Dairy
     if any(w in name_lower for w in ["milk", "cheese", "butter", "cream", "yogurt", "yoghurt",
                                        "feta", "parmesan", "mozzarella", "cheddar", "ricotta",
                                        "mascarpone", "halloumi", "brie", "gouda"]):
         return "Dairy"
-
-    # Grain
     if any(w in name_lower for w in ["rice", "pasta", "noodle", "bread", "flour", "oat",
                                        "quinoa", "couscous", "barley", "wheat", "tortilla",
                                        "wrap", "pita", "lasagne", "spaghetti", "penne", "fusilli",
                                        "orzo", "bulgur", "semolina"]):
         return "Grain"
-
-    # Fruit
     if any(w in name_lower for w in ["apple", "banana", "orange", "lemon", "lime", "berry",
                                        "strawberry", "blueberry", "raspberry", "grape", "mango",
                                        "peach", "pear", "plum", "cherry", "pineapple", "melon",
                                        "watermelon", "kiwi", "pomegranate", "fig", "date",
                                        "apricot", "coconut", "avocado"]):
         return "Fruit"
-
-    # Spice
     if any(w in name_lower for w in ["salt", "pepper", "cumin", "coriander", "turmeric",
                                        "paprika", "chili", "chilli", "cinnamon", "nutmeg",
                                        "oregano", "basil", "thyme", "rosemary", "parsley",
@@ -154,8 +142,6 @@ def categorize_ingredient(name):
                                        "garam masala", "five spice", "za'atar", "sumac",
                                        "cayenne", "chipotle", "anise", "fenugreek"]):
         return "Spice"
-
-    # Pantry
     if any(w in name_lower for w in ["oil", "vinegar", "sauce", "sugar", "honey", "syrup",
                                        "paste", "canned", "tin", "can", "stock", "broth",
                                        "bouillon", "soy sauce", "fish sauce", "oyster sauce",
@@ -167,8 +153,6 @@ def categorize_ingredient(name):
                                        "lentil", "chickpea", "bean", "kidney bean", "black bean",
                                        "cannellini", "borlotti"]):
         return "Pantry"
-
-    # Veg (catch-all for vegetables)
     if any(w in name_lower for w in ["onion", "garlic", "tomato", "potato", "carrot", "celery",
                                        "pepper", "courgette", "zucchini", "aubergine", "eggplant",
                                        "cucumber", "lettuce", "spinach", "kale", "cabbage",
@@ -184,15 +168,9 @@ def categorize_ingredient(name):
 
 
 def clean_ingredient_name(raw):
-    """Extract clean ingredient name from a raw recipe ingredient line.
-    E.g. '2-3 garlic cloves, finely grated' → 'Garlic'
-         '1/2 tsp ground cumin' → 'Cumin'
-         '500g full-fat Greek yoghurt (thick/strained)' → 'Greek yoghurt'
-    """
+    """Extract clean ingredient name from a raw recipe ingredient line."""
     text = raw.strip()
-    # Remove parenthetical notes
     text = re.sub(r'\s*\(.*?\)', '', text).strip()
-    # Remove leading quantities and units
     text = re.sub(
         r'^(?:[\d/→.\s-]+|x\s*\d+\s*)\s*'
         r'(?:cup|cups|tbsp|tsp|tablespoon|teaspoons|tablespoons|'
@@ -204,7 +182,6 @@ def clean_ingredient_name(raw):
         r'tin|tins|can|cans|jar|jars|bottle|bottles|'
         r'teaspoon|teaspoons)\s+',
         '', text, flags=re.IGNORECASE).strip()
-    # Remove preparation instructions after comma
     text = re.sub(
         r'\s*,\s*(?:'
         r'finely|roughly|thinly|thickly|'
@@ -217,13 +194,10 @@ def clean_ingredient_name(raw):
         r'thaw.*|measure.*'
         r').*$',
         '', text, flags=re.IGNORECASE).strip()
-    # Remove trailing phrases
     text = re.sub(
         r'\s+(?:to taste|to serve|for serving|for garnish|optional|for \w+|to finish).*$',
         '', text, flags=re.IGNORECASE).strip()
-    # Remove leading articles
     text = re.sub(r'^(?:a |an |the |~|small |large |medium )', '', text, flags=re.IGNORECASE).strip()
-    # Title case
     if text:
         words = text.split()
         result = []
@@ -237,17 +211,15 @@ def clean_ingredient_name(raw):
 
 
 def get_seasonal_months(ingredient_name):
-    """Return seasonal months for common UK ingredients. Very approximate."""
+    """Return seasonal months for common UK ingredients."""
     name_lower = ingredient_name.lower()
     seasonal = {
-        # Spring
         "asparagus": ["Apr", "May", "Jun"],
         "pea": ["May", "Jun", "Jul"],
         "radish": ["Mar", "Apr", "May"],
         "spring onion": ["Mar", "Apr", "May"],
         "new potato": ["May", "Jun"],
         "strawberry": ["Jun", "Jul"],
-        # Summer
         "tomato": ["Jul", "Aug", "Sep"],
         "cucumber": ["Jun", "Jul", "Aug"],
         "courgette": ["Jun", "Jul", "Aug"],
@@ -259,7 +231,6 @@ def get_seasonal_months(ingredient_name):
         "cherry": ["Jun", "Jul"],
         "basil": ["Jun", "Jul", "Aug"],
         "sweetcorn": ["Aug", "Sep"],
-        # Autumn
         "apple": ["Sep", "Oct", "Nov"],
         "pear": ["Sep", "Oct"],
         "plum": ["Aug", "Sep"],
@@ -268,7 +239,6 @@ def get_seasonal_months(ingredient_name):
         "butternut": ["Oct", "Nov", "Dec"],
         "mushroom": ["Sep", "Oct", "Nov"],
         "leek": ["Oct", "Nov", "Dec", "Jan", "Feb"],
-        # Winter
         "kale": ["Nov", "Dec", "Jan", "Feb"],
         "brussels sprout": ["Nov", "Dec", "Jan"],
         "cabbage": ["Nov", "Dec", "Jan", "Feb"],
@@ -276,7 +246,6 @@ def get_seasonal_months(ingredient_name):
         "swede": ["Nov", "Dec", "Jan", "Feb"],
         "turnip": ["Nov", "Dec", "Jan"],
         "celeriac": ["Nov", "Dec", "Jan"],
-        # Year-round
         "onion": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         "garlic": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         "carrot": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -290,42 +259,36 @@ def get_seasonal_months(ingredient_name):
     for key, months in seasonal.items():
         if key in name_lower:
             return months
-    return []  # Unknown seasonality
+    return []
 
 
 def find_existing_recipe(slug):
-    """Check if a recipe already exists in Airtable by Mealie Slug."""
-    result = airtable_get(TABLE_RECIPES, f"{{Mealie Slug}}='{slug}'")
-    records = result.get("records", [])
-    return records[0] if records else None
+    """Check if a recipe already exists in Baserow by Mealie Slug."""
+    token = get_baserow_token()
+    all_rows = baserow_get_all(TABLE_RECIPES, token)
+    for row in all_rows:
+        if row.get("Mealie Slug") == slug:
+            return row
+    return None
 
 
 def delete_existing_ingredients(recipe_record_id):
     """Delete all existing ingredient records linked to a recipe."""
-    # Get all records and filter locally (formula filter is unreliable for link fields)
-    result = airtable_get(TABLE_INGREDIENTS)
+    token = get_baserow_token()
+    all_rows = baserow_get_all(TABLE_INGREDIENTS, token)
     to_delete = []
-    for r in result.get("records", []):
-        recipe_links = r.get("fields", {}).get("Recipe", [])
+    for row in all_rows:
+        recipe_links = row.get("Recipe", [])
         if recipe_record_id in recipe_links:
-            to_delete.append(r["id"])
+            to_delete.append(row["id"])
 
     for rid in to_delete:
-        key = get_key()
-        req = urllib.request.Request(
-            f"https://api.airtable.com/v0/{BASE}/{TABLE_INGREDIENTS}/{rid}",
-            headers={"Authorization": f"Bearer {key}"},
-            method="DELETE",
-        )
-        try:
-            urllib.request.urlopen(req)
-        except Exception:
-            pass
+        baserow_delete(TABLE_INGREDIENTS, rid)
     return len(to_delete)
 
 
 def sync_recipe(slug):
-    """Main sync: fetch from Mealie, create/update Airtable."""
+    """Main sync: fetch from Mealie, create/update Baserow."""
     print(f"🔄 Syncing recipe: {slug}")
     print()
 
@@ -341,15 +304,14 @@ def sync_recipe(slug):
     print(f"  🔗 {org_url or 'No source URL'}")
     print()
 
-    # 2. Check for existing Airtable record
+    # 2. Check for existing Baserow record
     existing = find_existing_recipe(slug)
     if existing:
-        print(f"  ℹ️  Recipe already in Airtable (id: {existing['id']}) — updating")
+        print(f"  ℹ️  Recipe already in Baserow (id: {existing['id']}) — updating")
         recipe_record_id = existing["id"]
-        # Delete old ingredients (will re-create)
         delete_existing_ingredients(recipe_record_id)
     else:
-        # 3. Create Airtable Recipes record
+        # 3. Create Baserow Recipes record
         recipe_fields = {
             "Name": name,
             "Mealie Slug": slug,
@@ -357,13 +319,12 @@ def sync_recipe(slug):
             "Notes": description,
         }
 
-        # Try to extract photo
-        if recipe.get("image"):
-            recipe_fields["Photo"] = [{"url": f"{MEALIE_URL}/api/media/recipes/{slug}/image"}]
-
-        result = airtable_post(TABLE_RECIPES, recipe_fields)
+        result = baserow_post(TABLE_RECIPES, recipe_fields)
+        if not result:
+            print("  ❌ Failed to create Baserow Recipes record", file=sys.stderr)
+            return
         recipe_record_id = result["id"]
-        print(f"  ✅ Created Airtable Recipes record (id: {recipe_record_id})")
+        print(f"  ✅ Created Baserow Recipes record (id: {recipe_record_id})")
 
     # 4. Sync ingredients
     ingredients = recipe.get("recipeIngredient", [])
@@ -371,7 +332,6 @@ def sync_recipe(slug):
     ingredient_count = 0
 
     for ing in ingredients:
-        # Get the raw text from display or note
         raw_text = ing.get("display", "") or ing.get("note", "")
         if not raw_text:
             food = ing.get("food") or {}
@@ -379,7 +339,6 @@ def sync_recipe(slug):
         if not raw_text:
             continue
 
-        # Clean the ingredient name (remove quantities, units, prep notes)
         ing_name = clean_ingredient_name(raw_text)
         if not ing_name or ing_name.lower() in seen_names:
             continue
@@ -396,13 +355,13 @@ def sync_recipe(slug):
         if seasonal:
             ing_fields["Seasonal"] = seasonal
 
-        airtable_post(TABLE_INGREDIENTS, ing_fields)
+        baserow_post(TABLE_INGREDIENTS, ing_fields)
         ingredient_count += 1
 
     print(f"  ✅ Synced {ingredient_count} ingredients")
     print()
     print(f"✅ Sync complete: {name}")
-    print(f"   Airtable: https://airtable.com/{BASE}/{TABLE_RECIPES}/{recipe_record_id}")
+    print(f"   Baserow: {BASEROW_URL}/database/132/table/{TABLE_RECIPES}/{recipe_record_id}")
     if org_url:
         print(f"   Source:   {org_url}")
     print(f"   Mealie:   {MEALIE_URL}/recipes/{slug}")

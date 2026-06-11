@@ -3,3 +3,5 @@ User U0B73K4QWP5 (David). Non-engineer VPS user on Ubuntu 26.04, IP 77.68.33.121
 When asked "what can we build?" or "give me use cases for X", always lead with concrete, named project examples — NOT abstract categories. Cloud Console guidance: give exact URLs, not sidebar names. Recipe/meal planning: wants authentic recipes from verified web sources, will ask for citations.
 §
 David cycles regularly — did 45 miles Reading to Guildford with friend Oran on June 7, 2026. Uses Garmin Connect (not Strava). Prefers miles over km. Garmin import cron: 0d2ddb20ece8 (daily 7am UTC).
+§
+meal module, tracking meals from pictures

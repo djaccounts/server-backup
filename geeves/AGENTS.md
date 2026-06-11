@@ -48,14 +48,16 @@ No n8n, no Glide, no Railway.
 | Todos | `todos-agent` | 2 | ✅ Slack capture | Todos |
 | Meals | `meals-agent` | 2 | ✅ Slack capture | Meals, Daily Nutrition Summary |
 | Sleep & Habits | `sleep-agent` | 2 | ✅ Slack capture | Sleep Log, Habits, Habit Log |
-|| Fitness | `fitness-agent` | 2 | ✅ Slack capture + Garmin auto-import | Workouts, Exercise Log, Cycling, Fitness Goals |
-|| Cycling | — | 2 | ✅ Garmin auto-import (daily 7am) | Cycling (linked to Workouts + People) |
+| Fitness | `fitness-agent` | 2 | ✅ Slack capture + Garmin auto-import | Workouts, Exercise Log, Cycling, Fitness Goals |
+| Cycling | — | 2 | ✅ Garmin auto-import (daily 7am) | Cycling (linked to Workouts + People) |
 | Weekly digest | `weekly-digest-agent` | 3 | ✅ Sun 8pm UTC | Intentions |
 | Recipes | `recipes-agent` | 3 | ✅ Mealie integrated | Recipes, Ingredients, Dinner Parties, Dinner Planner, Shopping List, Dining Preferences |
+| Relationships & Occasions | `relationships-agent` | 3 | ✅ Built June 2026 | Occasions, Gift Ideas, Gift History, Social Log |
 | Film club | `film-club-agent` | 2+ | ✅ OMDb lookup | Films |
 | Restaurants | `restaurants-agent` | 4 | ✅ SerpApi | Restaurants, Restaurant Visits |
 | Books | `books-agent` | 4 | ✅ Slack capture | Books |
-| Property | `property-agent` | 4 | ✅ Rightmove scan 5am | Properties, Property Criteria |
+|| Property | `property-agent` | 4 | ✅ Rightmove scan 5am | Properties, Property Criteria |
+|| Listening | — | — | ✅ Spotify weekly fetch (via weekly digest) | Listening (table 402) |
 
 **Active cron jobs:**
 - `813b03d1a3e1` — Morning Digest, daily 6am UTC
@@ -63,7 +65,7 @@ No n8n, no Glide, no Railway.
 - `cea50fc34ab0` — Property Scan, daily 5am UTC
 - `0d2ddb20ece8` — Garmin Cycling Import, daily 7am UTC
 
-**Modules not yet built (on demand):** Fitness, Travel/Commute, Relationships & Occasions, Goals, Documents/Subscriptions, Wardrobe, Events, Watching/Reading, London, plus all Phase 5.
+**Modules not yet built (on demand):** Travel/Commute, Goals, Documents/Subscriptions, Wardrobe, Events, Watching/Reading, London, plus all Phase 5.
 
 ---
 
@@ -89,9 +91,11 @@ All at `/root/Geeves/scripts/`:
 | `airtable_api.py` | Legacy — kept for reference, no longer used |
 | `table_builder.py` | Legacy — Airtable Metadata API (needs Baserow rewrite for new modules) |
 | `slack_capture.py` | Classifies Slack messages → Baserow writes |
-| `*_fetch.py` | Bulletin/data fetchers → Baserow (weather, stocks, fact, token_usage) |
-| `schema_checker.py` | Legacy — Airtable registry sync |
-| `serpapi_search.py` | Google Maps / local business lookup |
+|| `*_fetch.py` | Bulletin/data fetchers → Baserow (weather, stocks, fact, token_usage) |
+|| `garmin_fetch.py` | Garmin Connect cycling import → Baserow (Cycling + Workouts tables). Supports backfill mode. |
+|| `spotify_weekly_fetch.py` | Spotify listening history → weekly summary → Baserow (Listening table). Called by weekly digest cron. |
+|| `schema_checker.py` | Legacy — Airtable registry sync |
+|| `serpapi_search.py` | Google Maps / local business lookup |
 
 **All scripts now write to Baserow.** Airtable is no longer used.
 

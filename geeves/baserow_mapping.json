@@ -1,6 +1,4 @@
 {
-  "database_id": 132,
-  "database_name": "Geeves",
   "tables": {
     "People": {
       "id": 359,
@@ -136,13 +134,6 @@
           "name": "Last Modified",
           "type": "last_modified",
           "order": 18
-        },
-        "Films": {
-          "id": 3318,
-          "name": "Films",
-          "type": "link_row",
-          "order": 21,
-          "link_row_table_id": 366
         },
         "Person Notes": {
           "id": 3322,
@@ -373,18 +364,33 @@
           "order": 38,
           "link_row_table_id": 396
         },
-        "Books": {
-          "id": 3336,
-          "name": "Books",
-          "type": "text",
-          "order": 39
+        "Occasions": {
+          "id": 3750,
+          "name": "Occasions",
+          "type": "link_row",
+          "order": 39,
+          "link_row_table_id": 403
         },
-        "Books 2": {
-          "id": 3337,
-          "name": "Books 2",
+        "Gift Ideas": {
+          "id": 3757,
+          "name": "Gift Ideas",
           "type": "link_row",
           "order": 40,
-          "link_row_table_id": 398
+          "link_row_table_id": 404
+        },
+        "Gift History": {
+          "id": 3764,
+          "name": "Gift History",
+          "type": "link_row",
+          "order": 41,
+          "link_row_table_id": 405
+        },
+        "Social Log": {
+          "id": 3776,
+          "name": "Social Log",
+          "type": "link_row",
+          "order": 42,
+          "link_row_table_id": 406
         }
       }
     },
@@ -1206,34 +1212,6 @@
           "name": "Member 4 Notes",
           "type": "long_text",
           "order": 20
-        },
-        "Recommended By": {
-          "id": 3414,
-          "name": "Recommended By",
-          "type": "link_row",
-          "order": 21,
-          "link_row_table_id": 359
-        },
-        "Member 2 Name": {
-          "id": 3415,
-          "name": "Member 2 Name",
-          "type": "link_row",
-          "order": 22,
-          "link_row_table_id": 359
-        },
-        "Member 3 Name": {
-          "id": 3416,
-          "name": "Member 3 Name",
-          "type": "link_row",
-          "order": 23,
-          "link_row_table_id": 359
-        },
-        "Member 4 Name": {
-          "id": 3417,
-          "name": "Member 4 Name",
-          "type": "link_row",
-          "order": 24,
-          "link_row_table_id": 359
         }
       }
     },
@@ -4726,13 +4704,6 @@
           "type": "rating",
           "order": 13
         },
-        "Recommended by": {
-          "id": 3704,
-          "name": "Recommended by",
-          "type": "link_row",
-          "order": 14,
-          "link_row_table_id": 359
-        },
         "Goodreads Rating": {
           "id": 3729,
           "name": "Goodreads Rating",
@@ -4849,6 +4820,429 @@
           "name": "Message",
           "type": "long_text",
           "order": 4
+        }
+      }
+    },
+    "Listening": {
+      "id": 402,
+      "fields": {
+        "Name": {
+          "id": 3731,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Notes": {
+          "id": 3732,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 1
+        },
+        "Active": {
+          "id": 3733,
+          "name": "Active",
+          "type": "boolean",
+          "order": 2
+        },
+        "Week starting": {
+          "id": 3734,
+          "name": "Week starting",
+          "type": "date",
+          "order": 3
+        },
+        "Top Tracks": {
+          "id": 3735,
+          "name": "Top Tracks",
+          "type": "long_text",
+          "order": 4
+        },
+        "Top Artists": {
+          "id": 3736,
+          "name": "Top Artists",
+          "type": "long_text",
+          "order": 5
+        },
+        "Total Plays": {
+          "id": 3737,
+          "name": "Total Plays",
+          "type": "number",
+          "order": 6
+        },
+        "Most Active Day": {
+          "id": 3738,
+          "name": "Most Active Day",
+          "type": "text",
+          "order": 7
+        },
+        "Summary": {
+          "id": 3739,
+          "name": "Summary",
+          "type": "long_text",
+          "order": 8
+        }
+      }
+    },
+    "Occasions": {
+      "id": 403,
+      "fields": {
+        "Name": {
+          "id": 3740,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Extra Notes": {
+          "id": 3741,
+          "name": "Extra Notes",
+          "type": "long_text",
+          "order": 1
+        },
+        "Active": {
+          "id": 3742,
+          "name": "Active",
+          "type": "boolean",
+          "order": 2
+        },
+        "Person": {
+          "id": 3749,
+          "name": "Person",
+          "type": "link_row",
+          "order": 3,
+          "link_row_table_id": 359
+        },
+        "Occasion Type": {
+          "id": 3751,
+          "name": "Occasion Type",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1951,
+              "value": "Birthday"
+            },
+            {
+              "id": 1952,
+              "value": "Anniversary"
+            },
+            {
+              "id": 1953,
+              "value": "Wedding"
+            },
+            {
+              "id": 1954,
+              "value": "Other"
+            }
+          ]
+        },
+        "Date": {
+          "id": 3752,
+          "name": "Date",
+          "type": "date",
+          "order": 5
+        },
+        "Recurring": {
+          "id": 3753,
+          "name": "Recurring",
+          "type": "boolean",
+          "order": 6
+        },
+        "Remind Days Before": {
+          "id": 3754,
+          "name": "Remind Days Before",
+          "type": "number",
+          "order": 7
+        },
+        "Created": {
+          "id": 3755,
+          "name": "Created",
+          "type": "created_on",
+          "order": 8
+        }
+      }
+    },
+    "Gift Ideas": {
+      "id": 404,
+      "fields": {
+        "Name": {
+          "id": 3743,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Extra Notes": {
+          "id": 3744,
+          "name": "Extra Notes",
+          "type": "long_text",
+          "order": 1
+        },
+        "Active": {
+          "id": 3745,
+          "name": "Active",
+          "type": "boolean",
+          "order": 2
+        },
+        "Person": {
+          "id": 3756,
+          "name": "Person",
+          "type": "link_row",
+          "order": 3,
+          "link_row_table_id": 359
+        },
+        "Idea": {
+          "id": 3758,
+          "name": "Idea",
+          "type": "long_text",
+          "order": 4
+        },
+        "Estimated Cost": {
+          "id": 3759,
+          "name": "Estimated Cost",
+          "type": "single_select",
+          "order": 5,
+          "select_options": [
+            {
+              "id": 1955,
+              "value": "Under \u00a320"
+            },
+            {
+              "id": 1956,
+              "value": "\u00a320-50"
+            },
+            {
+              "id": 1957,
+              "value": "\u00a350-100"
+            },
+            {
+              "id": 1958,
+              "value": "\u00a3100+"
+            }
+          ]
+        },
+        "Occasion": {
+          "id": 3760,
+          "name": "Occasion",
+          "type": "text",
+          "order": 6
+        },
+        "Status": {
+          "id": 3761,
+          "name": "Status",
+          "type": "single_select",
+          "order": 7,
+          "select_options": [
+            {
+              "id": 1959,
+              "value": "Idea"
+            },
+            {
+              "id": 1960,
+              "value": "Purchased"
+            },
+            {
+              "id": 1961,
+              "value": "Given"
+            }
+          ]
+        },
+        "Created": {
+          "id": 3762,
+          "name": "Created",
+          "type": "created_on",
+          "order": 8
+        }
+      }
+    },
+    "Gift History": {
+      "id": 405,
+      "fields": {
+        "Name": {
+          "id": 3746,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Extra Notes": {
+          "id": 3747,
+          "name": "Extra Notes",
+          "type": "long_text",
+          "order": 1
+        },
+        "Active": {
+          "id": 3748,
+          "name": "Active",
+          "type": "boolean",
+          "order": 2
+        },
+        "Person": {
+          "id": 3763,
+          "name": "Person",
+          "type": "link_row",
+          "order": 3,
+          "link_row_table_id": 359
+        },
+        "Gift": {
+          "id": 3765,
+          "name": "Gift",
+          "type": "long_text",
+          "order": 4
+        },
+        "Occasion": {
+          "id": 3766,
+          "name": "Occasion",
+          "type": "text",
+          "order": 5
+        },
+        "Date Given": {
+          "id": 3767,
+          "name": "Date Given",
+          "type": "date",
+          "order": 6
+        },
+        "Rating": {
+          "id": 3768,
+          "name": "Rating",
+          "type": "single_select",
+          "order": 7,
+          "select_options": [
+            {
+              "id": 1962,
+              "value": "1"
+            },
+            {
+              "id": 1963,
+              "value": "2"
+            },
+            {
+              "id": 1964,
+              "value": "3"
+            },
+            {
+              "id": 1965,
+              "value": "4"
+            },
+            {
+              "id": 1966,
+              "value": "5"
+            }
+          ]
+        },
+        "Created": {
+          "id": 3769,
+          "name": "Created",
+          "type": "created_on",
+          "order": 8
+        }
+      }
+    },
+    "Social Log": {
+      "id": 406,
+      "fields": {
+        "Name": {
+          "id": 3770,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Notes": {
+          "id": 3771,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 1
+        },
+        "Active": {
+          "id": 3772,
+          "name": "Active",
+          "type": "boolean",
+          "order": 2
+        },
+        "Date": {
+          "id": 3773,
+          "name": "Date",
+          "type": "date",
+          "order": 3
+        },
+        "Type": {
+          "id": 3774,
+          "name": "Type",
+          "type": "single_select",
+          "order": 4,
+          "select_options": [
+            {
+              "id": 1967,
+              "value": "Dinner"
+            },
+            {
+              "id": 1968,
+              "value": "Meetup"
+            },
+            {
+              "id": 1969,
+              "value": "Call"
+            },
+            {
+              "id": 1970,
+              "value": "Event"
+            },
+            {
+              "id": 1971,
+              "value": "Other"
+            }
+          ]
+        },
+        "Person": {
+          "id": 3775,
+          "name": "Person",
+          "type": "link_row",
+          "order": 5,
+          "link_row_table_id": 359
+        },
+        "Summary": {
+          "id": 3777,
+          "name": "Summary",
+          "type": "long_text",
+          "order": 6
+        },
+        "Key Things to Remember": {
+          "id": 3778,
+          "name": "Key Things to Remember",
+          "type": "long_text",
+          "order": 7
+        },
+        "Follow-up": {
+          "id": 3779,
+          "name": "Follow-up",
+          "type": "long_text",
+          "order": 8
+        },
+        "Source": {
+          "id": 3780,
+          "name": "Source",
+          "type": "single_select",
+          "order": 9,
+          "select_options": [
+            {
+              "id": 1972,
+              "value": "Slack"
+            },
+            {
+              "id": 1973,
+              "value": "Calendar"
+            },
+            {
+              "id": 1974,
+              "value": "Manual"
+            },
+            {
+              "id": 1975,
+              "value": "Voice"
+            }
+          ]
+        },
+        "Created": {
+          "id": 3781,
+          "name": "Created",
+          "type": "created_on",
+          "order": 10
         }
       }
     }

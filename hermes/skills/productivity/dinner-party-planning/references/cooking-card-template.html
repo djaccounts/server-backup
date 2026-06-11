@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dinner Party — Saturday 20th June, 1:30pm</title>
+<style>
+  :root {
+    --bg: #fff;
+    --card: #f9f9f9;
+    --surface: #f0f0f0;
+    --accent: #e94560;
+    --accent2: #533483;
+    --text: #1a1a1a;
+    --text-muted: #777;
+    --border: #e5e5e5;
+    --green: #2d9e6a;
+    --orange: #e8941a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ── Cover / Invite Section ── */
+  .invite-cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .invite-cover::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(233,69,96,0.05) 0%, transparent 70%);
+    top: -150px; right: -150px;
+    border-radius: 50%;
+  }
+  .invite-cover .date-badge {
+    background: var(--accent);
+    color: #fff;
+    padding: 0.35rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .invite-cover h1 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    color: #1a1a1a;
+  }
+  .invite-cover .subtitle {
+    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .invite-cover .guest-names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 1.8rem;
+  }
+  .invite-cover .guest-chip {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #333;
+  }
+  .menu-preview {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: left;
+  }
+  .menu-preview h2 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 0.7rem;
+  }
+  .menu-preview ul { list-style: none; padding: 0; }
+  .menu-preview li {
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .menu-preview li:last-child { border-bottom: none; }
+  .menu-preview li .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+    margin-top: 0.4rem;
+  }
+  .menu-preview li .dish-name { font-weight: 600; font-size: 0.88rem; }
+  .menu-preview li .dish-desc { font-size: 0.78rem; color: #999; }
+  .dietary-note {
+    margin-top: 0.8rem;
+    padding: 0.4rem 0.7rem;
+    background: #f0faf6;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: #666;
+  }
+
+  /* ── Tab Navigation ── */
+  .tab-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+  }
+  .tab-nav button {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.8rem 0.5rem;
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+  }
+  .tab-nav button.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-nav button:hover { color: var(--text); }
+
+  /* ── Sections ── */
+  .section {
+    display: none;
+    padding: 1.5rem 1rem;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .section.active { display: block; }
+
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+  .section-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    padding-left: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0.3rem; bottom: 0.3rem;
+    width: 2px;
+    background: #ddd;
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 0.35rem;
+    padding: 0.25rem 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -1.25rem;
+    top: 0.45rem;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    flex-shrink: 0;
+  }
+  .tl-item.active::before { background: var(--green); }
+  .tl-item.passive::before { background: var(--orange); }
+  .tl-item.makeahead::before { background: var(--accent); }
+  .tl-time {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    min-width: 3.2rem;
+  }
+  .tl-task { font-weight: 600; font-size: 0.85rem; }
+  .tl-detail {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    width: 100%;
+    padding-left: 3.7rem;
+    margin-top: -0.15rem;
+  }
+  .tl-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: 0.3rem;
+  }
+  .tag-active { background: #2d9e6a12; color: var(--green); }
+  .tag-passive { background: #e8941a12; color: var(--orange); }
+  .tag-makeahead { background: #e9456012; color: var(--accent); }
+
+  /* ── Shopping List ── */
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.7rem;
+  }
+  .shop-category {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem;
+  }
+  .shop-category h3 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .shop-category ul { list-style: none; padding: 0; }
+  .shop-category li {
+    padding: 0.2rem 0;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  .shop-category li input[type="checkbox"] {
+    margin-top: 0.2rem;
+    accent-color: var(--green);
+  }
+  .shop-note {
+    margin-top: 1rem;
+    padding: 0.7rem;
+    background: var(--card);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .shop-note h4 { color: var(--text); margin-bottom: 0.3rem; font-size: 0.85rem; }
+
+  /* ── Recipe Cards ── */
+  .recipe-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .recipe-header {
+    padding: 0.8rem 1.2rem;
+    background: var(--surface);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .recipe-header h3 { font-size: 1rem; font-weight: 700; }
+  .recipe-header .recipe-meta {
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .recipe-header .chevron {
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: transform 0.2s;
+  }
+  .recipe-card.open .chevron { transform: rotate(180deg); }
+  .recipe-body { display: none; padding: 1.2rem; }
+  .recipe-card.open .recipe-body { display: block; }
+  .recipe-body h4 {
+    color: var(--accent);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.4rem;
+  }
+  .recipe-body .ingredient-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0.8rem;
+  }
+  .recipe-body .ingredient-list li {
+    padding: 0.15rem 0;
+    font-size: 0.85rem;
+  }
+  .recipe-body .ingredient-list li::before {
+    content: '•';
+    color: var(--green);
+    margin-right: 0.4rem;
+  }
+  .recipe-body .steps { padding-left: 1.2rem; }
+  .recipe-body .steps li { padding: 0.25rem 0; font-size: 0.85rem; }
+  .recipe-tip {
+    margin-top: 0.8rem;
+    padding: 0.6rem 0.8rem;
+    background: #2d9e6a08;
+    border-left: 3px solid var(--green);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.8rem;
+  }
+  .recipe-tip strong { color: var(--green); }
+  .recipe-source {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .recipe-source a { color: var(--accent); text-decoration: none; }
+  .recipe-source a:hover { text-decoration: underline; }
+
+  /* ── Print Styles ── */
+  @media print {
+    body { background: #fff; color: #222; }
+    .invite-cover { min-height: auto; padding: 1rem; background: none; }
+    .invite-cover::before { display: none; }
+    .tab-nav { display: none; }
+    .section { display: block !important; page-break-inside: avoid; }
+    .recipe-card { break-inside: avoid; }
+    .recipe-body { display: block !important; }
+    .shop-category { break-inside: avoid; }
+    .tl-item { break-inside: avoid; }
+  }
+
+  @media (max-width: 600px) {
+    .shop-grid { grid-template-columns: 1fr; }
+    .recipe-header { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- COVER / GUEST INVITE                      -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="invite-cover" id="invite">
+  <div class="date-badge">Saturday 20th June · 1:30pm</div>
+  <h1>You're Invited</h1>
+  <p class="subtitle">A Middle Eastern–inspired lunch with family</p>
+  <div class="guest-names">
+    <span class="guest-chip">David</span>
+    <span class="guest-chip">Jill Jacobs</span>
+    <span class="guest-chip">Adam Redhouse</span>
+    <span class="guest-chip">Sidney Redhouse</span>
+    <span class="guest-chip">Grace Redhouse</span>
+  </div>
+  <div class="menu-preview">
+    <h2>On the Menu</h2>
+    <ul>
+      <li><span class="dot"></span><div><div class="dish-name">Chicken Shawarma</div><div class="dish-desc">Spit-roasted with warm spices, sliced thin</div></div></li>
+      <li><span class="dot"></span><div><div class="dish-name">Homemade Pita Bread</div><div class="dish-desc">Warm, soft, pillowy — straight from the oven</div></div></li>
+      <li><span class="dot"></span><div><div class="dish-name">Hummus</div><div class="dish-desc">Creamy, lemony, made from scratch with tahini</div></div></li>
+      <li><span class="dot"></span><div><div class="dish-name">Pickled Red Onions</div><div class="dish-desc">Tangy, crisp, bright pink — the ultimate topping</div></div></li>
+      <li><span class="dot"></span><div><div class="dish-name">Quinoa Salad with Roasted Vegetables</div><div class="dish-desc">Eggplant, courgette, tomato, fresh herbs</div></div></li>
+    </ul>
+    <div class="dietary-note">🌿 All dishes are dairy-free · Kosher-friendly</div>
+  </div>
+  <p style="margin-top:1.5rem; color:#999; font-size:0.8rem;">Come hungry. Leave happy.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB NAVIGATION                            -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="tab-nav">
+  <button class="active" onclick="showTab('summary')">Summary</button>
+  <button onclick="showTab('shopping')">Shopping List</button>
+  <button onclick="showTab('timeline')">Timeline</button>
+  <button onclick="showTab('recipes')">Recipes</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB: SUMMARY                              -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section active" id="summary">
+  <h2 class="section-title">Meal Summary</h2>
+  <p class="section-subtitle">Saturday 20th June, 1:30pm · 5 guests · Dairy-free / Kosher-friendly</p>
+
+  <div class="recipe-card open">
+    <div class="recipe-header">
+      <h3>How It All Comes Together</h3>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="recipe-body" style="display:block;">
+      <p style="margin-bottom:0.8rem;">
+        This is a <strong>Middle Eastern–inspired mezze-style lunch</strong> built around a show-stopping chicken shawarma as the centrepiece, surrounded by colourful shareable sides. Everything is dairy-free and kosher-friendly.
+      </p>
+      <p style="margin-bottom:0.8rem;">
+        <strong>The shawarma</strong> does most of the work — marinate overnight, then it's a case of grilling and slicing. While that's cooking, the <strong>pickled onions</strong> are already done (make them the day before) and the <strong>quinoa salad</strong> can sit at room temperature.
+      </p>
+      <p style="margin-bottom:0.8rem;">
+        <strong>The pita</strong> is last — roll and cook just before serving so they arrive warm and puffy at the table. The <strong>hummus</strong> can be made the morning of and comes together in 5 minutes with a food processor.
+      </p>
+      <p>
+        <strong>Key overlap:</strong> Chicken marinates overnight (passive). Quinoa roasted veg goes in the oven before the grill. Pita cooks on the hob while the chicken rests. Pickled onions are done the night before.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB: SHOPPING LIST                        -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section" id="shopping">
+  <h2 class="section-title">Shopping List</h2>
+  <p class="section-subtitle">Everything you need for 5 guests — tap to check off as you shop</p>
+
+  <div class="shop-grid">
+    <div class="shop-category">
+      <h3>Meat</h3>
+      <ul>
+        <li><input type="checkbox"> Chicken thighs, boneless & skinless · 8 pieces (~700g)</li>
+      </ul>
+    </div>
+    <div class="shop-category">
+      <h3>Vegetables & Fresh</h3>
+      <ul>
+        <li><input type="checkbox"> Red onions · 2 medium</li>
+        <li><input type="checkbox"> Eggplant · 1 medium (~1 lb)</li>
+        <li><input type="checkbox"> Courgette (zucchini) · 1 medium-large</li>
+        <li><input type="checkbox"> Yellow squash · 1 medium-large (or extra courgette)</li>
+        <li><input type="checkbox"> Grape / cherry tomatoes · 1 cup (halved)</li>
+        <li><input type="checkbox"> Persian cucumbers · 3–4 (or 1 regular cucumber)</li>
+        <li><input type="checkbox"> Roma tomato · 1 (for shawarma topper)</li>
+        <li><input type="checkbox"> Yellow onion · 1 large</li>
+        <li><input type="checkbox"> Garlic · 2 bulbs</li>
+        <li><input type="checkbox"> Lemons · 3</li>
+        <li><input type="checkbox"> Fresh basil · small pack</li>
+        <li><input type="checkbox"> Fresh mint · small pack</li>
+      </ul>
+    </div>
+    <div class="shop-category">
+      <h3>Pantry — Dry</h3>
+      <ul>
+        <li><input type="checkbox"> Quinoa · ½ cup (100g) uncooked</li>
+        <li><input type="checkbox"> All-purpose flour · 3 cups (for pita)</li>
+        <li><input type="checkbox"> Active dry yeast · 2 tsp (1 sachet)</li>
+        <li><input type="checkbox"> Chickpeas, dried · 1 cup (or 2× 15oz cans)</li>
+        <li><input type="checkbox"> Sliced almonds or pine nuts · ¼ cup</li>
+        <li><input type="checkbox"> Sugar · ½ tsp (for pita yeast)</li>
+        <li><input type="checkbox"> Baking soda · 1½ tsp (for peeling chickpeas)</li>
+      </ul>
+    </div>
+    <div class="shop-category">
+      <h3>Pantry — Jar / Bottle</h3>
+      <ul>
+        <li><input type="checkbox"> Tahini · ⅓ cup jar</li>
+        <li><input type="checkbox"> Apple cider vinegar · small bottle</li>
+        <li><input type="checkbox"> Distilled white vinegar · small bottle</li>
+        <li><input type="checkbox"> Maple syrup or honey · small bottle</li>
+      </ul>
+    </div>
+    <div class="shop-category">
+      <h3>Spices & Seasoning</h3>
+      <ul>
+        <li><input type="checkbox"> Ground cumin · 2 tsp</li>
+        <li><input type="checkbox"> Ground coriander · 2 tsp</li>
+        <li><input type="checkbox"> Ground turmeric · 1 tsp</li>
+        <li><input type="checkbox"> Paprika (sweet) · 2 tsp</li>
+        <li><input type="checkbox"> Ground cinnamon · ½ tsp</li>
+        <li><input type="checkbox"> Ground cloves · ½ tsp</li>
+        <li><input type="checkbox"> Cayenne pepper · ¼ tsp (optional)</li>
+        <li><input type="checkbox"> Garlic powder · 1 tsp</li>
+        <li><input type="checkbox"> Fine sea salt</li>
+        <li><input type="checkbox"> Dried oregano · 1 tsp</li>
+        <li><input type="checkbox"> Sumac · small pot (for hummus garnish)</li>
+        <li><input type="checkbox"> Red pepper flakes · ¼ tsp (optional)</li>
+      </ul>
+    </div>
+    <div class="shop-category">
+      <h3>Oils</h3>
+      <ul>
+        <li><input type="checkbox"> Extra virgin olive oil · ½ cup total</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="shop-note">
+    <h4>📌 Notes</h4>
+    <ul style="list-style: disc; padding-left: 1.2rem;">
+      <li>One ½ cup olive oil covers: shawarma marinade (~⅓ cup) + roasting veg (2 tbsp) + pita dough (2 tbsp) + drizzling</li>
+      <li>One 3-lemon bag covers: shawarma marinade (1 lemon) + hummus (1 lemon) + quinoa salad dressing (1 lemon)</li>
+      <li>If using <strong>canned chickpeas</strong> instead of dried, buy 2× 15 oz cans — skip the baking soda peel step, just simmer 20 min</li>
+      <li>Total spice quantities assume starting from scratch. If you have a <strong>shawarma spice blend</strong>, use ~¼ cup of that instead</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB: TIMELINE                             -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section" id="timeline">
+  <h2 class="section-title">Cooking Timeline</h2>
+  <p class="section-subtitle">Working backwards from 1:30pm serve time · Oven + 4 hob rings</p>
+
+  <h3 style="color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem;">🌙 Day Before (Friday 19th)</h3>
+  <div class="timeline">
+    <div class="tl-item makeahead">
+      <span class="tl-time">Anytime</span>
+      <span class="tl-task">Marinate the chicken</span>
+      <span class="tl-tag tag-makeahead">Make Ahead</span>
+    </div>
+    <div class="tl-detail">Shawarma spice blend (¼ cup) + olive oil (⅓ cup) + lemon juice. Season thighs, toss, add onion rounds. Fridge overnight.</div>
+    <div class="tl-item makeahead">
+      <span class="tl-time">Anytime</span>
+      <span class="tl-task">Pickle the red onions</span>
+      <span class="tl-tag tag-makeahead">Make Ahead</span>
+    </div>
+    <div class="tl-detail">Thinly slice 2 red onions. Simmer ½ cup water, ¼ cup white vinegar, ¼ cup apple cider vinegar, 1½ tbsp maple syrup, 1½ tsp salt. Pour over. Cool, fridge.</div>
+    <div class="tl-item makeahead">
+      <span class="tl-time">Anytime</span>
+      <span class="tl-task">Prep pita dough (optional)</span>
+      <span class="tl-tag tag-makeahead">Optional</span>
+    </div>
+    <div class="tl-detail">Make dough through first rise. Fridge overnight. Bring to room temp 30 min before shaping.</div>
+  </div>
+
+  <h3 style="color: var(--green); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin: 0.8rem 0 0.4rem;">☀️ Saturday — Morning</h3>
+  <div class="timeline">
+    <div class="tl-item passive">
+      <span class="tl-time">09:00</span>
+      <span class="tl-task">Cook chickpeas</span>
+      <span class="tl-tag tag-passive">Passive</span>
+    </div>
+    <div class="tl-detail">Dried: simmer 1.5–2 hrs. Canned: simmer 20 min with 1½ tsp baking soda.</div>
+    <div class="tl-item active">
+      <span class="tl-time">09:30</span>
+      <span class="tl-task">Peel chickpeas</span>
+      <span class="tl-tag tag-active">Active</span>
+    </div>
+    <div class="tl-detail">Rub under water to remove skins. Dry. Reserve 1 tbsp for garnish.</div>
+    <div class="tl-item active">
+      <span class="tl-time">10:00</span>
+      <span class="tl-task">Make hummus</span>
+      <span class="tl-tag tag-active">Active</span>
+    </div>
+    <div class="tl-detail">Blend chickpeas → paste. Add 2 ice cubes, ⅓ cup tahini, ½ tsp salt, lemon juice. Blend 4–5 min. Fridge.</div>
+    <div class="tl-item active">
+      <span class="tl-time">10:30</span>
+      <span class="tl-task">Prep pita dough</span>
+      <span class="tl-tag tag-active">Active</span>
+    </div>
+    <div class="tl-detail">Water + yeast + sugar. Wait 15 min. Add salt, oil, flour. Knead 2 min. Rise 1 hr.</div>
+  </div>
+
+  <h3 style="color: var(--orange); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; margin: 0.8rem 0 0.4rem;">🔥 Saturday — Afternoon</h3>
+  <div class="timeline">
+    <div class="tl-item active">
+      <span class="tl-time">11:00</span>
+      <span class="tl-task">Prep roasted veg</span>
+      <span class="tl-tag tag-active">Active</span>
+    </div>
+    <div class="tl-detail">Dice eggplant, courgette, squash. Toss with oil, salt, pepper on trays.</div>
+    <div class="tl-item passive">
+      <span class="tl-time">11:15</span>
+      <span class="tl-task">Roast veg · Oven 220°C</span>
+      <span class="tl-tag tag-passive">Oven</span>
+    </div>
+    <div class="tl-detail">25–30 min until browned. Cool to room temp.</div>
+    <div class="tl-item passive">
+      <span class="tl-time">11:20</span>
+      <span class="tl-task">Cook quinoa</span>
+      <span class="tl-tag tag-passive">Hob</span>
+    </div>
+    <div class="tl-detail">½ cup quinoa + 1 cup water. Boil, cover, simmer 15 min. Steam 5 min. Fluff.</div>
+    <div class="tl-item active">
+      <span class="tl-time">11:45</span>
+      <span class="tl-task">Assemble quinoa salad</span>
+      <span class="tl-tag tag-active">Active</span>
+    </div>
+    <div class="tl-detail">Lemon + garlic + 2 tbsp oil. Add tomatoes, quinoa, veg, herbs, nuts. Toss. Room temp.</div>
+    <div class="tl-item active">
+      <span class="tl-time">12:00</span>
+      <span class="tl-task">Chicken out of fridge</span>
+      <span class="tl-tag tag-active">Active</span>
+    </div>
+    <div class="tl-detail">Room temp 20 min. Thread onto skewers.</div>
+    <div class="tl-item passive">
+      <span class="tl-time">12:15</span>
+      <span class="tl-task">Cook chicken</span>
+      <span class="tl-tag tag-passive">Passive</span>
+    </div>
+    <div class="tl-detail">Grill: 10–12 min/side. Oven: 200°C, 30–40 min. Rest 5 min, slice thin.</div>
+    <div class="tl-item active">
+      <span class="tl-time">12:30</span>
+      <span class="tl-task">Shape pita</span>
+      <span class="tl-tag tag-active">Active</span>
+    </div>
+    <div class="tl-detail">7–8 balls. Rest 10 min. Roll 8–9" wide, ¼" thick.</div>
+    <div class="tl-item passive">
+      <span class="tl-time">1:00</span>
+      <span class="tl-task">Preheat oven 240°C</span>
+      <span class="tl-tag tag-passive">Oven</span>
+    </div>
+    <div class="tl-detail">Heavy baking sheet inside.</div>
+    <div class="tl-item active">
+      <span class="tl-time">1:10</span>
+      <span class="tl-task">Cook pita · 2 min/side</span>
+      <span class="tl-tag tag-active">Oven</span>
+    </div>
+    <div class="tl-detail">2 at a time. Flip with tongs. Puff! Stack under towel.</div>
+    <div class="tl-item active">
+      <span class="tl-time">1:25</span>
+      <span class="tl-task">🍽️ Plate & serve at 1:30</span>
+    </div>
+    <div class="tl-detail">Chicken platter + hummus + pickled onions + quinoa salad + warm pita. Family-style.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TAB: RECIPES                              -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section" id="recipes">
+  <h2 class="section-title">Recipes</h2>
+  <p class="section-subtitle">Tap each recipe to expand · Serves 5</p>
+
+  <!-- Shawarma -->
+  <div class="recipe-card">
+    <div class="recipe-header" onclick="toggleRecipe(this)">
+      <div>
+        <h3>Chicken Shawarma</h3>
+        <div class="recipe-meta"><span>⏱ 30 min prep + 30–40 min cook</span><span>🔥 Grill or Oven</span></div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="recipe-body">
+      <h4>Ingredients</h4>
+      <ul class="ingredient-list">
+        <li>8 boneless skinless chicken thighs (~700g)</li>
+        <li>¼ cup shawarma spice blend (see below)</li>
+        <li>⅓ cup extra virgin olive oil</li>
+        <li>Juice of 1 large lemon</li>
+        <li>Kosher salt & black pepper</li>
+        <li>1 large yellow onion, thick rounds</li>
+        <li>1 Roma tomato (optional, for top of spit)</li>
+        <li>Persian cucumbers, tomato wedges, parsley — to serve</li>
+      </ul>
+      <h4>Shawarma Spice Blend</h4>
+      <ul class="ingredient-list">
+        <li>2 tsp ground cumin · 2 tsp ground coriander · 1 tsp turmeric</li>
+        <li>2 tsp paprika · ½ tsp cinnamon · ½ tsp cloves · ¼ tsp cayenne (optional) · 1 tsp garlic powder</li>
+      </ul>
+      <h4>Method</h4>
+      <ol class="steps">
+        <li><strong>Marinate (day before):</strong> Whisk spice blend, olive oil, and lemon juice. Season chicken, toss to coat. Add onion rounds. Refrigerate overnight.</li>
+        <li><strong>Room temp:</strong> Remove from fridge 20–30 min before cooking.</li>
+        <li><strong>Grill:</strong> Medium-high, 10–12 min per side until charred & 74°C. <strong>Oven:</strong> 200°C, 30–40 min, turn once.</li>
+        <li><strong>Rest:</strong> 5 min at room temp. Slice thin against the grain.</li>
+      </ol>
+      <div class="recipe-tip"><strong>💡 Tip:</strong> Chicken thighs are essential — breasts will dry out. Overnight marinade makes a huge difference.</div>
+      <div class="recipe-source">Source: <a href="https://www.themediterraneandish.com/grilled-chicken-shawarma/" target="_blank">The Mediterranean Dish</a> · Spice blend: <a href="https://www.themediterraneandish.com/shawarma-spice-blend/" target="_blank">Shawarma Spice Blend</a></div>
+    </div>
+  </div>
+
+  <!-- Pita -->
+  <div class="recipe-card">
+    <div class="recipe-header" onclick="toggleRecipe(this)">
+      <div>
+        <h3>Homemade Pita Bread</h3>
+        <div class="recipe-meta"><span>⏱ 15 min prep + 1 hr rise + 10 min cook</span><span>🔥 Oven or Hob</span></div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="recipe-body">
+      <h4>Ingredients</h4>
+      <ul class="ingredient-list">
+        <li>1 cup lukewarm water · 2 tsp active dry yeast · ½ tsp sugar</li>
+        <li>3 cups all-purpose flour · 1–2 tsp kosher salt · 2 tbsp olive oil</li>
+      </ul>
+      <h4>Method</h4>
+      <ol class="steps">
+        <li><strong>Sponge:</strong> Water + yeast + sugar. Wait 15 min. Add ½ cup flour, whisk. Wait 15 min until frothy.</li>
+        <li><strong>Dough:</strong> Add salt, oil, almost all flour. Knead ~2 min. Soft & slightly moist.</li>
+        <li><strong>Rise:</strong> Oiled bowl, cover. 1 hour until doubled.</li>
+        <li><strong>Divide:</strong> 7–8 balls. Rest 10 min. Roll to 8–9" wide, ¼" thick.</li>
+        <li><strong>Cook (Oven 240°C):</strong> 2 at a time on hot tray, 2 min per side. Puff! Stack under towel.</li>
+        <li><strong>Cook (Hob):</strong> Cast iron, medium-high. 30 sec, flip 1–2 min, flip 1–2 min.</li>
+      </ol>
+      <div class="recipe-tip"><strong>💡 Tip:</strong> If pita doesn't puff, the oven/skillet isn't hot enough. Dough can be refrigerated overnight.</div>
+      <div class="recipe-source">Source: <a href="https://www.themediterraneandish.com/homemade-pita-bread-recipe/" target="_blank">The Mediterranean Dish</a></div>
+    </div>
+  </div>
+
+  <!-- Hummus -->
+  <div class="recipe-card">
+    <div class="recipe-header" onclick="toggleRecipe(this)">
+      <div>
+        <h3>Hummus from Scratch</h3>
+        <div class="recipe-meta"><span>⏱ 5 min prep + blending</span><span>🧊 Key: ice cubes</span></div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="recipe-body">
+      <h4>Ingredients</h4>
+      <ul class="ingredient-list">
+        <li>1 cup dried chickpeas, soaked overnight (or 2× 15oz cans)</li>
+        <li>1½ tsp baking soda · ⅓ cup tahini · Juice of 1 lemon</li>
+        <li>1–2 cloves garlic · ½ tsp kosher salt · 2 ice cubes</li>
+        <li>Olive oil, sumac, reserved chickpeas — to garnish</li>
+      </ul>
+      <h4>Method</h4>
+      <ol class="steps">
+        <li><strong>Cook:</strong> Dried: simmer 1.5–2 hrs. Canned: simmer 20 min with baking soda.</li>
+        <li><strong>Peel:</strong> Hot water + baking soda. Rub under running water. Dry. Reserve 1 tbsp.</li>
+        <li><strong>Puree:</strong> Food processor until smooth paste.</li>
+        <li><strong>Finish:</strong> Add ice cubes, tahini, salt, lemon, garlic. Blend 4–5 min until fluffy.</li>
+        <li><strong>Serve:</strong> Bowl, swirl, olive oil, sumac, reserved chickpeas.</li>
+      </ol>
+      <div class="recipe-tip"><strong>💡 Tip:</strong> Peeling + ice cubes = restaurant-quality hummus. Don't skip either.</div>
+      <div class="recipe-source">Source: <a href="https://www.themediterraneandish.com/how-to-make-hummus/" target="_blank">The Mediterranean Dish</a></div>
+    </div>
+  </div>
+
+  <!-- Pickled Onions -->
+  <div class="recipe-card">
+    <div class="recipe-header" onclick="toggleRecipe(this)">
+      <div>
+        <h3>Quick Pickled Red Onions</h3>
+        <div class="recipe-meta"><span>⏱ 10 min + 30 min cooling</span><span>🔴 Make the day before</span></div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="recipe-body">
+      <h4>Ingredients</h4>
+      <ul class="ingredient-list">
+        <li>2 medium red onions, very thinly sliced (~⅛ inch)</li>
+        <li>½ cup water · ¼ cup distilled white vinegar · ¼ cup apple cider vinegar</li>
+        <li>1½ tbsp maple syrup · 1½ tsp fine sea salt · ¼ tsp red pepper flakes (optional)</li>
+      </ul>
+      <h4>Method</h4>
+      <ol class="steps">
+        <li>Pack sliced onions into a pint jar.</li>
+        <li>Simmer water, vinegars, maple syrup, salt, pepper flakes.</li>
+        <li>Pour hot liquid over onions. Press down to release air bubbles.</li>
+        <li>Cool to room temp (20–30 min). Ready to serve.</li>
+        <li>Cover & refrigerate. Best within 3 days.</li>
+      </ol>
+      <div class="recipe-tip"><strong>💡 Tip:</strong> Don't skip the sweetener — without it, they're overly vinegary.</div>
+      <div class="recipe-source">Source: <a href="https://cookieandkate.com/quick-pickled-onions-recipe/" target="_blank">Cookie and Kate</a></div>
+    </div>
+  </div>
+
+  <!-- Quinoa Salad -->
+  <div class="recipe-card">
+    <div class="recipe-header" onclick="toggleRecipe(this)">
+      <div>
+        <h3>Quinoa Salad with Roasted Vegetables</h3>
+        <div class="recipe-meta"><span>⏱ 20 min prep + 30 min roast</span><span>🌿 Dairy-free</span></div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="recipe-body">
+      <h4>Ingredients</h4>
+      <ul class="ingredient-list">
+        <li>½ cup quinoa, rinsed · 1 cup water</li>
+        <li>1 medium eggplant, diced · 1 courgette, diced · 1 yellow squash, diced</li>
+        <li>4 tbsp olive oil · Salt & pepper</li>
+        <li>Juice of 1 lemon · 1 clove garlic, minced · 1 cup halved grape tomatoes</li>
+        <li>⅓ cup fresh basil · ⅓ cup fresh mint · ¼ cup sliced almonds, toasted</li>
+      </ul>
+      <h4>Method</h4>
+      <ol class="steps">
+        <li><strong>Roast veg:</strong> 220°C (425°F), 25–30 min until browned. Cool.</li>
+        <li><strong>Cook quinoa:</strong> Boil, cover, simmer 15 min, steam 5 min. Fluff.</li>
+        <li><strong>Toast nuts:</strong> Dry skillet, 4–8 min until golden.</li>
+        <li><strong>Assemble:</strong> Whisk lemon + garlic + 2 tbsp oil. Add everything. Toss gently.</li>
+        <li><strong>Serve</strong> at room temperature. Keeps 5 days in fridge.</li>
+      </ol>
+      <div class="recipe-tip"><strong>💡 Tip:</strong> Even better after 30 min — flavours meld. Perfect make-ahead side.</div>
+      <div class="recipe-source">Source: <a href="https://cookieandkate.com/mediterranean-quinoa-salad-recipe/" target="_blank">Cookie and Kate</a> (adapted dairy-free)</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- FOOTER                                    -->
+<!-- ═══════════════════════════════════════════ -->
+<div style="text-align: center; padding: 1.5rem; color: #999; font-size: 0.75rem;">
+  <p>Dinner Party Planner · Geeves · Saturday 20th June 2026</p>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function toggleRecipe(header) {
+  header.parentElement.classList.toggle('open');
+}
+</script>
+</body>
+</html>

@@ -162,6 +162,22 @@ CATEGORY_RULES = [
         r"\brecommend(s|ed|ation)?\b.*\b(book|novel|read)\b",
         r"\b(book|novel|read)\b.*\brecommend(s|ed|ation)?\b",
     ]),
+    ("Occasion", [
+        r"\bbirthday\b", r"\banniversary\b", r"\bwedding\b",
+        r"\bcelebration\b", r"\bparty\b",
+        r"\b(turning|turned)\s+\d+\b",
+        r"\b(he|she|they)\s+(is|are)\s+(turning|having)\b",
+        r"\b(gift|present)\s+(for|idea)\b",
+        r"\bwhat\s+(should|can)\s+(i|we)\s+(get|give|buy)\b",
+    ]),
+    ("Social", [
+        r"\bdinner\s+(with|at)\b", r"\bmet\s+up\b", r"\bmeetup\b",
+        r"\bhad\s+(dinner|lunch|coffee|drinks)\b",
+        r"\bwent\s+(out|for)\b.*\b(dinner|lunch|drinks|coffee)\b",
+        r"\bcall(ed|ing)?\s+(with|mom|dad|mum|friend)\b",
+        r"\bvisited\b", r"\bsaw\b",
+        r"\bhad\s+a\s+(great|good|nice|lovely)\s+(time|evening|dinner|lunch)\b",
+    ]),
 ]
 
 
@@ -1039,6 +1055,95 @@ def handle_books(msg, dry_run=False):
     return ok
 
 
+def handle_occasion(msg, dry_run=False):
+    """Handle birthday/anniversary messages."""
+    text = msg.get("text", "")
+    name = extract_name(text)
+    if not name:
+        print(f"  ℹ️  Could not extract person name for occasion — skipping")
+        return False
+
+    person = find_person(name)
+    if not person:
+        print(f"  ℹ️  Person '{name}' not found in People table — skipping")
+        return False
+
+    person_id = person.get("id")
+    today = datetime.date.today().isoformat()
+
+    text_lower = text.lower()
+    if "birthday" in text_lower:
+        occ_type = "Birthday"
+    elif "anniversary" in text_lower:
+        occ_type = "Anniversary"
+    elif "wedding" in text_lower:
+        occ_type = "Wedding"
+    else:
+        occ_type = "Other"
+
+    fields = {
+        "Person": [person_id],
+        "Occasion Type": occ_type,
+        "Date": today,
+        "Recurring": True,
+        "Extra Notes": text[:500],
+    }
+
+    if dry_run:
+        print(f"  [DRY RUN] Would create occasion: {name}'s {occ_type}")
+        return True
+
+    ok, _ = baserow_post("Occasions", fields)
+    if ok:
+        print(f"  ✅ Occasion: {name}'s {occ_type}")
+    return ok
+
+
+def handle_social(msg, dry_run=False):
+    """Handle social interaction messages."""
+    text = msg.get("text", "")
+    name = extract_name(text)
+    if not name:
+        print(f"  ℹ️  Could not extract person name for social log — skipping")
+        return False
+
+    person = find_person(name)
+    if not person:
+        print(f"  ℹ️  Person '{name}' not found in People table — skipping")
+        return False
+
+    person_id = person.get("id")
+    text_lower = text.lower()
+    if "dinner" in text_lower or "ate" in text_lower:
+        social_type = "Dinner"
+    elif "lunch" in text_lower:
+        social_type = "Meetup"
+    elif "call" in text_lower or "phone" in text_lower:
+        social_type = "Call"
+    elif "event" in text_lower or "party" in text_lower:
+        social_type = "Event"
+    else:
+        social_type = "Other"
+
+    today = datetime.date.today().isoformat()
+    fields = {
+        "Person": [person_id],
+        "Type": social_type,
+        "Date": today,
+        "Summary": text[:500],
+        "Source": "Slack",
+    }
+
+    if dry_run:
+        print(f"  [DRY RUN] Would create social log: {social_type} with {name}")
+        return True
+
+    ok, _ = baserow_post("Social Log", fields)
+    if ok:
+        print(f"  ✅ Social Log: {social_type} with {name}")
+    return ok
+
+
 def extract_cost(text):
     m = re.search(r'(?:bill|cost|total|spent|was)\s+(?:£|GBP\s+)(\d{2,4})(?:\.\d{2})?', text, re.IGNORECASE)
     if m:
@@ -1070,6 +1175,8 @@ HANDLERS = {
     "Module Request": handle_module_request,
     "Film Club": handle_film_club,
     "Books": handle_books,
+    "Occasion": handle_occasion,
+    "Social": handle_social,
 }
 
 

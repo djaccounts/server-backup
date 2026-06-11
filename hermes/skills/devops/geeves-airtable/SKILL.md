@@ -669,11 +669,25 @@ python3 /root/Geeves/scripts/serpapi_search.py "UK news" --engine google_news --
 
 Key: `SERPAPI_KEY` in `/root/.hermes/.env`. Engines: `google`, `google_news`, `google_finance`.
 
-## External APIs Reference
+## Garmin Connect Integration
 
-See the `public-apis` skill for all curated free APIs: rate limits, auth patterns, endpoints, and pitfalls. Covers World News API, SerpApi, PDFBolt, OMDb, Alpha Vantage/Finnhub, Purple Air/OpenUV, and the full quotes/facts lineup.
+Script: `/root/Geeves/scripts/garmin_fetch.py` — imports cycling from Garmin Connect → Baserow.
 
-Local reference: `references/external-apis.md` (superseded by `public-apis` skill — prefer the skill).
+```bash
+python3 garmin_fetch.py --days 7          # Dry run
+python3 garmin_fetch.py --days 7 --write  # Write to Baserow
+python3 garmin_fetch.py --backfill --write  # Backfill: one week at a time backwards
+```
+
+**Features:** Auto-retry on 429 rate limits, deduplication (date+route+distance), creates Workout + Cycling records.
+
+**Cron:** Job `0d2ddb20ece8`, daily 7am UTC, `--backfill --write` mode.
+
+**Baserow IDs:** Cycling=396, Workouts=392, People=359.
+
+**Known issues:** Garmin rate-limits aggressively (auto-retry after 60s). Dual Garmin setup (bike=cycling, wrist=walking) imports correctly. 2FA may be needed on first login. Units auto-converted from meters/mps to miles/mph. People links not auto-tagged.
+
+See `references/garmin-connect.md` for full details.
 
 ## Sensitivity Rules
 - Sensitive fields (Phone, Email, Relationship Notes, Conversation Log) → Ollama only

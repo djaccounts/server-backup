@@ -3,7 +3,7 @@
     {
       "id": "813b03d1a3e1",
       "name": "Geeves Morning Digest",
-      "prompt": "You are OWL, the Geeves personal assistant. It's morning \u2014 time for the daily digest.\n\nTASK: Run the bulletin fetcher, then compose and send the morning digest email with PDF attachment.\n\n## Steps\n\n1. Run `python3 /root/Geeves/scripts/bulletin_fetch.py --write` to fetch today's data into Airtable\n2. Run `python3 /root/Geeves/scripts/build_digest_html.py --save` to build the HTML digest (saved to /root/Geeves/digests/digest_YYYY-MM-DD.html)\n3. Run `python3 /root/Geeves/scripts/digest_to_pdf.py --file /root/Geeves/digests/digest_YYYY-MM-DD.html` to generate the PDF\n\n4. Send the email via AgentMail to dj@djaccounts.com:\n   - Use the HTML digest content as the email body (same content as the PDF)\n   - Attach the PDF file\n   - Subject: \"\u2600\ufe0f Geeves Morning Digest \u2014 [today's date]\"\n   - Use base64 encoding for the PDF attachment (see skill pattern)\n\n## Important\n\n- The HTML from build_digest_html.py is the SINGLE SOURCE of truth for both email body and PDF\n- Do NOT compose a separate plain text email \u2014 use the HTML digest as-is\n- If any step fails, continue with remaining steps and note the failure\n- Do NOT post to Slack \u2014 email only",
+      "prompt": "You are OWL, the Geeves personal assistant. It's morning \u2014 time for the daily digest.\n\nTASK: Run the morning digest pipeline and deliver via email + Slack.\n\n## Steps\n\n1. Fetch today's bulletin data:\n   cd /root/Geeves/scripts && python3 bulletin_fetch.py --write\n\n2. Build the HTML digest:\n   python3 /root/Geeves/digests/build_digest_baserow.py --save\n\n3. Generate PDF:\n   python3 /root/Geeves/scripts/legacy_airtable/digest_to_pdf.py --file /root/Geeves/digests/digest_$(date +%Y-%m-%d).html\n\n4. Send email via AgentMail to dj@djaccounts.com with PDF attachment.\n   Use the mcp_agentmail_send_message tool or the agentmail_helper.py script.\n   Include MEDIA:/path/to/digest_$(date +%Y-%m-%d).pdf in the email.\n\n5. Post digest summary to Slack channel C0B7C89HKQ9.\n\n## Digest Sections (in order)\n\ud83c\udf24\ufe0f London Weather | \ud83d\udccb Short-Term Todos | \ud83d\udca1 Fact of the Day | \ud83d\udcc8 Markets | \ud83d\udcca Token Usage | \ud83c\udfe0 New Property Listings\n\n## Important\n- If a section has no data, skip it gracefully\n- Keep the email concise \u2014 David reads this first thing\n- The build_digest_baserow.py reads from Baserow (system of record)\n- Properties section shows new listings from the past 7 days\n- Todos section shows items due today or within the next 7 days",
       "skills": [
         "bulletin-agent",
         "public-apis"
@@ -23,15 +23,15 @@
       "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 7
+        "completed": 8
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-02T15:29:19.046414+00:00",
-      "next_run_at": "2026-06-10T06:00:00+00:00",
-      "last_run_at": "2026-06-09T06:02:03.775330+00:00",
+      "next_run_at": "2026-06-11T06:00:00+00:00",
+      "last_run_at": "2026-06-10T06:05:59.227773+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -113,15 +113,15 @@
       "schedule_display": "0 2 * * *",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T15:56:27.457927+00:00",
-      "next_run_at": "2026-06-11T02:00:00+00:00",
-      "last_run_at": "2026-06-09T02:01:08.030382+00:00",
+      "next_run_at": "2026-06-12T02:00:00+00:00",
+      "last_run_at": "2026-06-10T02:01:16.220551+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -158,15 +158,15 @@
       "schedule_display": "0 5 * * *",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T19:43:45.740827+00:00",
-      "next_run_at": "2026-06-10T05:00:00+00:00",
-      "last_run_at": "2026-06-09T05:01:43.012871+00:00",
+      "next_run_at": "2026-06-11T05:00:00+00:00",
+      "last_run_at": "2026-06-10T05:02:02.637720+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -187,7 +187,7 @@
     {
       "id": "b0b836135650",
       "name": "Geeves Weekly Digest + Intentions",
-      "prompt": "You are OWL, the Geeves personal assistant. It's Sunday evening \u2014 time for the weekly digest.\n\nTASK: Run the weekly digest pipeline \u2014 fetch the past 7 days of data, build the HTML digest, generate PDF, and deliver via email + Slack.\n\nSTEPS:\n\n1. FETCH DATA\n   Run: python3 /root/Geeves/scripts/weekly_digest_fetch.py --write\n   This collects the past week's data from Todos, Workouts, Sleep, Habits, and Intentions tables.\n\n2. BUILD HTML\n   Run: python3 /root/Geeves/scripts/build_weekly_digest_html.py --save\n   This reads the fetched data and composes the HTML digest.\n   Output: /root/Geeves/digests/weekly_YYYY-MM-DD.html\n\n3. GENERATE PDF\n   Run: python3 /root/Geeves/scripts/digest_to_pdf.py --file /root/Geeves/digests/weekly_YYYY-MM-DD.html\n   Output: /root/Geeves/digests/weekly_YYYY-MM-DD.pdf\n\n4. SEND EMAIL\n   Use the AgentMail REST API to send the digest email:\n   - To: dj@djaccounts.com\n   - Subject: \"Geeves Weekly Digest \u2014 [week range]\"\n   - Body: the HTML from step 2\n   - Attachment: the PDF from step 3\n   - From: davidj@agentmail.to\n   Read AGENT_MAIL_API key from /root/.hermes/.env\n\n5. POST TO SLACK\n   Post a brief summary to the home channel:\n   - \"\ud83d\udcc5 Weekly Digest is ready! [link to key sections]\"\n   - Include: tasks completed, workouts logged, sleep average, intentions review\n   Read SLACK_BOT_TOKEN and SLACK_HOME_CHANNEL from /root/.hermes/.env\n\n6. LOG TO DIGEST LOG\n   The fetch script already wrote a Digest Log entry. Verify it was created.\n\nIMPORTANT:\n- execute_code is BLOCKED in cron. Use write_file + terminal pattern for all Python scripts.\n- If a section has no data (e.g., no workouts logged), skip it gracefully.\n- The HTML builder handles empty sections automatically.\n- If any step fails, continue with the next steps and report what failed.\n\nReport the results: what data was found, what was sent, and any errors.",
+      "prompt": "You are OWL, the Geeves personal assistant. It's Sunday evening \u2014 time for the weekly digest.\n\nTASK: Run the weekly digest pipeline \u2014 fetch the past 7 days of data, build the HTML digest, generate PDF, and deliver via email + Slack.\n\nSTEPS:\n\n1. FETCH GEEVES DATA\n   Run: python3 /root/Geeves/scripts/weekly_digest_fetch.py --write\n   This collects the past week's data from Todos, Workouts, Sleep, Habits, and Intentions tables.\n\n2. FETCH SPOTIFY LISTENING DATA\n   Run: python3 /root/Geeves/scripts/spotify_weekly_fetch.py --write\n   This fetches the last 7 days of Spotify listening history, computes top tracks/artists, and writes a summary to the Listening table (Baserow table 402).\n   If this step fails (e.g., Spotify not authenticated), skip it gracefully and note it in the report.\n\n3. BUILD HTML\n   Run: python3 /root/Geeves/scripts/build_weekly_digest_html.py --save\n   This reads the fetched data and composes the HTML digest.\n   Output: /root/Geeves/digests/weekly_YYYY-MM-DD.html\n\n4. GENERATE PDF\n   Run: python3 /root/Geeves/scripts/digest_to_pdf.py --file /root/Geeves/digests/weekly_YYYY-MM-DD.html\n   Output: /root/Geeves/digests/weekly_YYYY-MM-DD.pdf\n\n5. SEND EMAIL\n   Use the AgentMail REST API to send the digest email:\n   - To: dj@djaccounts.com\n   - Subject: \"Geeves Weekly Digest \u2014 [week range]\"\n   - Body: the HTML from step 3\n   - Attachment: the PDF from step 4\n   - From: davidj@agentmail.to\n   Read AGENT_MAIL_API key from /root/.hermes/.env\n\n6. POST TO SLACK\n   Post a brief summary to the home channel:\n   - \"\ud83d\udcc5 Weekly Digest is ready! [link to key sections]\"\n   - Include: tasks completed, workouts logged, sleep average, intentions review, and if available: top artist and most-played track from Spotify\n   Read SLACK_BOT_TOKEN and SLACK_HOME_CHANNEL from /root/.hermes/.env\n\n7. LOG TO DIGEST LOG\n   The fetch script already wrote a Digest Log entry. Verify it was created.\n\nIMPORTANT:\n- execute_code is BLOCKED in cron. Use write_file + terminal pattern for all Python scripts.\n- If a section has no data (e.g., no workouts logged), skip it gracefully.\n- The HTML builder handles empty sections automatically.\n- If any step fails, continue with the next steps and report what failed.\n- The Spotify step is optional \u2014 if it fails, continue without it.\n\nReport the results: what data was found, what was sent, and any errors.",
       "skills": [
         "weekly-digest-agent",
         "public-apis"
@@ -237,7 +237,7 @@
     {
       "id": "0d2ddb20ece8",
       "name": "Garmin Cycling Import",
-      "prompt": "Run the Garmin Connect sync to fetch recent cycling activities and store them in Airtable.\n\nSteps:\n1. Check that GARMIN_EMAIL and GARMIN_PASSWORD are set in /root/.hermes/.env\n2. Run: python3 /root/Geeves/scripts/garmin_sync.py\n3. Report the results: how many new rides synced, any errors.\n4. If authentication fails, report that Garmin credentials need to be re-entered.",
+      "prompt": "Run the Garmin cycling import script and report the results back to David in Slack.\n\nSteps:\n1. Run: cd /root/Geeves/scripts && python garmin_fetch.py --backfill\n2. Capture the output (number of rides fetched, imported, duplicates skipped, any errors)\n3. Send a concise summary to David via Slack. Include:\n   - Date range fetched\n   - How many rides found vs imported vs skipped as duplicates\n   - Any errors (especially rate limiting)\n   - Total rides now in Baserow (check with: curl -s 'http://77.68.33.121/api/database/rows/table/[CYCLING_TABLE_ID]/?user_field_names=true' -H 'Authorization: Token [BASEROW_TOKEN]' | python -c \"import sys,json; print(len(json.load(sys.stdin)['results']))\")\n   - If rate limited, note that the next run will retry\n\nKeep it brief \u2014 David wants a quick status, not a novel.",
       "skills": [
         "baserow"
       ],
@@ -256,16 +256,16 @@
       "schedule_display": "0 7 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-09T07:15:25.963482+00:00",
-      "next_run_at": "2026-06-10T07:00:00+00:00",
-      "last_run_at": null,
-      "last_status": null,
+      "next_run_at": "2026-06-11T07:00:00+00:00",
+      "last_run_at": "2026-06-10T07:01:09.721319+00:00",
+      "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "origin",
@@ -281,7 +281,93 @@
       ],
       "workdir": null,
       "profile": null
+    },
+    {
+      "id": "13d764e11d46",
+      "name": "AgentMail Reply Monitor",
+      "prompt": "Run the AgentMail reply monitor script: python3 /root/Geeves/scripts/agentmail_replies_to_slack.py\n\nIf the output contains \"No new replies\", do NOT send any message to Slack \u2014 just respond with \"No new replies\" silently.\n\nIf the output contains \"Posted reply\" or \"Processed\", then send a Slack message to the home channel with the reply details. Use the send_message tool with target \"slack\" and include the full script output.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 15,
+        "display": "every 15m"
+      },
+      "schedule_display": "every 15m",
+      "repeat": {
+        "times": null,
+        "completed": 27
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-10T18:27:17.748211+00:00",
+      "next_run_at": "2026-06-11T02:03:01.499735+00:00",
+      "last_run_at": "2026-06-11T01:48:01.499735+00:00",
+      "last_status": "ok",
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7C89HKQ9",
+        "chat_name": "C0B7C89HKQ9",
+        "thread_id": "1781034688.643169"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
+    },
+    {
+      "id": "f03915228d1f",
+      "name": "Google Contacts to Baserow Sync",
+      "prompt": "Run the Google Contacts to Baserow sync to keep contacts in sync.\n\nSteps:\n1. Run: cd /root/Geeves/scripts && python3 google_contacts_sync.py --direction google-to-baserow\n2. Report the results: how many created, updated, unchanged, errors.\n3. If there are errors, log them but don't fail silently.\n\nThis is a background maintenance task. David doesn't need to see the details unless something goes wrong.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "display": "0 8 * * *"
+      },
+      "schedule_display": "0 8 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-10T21:01:46.901732+00:00",
+      "next_run_at": "2026-06-11T08:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7C89HKQ9",
+        "chat_name": "C0B7C89HKQ9",
+        "thread_id": "1781032782.006329"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
     }
   ],
-  "updated_at": "2026-06-10T02:00:49.852376+00:00"
+  "updated_at": "2026-06-11T02:00:02.159702+00:00"
 }

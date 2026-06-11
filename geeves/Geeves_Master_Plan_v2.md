@@ -101,8 +101,7 @@ Where the system starts to feel less like a tracker and more like an assistant.
 - **Weekly digest and intentions** — a reflective look back over the week and a short, considered look forward; a few intentions set for the week ahead and revisited at its end.
 - **Recipes** — a living library powered by Mealie as the recipe engine and Airtable as the connective metadata layer. Recipes are imported from URLs, rated, and linked to ingredients (with LLM-assigned categories). The standout feature is planning a dinner party around who's coming and what they can and can't eat — guests' dietary data from the People graph is auto-compiled and cross-referenced against recipe ingredients. Restaurant meals can be logged by description or photo, with macros estimated by the LLM. A shared **Dining Preferences** table accumulates taste signals (frequent/high-rated cuisines, favourite dishes, avoidances) and feeds the future Restaurant Finder module.
 - **Travel and commute** — on days with somewhere to be, the morning briefing already knows the route and any disruption.
-- **Relationships and occasions** — birthdays, anniversaries, and the gentle nudge that it's been too long since the user saw someone, with the context to make the reach-out meaningful.
-- **Gift ideas** — a running place to capture ideas the moment they occur, tagged to the person, ready when the occasion comes.
+- **Relationships and occasions** ✅ — birthdays, anniversions, gift ideas/history, and social log. Gentle nudges when it's been too long since the user saw someone, with the context to make the reach-out meaningful.
 - **Skills and goals** — ambitions tracked across horizons, broken into steps that feed the to-do list, with goals that have gone quiet surfaced for a decision.
 - **Documents and subscriptions** — the admin that otherwise slips: renewals, expiries, and recurring costs flagged before they bite.
 

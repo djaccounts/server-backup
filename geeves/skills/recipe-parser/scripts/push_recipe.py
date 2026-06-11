@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Full recipe pipeline: text/URL/photo → Mealie → Airtable.
+Full recipe pipeline: text/URL/photo → Mealie → Baserow.
 
 Usage:
   python3 push_recipe.py --photo /path/to/image.jpg
@@ -9,14 +9,17 @@ Usage:
   python3 push_recipe.py --json-ld '{"@type":"Recipe","name":"...",...}'
 
 Requires in ~/.hermes/.env:
-  AIRTABLE_API_KEY, NVIDIA_API_KEY (for photo), SLACK_BOT_TOKEN (for Slack download)
+  BASEROW_API_TOKEN, NVIDIA_API_KEY (for photo), SLACK_BOT_TOKEN (for Slack download)
+
+Baserow tables:
+    Recipes (id: 379), Ingredients (id: 375), database ID: 132
 """
 import argparse, base64, json, re, subprocess, sys, urllib.request, urllib.error, urllib.parse
 
 # ── Config ──
-BASE_ID = "appzvmonQXs4x2AlL"
-RECIPES_TABLE = "tblehBgzRMa2Xucjd"
-INGREDIENTS_TABLE = "tblNsgbYHNK8xWnB7"
+BASEROW_URL = "http://77.68.33.121"
+RECIPES_TABLE = 379
+INGREDIENTS_TABLE = 375
 MEALIE_URL = "http://localhost:9925"
 MEALIE_USER = "changeme@example.com"
 MEALIE_PASS = "MyPassword123"
@@ -44,15 +47,9 @@ def categorise(ingredient):
     return "Other"
 
 def clean_ingredient_name(raw):
-    """Extract clean ingredient name from a raw recipe ingredient line.
-    E.g. '2-3 garlic cloves, finely grated' → 'Garlic'
-         '1/2 tsp ground cumin' → 'Cumin'
-         '500g full-fat Greek yoghurt (thick/strained)' → 'Greek yoghurt'
-    """
+    """Extract clean ingredient name from a raw recipe ingredient line."""
     text = raw.strip()
-    # Remove parenthetical notes
     text = re.sub(r'\s*\(.*?\)', '', text).strip()
-    # Remove leading quantities and units
     text = re.sub(
         r'^(?:[\d/→.\s-]+|x\s*\d+\s*)\s*'
         r'(?:cup|cups|tbsp|tsp|tablespoon|teaspoons|tablespoons|'
@@ -64,7 +61,6 @@ def clean_ingredient_name(raw):
         r'tin|tins|can|cans|jar|jars|bottle|bottles|'
         r'teaspoon|teaspoons)\s+',
         '', text, flags=re.IGNORECASE).strip()
-    # Remove preparation instructions after comma
     text = re.sub(
         r'\s*,\s*(?:'
         r'finely|roughly|thinly|thickly|'
@@ -77,13 +73,10 @@ def clean_ingredient_name(raw):
         r'thaw.*|measure.*'
         r').*$',
         '', text, flags=re.IGNORECASE).strip()
-    # Remove trailing phrases
     text = re.sub(
         r'\s+(?:to taste|to serve|for serving|for garnish|optional|for \w+|to finish).*$',
         '', text, flags=re.IGNORECASE).strip()
-    # Remove leading articles
     text = re.sub(r'^(?:a |an |the |~|small |large |medium )', '', text, flags=re.IGNORECASE).strip()
-    # Title case
     if text:
         words = text.split()
         result = []
@@ -129,48 +122,58 @@ def push_to_mealie(json_ld):
         print(f"Mealie error: {e.code} {body[:300]}", file=sys.stderr)
         return None
 
-# ── Airtable ──
-def airtable_headers():
-    return {
-        "Authorization": "Bearer " + get_env_key("AIRTABLE_API_KEY"),
-        "Content-Type": "application/json"
-    }
+# ── Baserow ──
+def baserow_post(table_id, fields):
+    """POST to Baserow using the baserow_api helper for field resolution."""
+    fields_json = json.dumps(fields)
+    result = subprocess.run(
+        ["python3", "/root/Geeves/scripts/baserow_api.py", "create-row",
+         str(table_id), fields_json],
+        capture_output=True, text=True, timeout=30
+    )
+    if result.returncode == 0 and result.stdout.strip():
+        stdout = result.stdout.strip()
+        if "Created: row" in stdout:
+            row_id = int(stdout.split("Created: row")[1].strip())
+            return {"id": row_id}
+    return None
 
-def airtable_post(table, data):
-    url = f"https://api.airtable.com/v0/{BASE_ID}/{table}"
-    payload = json.dumps(data).encode("utf-8")
-    req = urllib.request.Request(url, data=payload, headers=airtable_headers(), method="POST")
-    try:
+def baserow_get_all(table_id):
+    """Get all rows from Baserow."""
+    token = get_env_key("BASEROW_API_TOKEN")
+    all_rows = []
+    page = 1
+    while True:
+        url = f"{BASEROW_URL}/api/database/rows/table/{table_id}/?page={page}&size=100"
+        req = urllib.request.Request(url, headers={"Authorization": f"Token {token}"})
         with urllib.request.urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
-        return {"error": f"HTTP {e.code}: {body[:300]}"}
+            data = json.loads(resp.read())
+        results = data.get("results", [])
+        all_rows.extend(results)
+        if not data.get("next"):
+            break
+        page += 1
+    return all_rows
 
-def airtable_get(table, params=""):
-    url = f"https://api.airtable.com/v0/{BASE_ID}/{table}{params}"
-    req = urllib.request.Request(url, headers=airtable_headers())
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
-        return {"error": f"HTTP {e.code}: {body[:300]}"}
-
-def sync_to_airtable(recipe_name, slug, source, ingredients):
+def sync_to_baserow(recipe_name, slug, source, ingredients):
     # Check existing
-    f = urllib.parse.quote(f"{{Mealie Slug}}='{slug}'")
-    existing = airtable_get(RECIPES_TABLE, f"?filterByFormula={f}")
-    if existing.get("records"):
-        recipe_id = existing["records"][0]["id"]
+    all_recipes = baserow_get_all(RECIPES_TABLE)
+    existing = None
+    for r in all_recipes:
+        if r.get("Mealie Slug") == slug:
+            existing = r
+            break
+
+    if existing:
+        recipe_id = existing["id"]
         print(f"Recipe exists: {recipe_id}")
     else:
-        r = airtable_post(RECIPES_TABLE, {"fields": {
+        r = baserow_post(RECIPES_TABLE, {
             "Name": recipe_name,
             "Mealie Slug": slug,
             "Notes": f"Source: {source}"
-        }})
-        if "id" not in r:
+        })
+        if not r:
             print(f"Failed to create recipe: {r}", file=sys.stderr)
             return None
         recipe_id = r["id"]
@@ -184,12 +187,12 @@ def sync_to_airtable(recipe_name, slug, source, ingredients):
             continue
         seen.add(clean_name.lower())
         cat = categorise(clean_name)
-        r = airtable_post(INGREDIENTS_TABLE, {"fields": {
+        r = baserow_post(INGREDIENTS_TABLE, {
             "Ingredient": clean_name,
             "Category": cat,
             "Recipe": [recipe_id]
-        }})
-        status = "OK" if "id" in r else f"FAIL: {r.get('error','?')}"
+        })
+        status = "OK" if r and "id" in r else f"FAIL"
         print(f"  {status} {ing} -> {cat}")
 
     return recipe_id
@@ -218,7 +221,7 @@ def extract_from_photo(image_path):
 
 # ── Main ──
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Push recipe to Mealie + Airtable")
+    parser = argparse.ArgumentParser(description="Push recipe to Mealie + Baserow")
     parser.add_argument("--photo", help="Path to recipe photo")
     parser.add_argument("--text", help="Raw recipe text")
     parser.add_argument("--url", help="Recipe URL")
@@ -229,7 +232,6 @@ if __name__ == "__main__":
         print("Extracting recipe from photo...")
         text = extract_from_photo(args.photo)
         print(f"Extracted:\n{text}\n")
-        # Parse the extracted text into JSON-LD (simplified)
         lines = text.strip().split("\n")
         name = lines[0].strip("# *")
         json_ld = {
@@ -237,7 +239,6 @@ if __name__ == "__main__":
             "name": name, "description": f"Extracted from photo: {args.photo}",
             "recipeIngredient": [], "recipeInstructions": []
         }
-        # Simple parsing: look for ingredient lines and step lines
         in_ingredients = False
         in_instructions = False
         for line in lines[1:]:
@@ -258,11 +259,9 @@ if __name__ == "__main__":
                     json_ld["recipeInstructions"].append({"@type": "HowToStep", "text": clean})
         source = f"Photo: {args.photo}"
     elif args.text:
-        # Treat as pre-built JSON-LD if it starts with {, else raw text
         if args.text.strip().startswith("{"):
             json_ld = json.loads(args.text)
         else:
-            # Minimal JSON-LD from raw text
             json_ld = {
                 "@context": "https://schema.org", "@type": "Recipe",
                 "name": "Recipe from text",
@@ -288,9 +287,9 @@ if __name__ == "__main__":
 
     recipe_name = json_ld.get("name", "Unknown")
     ingredients = json_ld.get("recipeIngredient", [])
-    print(f"Syncing to Airtable ({len(ingredients)} ingredients)...")
-    sync_to_airtable(recipe_name, slug, source, ingredients)
+    print(f"Syncing to Baserow ({len(ingredients)} ingredients)...")
+    sync_to_baserow(recipe_name, slug, source, ingredients)
 
     print(f"\nDone!")
     print(f"Mealie: http://77.68.33.121:9925/recipes/{slug}")
-    print(f"Airtable: https://airtable.com/appzvmonQXs4x2AlL/{RECIPES_TABLE}")
+    print(f"Baserow: {BASEROW_URL}/database/132/table/{RECIPES_TABLE}")

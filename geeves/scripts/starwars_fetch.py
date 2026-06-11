@@ -2,29 +2,28 @@
 """
 starwars_fetch.py — Fetch a random Star Wars character fact from SWAPI.
 
+Writes to Baserow Star_Wars_Fact table (id=371).
+
 Usage:
     python3 starwars_fetch.py         # fetch and print
-    python3 starwars_fetch.py --write # fetch and write to Airtable Star_Wars_Fact table
+    python3 starwars_fetch.py --write # fetch and write to Baserow
 """
 
 import json, urllib.request, random, sys
 from datetime import datetime, timezone
-import subprocess
 
-ENV_PATH = "/root/.hermes/.env"
-BASE = "appzvmonQXs4x2AlL"
+sys.path.insert(0, "/root/Geeves/scripts")
+import baserow_api
+
 TABLE = "Star_Wars_Fact"
 
-def get_key():
-    r = subprocess.run(["grep", "AIRTABLE_API_KEY", ENV_PATH], capture_output=True, text=True)
-    line = r.stdout.strip().split("\n")[0]
-    return line.split("=", 1)[1] if "=" in line else ""
 
 def swapi_get(path):
     url = f"https://www.swapi.tech/api/{path}"
     req = urllib.request.Request(url, headers={"User-Agent": "Geeves/1.0"})
     with urllib.request.urlopen(req, timeout=10) as resp:
         return json.loads(resp.read())
+
 
 def fetch_character(char_id):
     """Fetch a character and build a fun fact string."""
@@ -74,26 +73,15 @@ def fetch_character(char_id):
         "Source URL": "https://www.swapi.tech",
     }
 
-def write_to_airtable(record):
-    key = get_key()
-    url = f"https://api.airtable.com/v0/{BASE}/{TABLE}"
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    payload = json.dumps({
-        "records": [{
-            "fields": {
-                "Date": today,
-                **record
-            }
-        }]
-    }).encode()
-    req = urllib.request.Request(
-        url, data=payload,
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        method="POST"
-    )
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        result = json.loads(resp.read())
-    return result["records"][0]["id"]
+
+def write_to_baserow(record, today):
+    record["Date"] = today
+    ok, row_id = baserow_api.baserow_post(baserow_api.load_mapping(), TABLE, record)
+    if ok:
+        print(f"  ✅ Written to Baserow (record {row_id})")
+    else:
+        print(f"  ❌ Baserow error: {row_id}")
+
 
 def main():
     write_mode = "--write" in sys.argv
@@ -102,10 +90,11 @@ def main():
     char_id = random.randint(1, 83)
     try:
         record = fetch_character(char_id)
-    except Exception as e:
-        # Try another ID
+    except Exception:
         char_id = random.randint(1, 83)
         record = fetch_character(char_id)
+
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     print(f"⚔️  Star Wars Fact")
     print(f"    Character: {record['Name']}")
@@ -113,10 +102,10 @@ def main():
     print(f"    Fact: {record['Fact']}")
 
     if write_mode:
-        rec_id = write_to_airtable(record)
-        print(f"    ✅ Written to Airtable ({rec_id})")
+        write_to_baserow(record, today)
     else:
         print(f"    (dry run — add --write to save)")
+
 
 if __name__ == "__main__":
     main()

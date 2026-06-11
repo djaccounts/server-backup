@@ -925,3 +925,58 @@ Workouts + Sleep + Meals ──→ Insights (cross-module)
 - *The [Module Build Playbook](Module_Build_Playbook.md) describes how to build a new module — the standard process for creating tables, skills, scripts, and cron jobs.*
 - *[modules_status.json](modules_status.json) tracks what's built, what's in-progress, and what's planned.*
 - *This document holds the structure beneath it — the exact table and field definitions.*
+
+---
+
+# PHASE 3 — WEEKLY RHYTHM (continued)
+
+---
+
+## Module 12 — Relationships & Occasions
+
+Tracks the social side of David's life — who he's seen, when, what he gave them, and what's coming up. Links to the People graph for dietary preferences, social style, and gift interests.
+
+### Table: `Occasions`
+
+Birthdays, anniversaries, and recurring events per person.
+
+> **Person** · `link → People` — who it's for
+> **Occasion Type** · `single select` — Birthday / Anniversary / Wedding / Other
+> **Date** · `date` — month-day, year optional
+> **Recurring** · `checkbox` — annual recurring
+> **Remind Days Before** · `number` — custom reminder window per person
+> **Extra Notes** · `long text`
+
+### Table: `Gift Ideas`
+
+Running list of gift ideas per person.
+
+> **Person** · `link → People` — who it's for
+> **Idea** · `long text` — the gift idea
+> **Estimated Cost** · `single select` — Under £20 / £20-50 / £50-100 / £100+
+> **Occasion** · `single line text` — when to give it (free text)
+> **Status** · `single select` — Idea / Purchased / Given
+> **Extra Notes** · `long text`
+
+### Table: `Gift History`
+
+Record of gifts given, with ratings.
+
+> **Person** · `link → People` — who received it
+> **Gift** · `long text` — what was given
+> **Occasion** · `single line text` — what occasion (free text)
+> **Date Given** · `date`
+> **Rating** · `single select` — 1-5 (how well it landed)
+> **Extra Notes** · `long text`
+
+### Table: `Social Log`
+
+Social interactions — dinners, meetups, calls.
+
+> **Date** · `date`
+> **Type** · `single select` — Dinner / Meetup / Call / Event / Other
+> **Person** · `link → People` — who was involved
+> **Summary** · `long text` — what was discussed
+> **Key Things to Remember** · `long text` — promotions, moves, life events
+> **Follow-up** · `long text` — things to follow up on
+> **Source** · `single select` — Slack / Calendar / Manual / Voice

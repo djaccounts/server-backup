@@ -1,7 +1,7 @@
 ---
 name: weekly-digest-agent
 description: "Geeves Weekly Digest + Intentions Agent — fetch weekly data, build reflective HTML digest, prompt for intentions, and deliver via email + Slack. Runs as a cron job on Sundays at 8pm UTC. Use this skill when maintaining, debugging, or extending the weekly digest pipeline."
-version: 1.0.0
+version: 1.1.0
 author: Geeves
 ---
 
@@ -47,6 +47,7 @@ The weekly digest pulls from all active Phase 2+ modules:
 | Habits | `Habits`, `Habit Log` | Habit completion rates |
 | Meals | `Meals` | Meals logged, nutrition summary |
 | Intentions | `Intentions` | Last week's intentions: achieved/missed |
+| Listening | `Listening` (table 402) | Top tracks, top artists, total plays, most active day |
 
 ## Baserow CRUD
 
@@ -126,12 +127,17 @@ This module depends on data from other modules. The more modules that are active
 - **Habits** → Habit completion rates
 - **Meals** → Nutrition summary
 - **People** → Social interactions (future)
+- **Listening** → Spotify weekly summary (requires `hermes auth spotify`; optional — digest works without it)
 
 ## Integration Points
 
 - **Morning Digest:** Weekly digest complements the daily morning digest. Morning = forward-looking, Weekly = reflective.
 - **Intentions → Todos:** An intention can spawn multiple todos.
 - **Cross-module patterns:** The weekly digest can surface correlations (e.g., "You slept better on days you worked out").
+
+## Adding New Data Sources
+
+See `references/adding-data-sources.md` for the step-by-step pattern when adding a new module (e.g. Spotify Listening) to the weekly digest.
 
 ## Standing Rules
 

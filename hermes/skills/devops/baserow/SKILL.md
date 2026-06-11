@@ -1,7 +1,7 @@
 ---
 name: baserow
 description: "Baserow self-hosted no-code database. Use when managing, configuring, or migrating data to/from Baserow. Covers: Docker deployment, Nginx reverse proxy setup, Airtable import, API usage, and troubleshooting."
-version: 1.1.0
+version: 1.2.0
 author: OWL
 license: MIT
 platforms: [linux]
@@ -29,7 +29,8 @@ Baserow is an open-source no-code database platform. Self-hosted on the VPS at `
 | Workspace | Geeves (id=95) |
 | Database ID | 132 |
 | API Token | `BASEROW_API_TOKEN` in `/root/.hermes/.env` |
-| Tables | 41 (imported from Airtable June 2026) |
+| Tables | 46 (June 2026) |
+| JWT token | Saved at `/root/Geeves/baserow_jwt_token.txt` for schema changes |
 
 ## Mapping File
 
@@ -92,7 +93,7 @@ When migrating table definitions or creating new tables, use these Baserow Platf
 | `date` | `date` | Requires `date_format: "ISO"`, `date_include_time: false` |
 | `url` | `url` | |
 | `email` | `email` | |
-| `phoneNumber` | `phone_number` | |
+| `phoneNumber` | `phone_number` | **Strict validation** — strip to digits-only before writing |
 | `rating` | `rating` | Requires `max_value` (e.g., 5 or 10) |
 | `createdTime` | `created_on` | Auto-managed, skip in creation |
 | `lastModifiedTime` | `last_modified` | Auto-managed, skip in creation |
@@ -157,20 +158,6 @@ def bw_count_rows(table_id, token):
                 break
             page += 1
     return total
-
-# Airtable: offset-based pagination
-def at_count_rows(table_id, token):
-    total, offset = 0, None
-    while True:
-        url = f"https://api.airtable.com/v0/{AT_BASE}/{table_id}?pageSize=100"
-        if offset: url += f"&offset={offset}"
-        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            result = json.loads(resp.read())
-            total += len(result.get("records", []))
-            offset = result.get("offset")
-            if not offset: break
-    return total
 ```
 
 ### ⚠️ Critical Pitfalls
@@ -181,8 +168,16 @@ def at_count_rows(table_id, token):
 3. **Number field `number_negative` constraint** — Airtable imports may set `False` on fields needing negatives (e.g., stock price changes). Causes 400 `min_value` error. Fix via JWT PATCH to `/api/database/fields/{id}/` with `{"number_negative": true}`.
 4. **204 on DELETE** = success, not error. 404 on delete = already deleted (also OK).
 5. **Database token can't list tables** — Use JWT for `/api/database/tables/database/{id}/`.
+5a. **Field DELETE on `/api/database/fields/{id}/` requires JWT** — The database token can GET (list/read) fields but cannot DELETE or PATCH them. Field read works with `Token`, field write/delete needs `JWT`. This is a common trap: `list-fields` works fine but `delete field` returns 401. You MUST use `POST /api/user/token-auth/` with admin email+password to get a JWT token first. The admin password is NOT stored in any file — David must provide it.
+5b. **Getting a JWT token is a two-step process**: `POST http://77.68.33.121/api/user/token-auth/` with `{"email": "daverj1987@gmail.com", "password": "..."}`. Returns `{"token": "..."}`. Use as `Authorization: JWT <token>`. The admin password is NOT stored in any file — David must provide it.
 6. **Nginx path order** — Specific paths (`/mealie/`) MUST come before generic (`/`) in Nginx config.
-7. **Link fields auto-create reverse links** — When creating a `link_row` field, Baserow automatically creates a reverse field on the linked table. This is normal.
+7. **Baserow auto-creates a "Notes" field** on new tables — If you also try to add a "Notes" field explicitly, you get `ERROR_FIELD_WITH_SAME_NAME_ALREADY_EXISTS`. Fix: after creating a table, list fields and rename the auto-created one (e.g., to "Extra Notes") via JWT PATCH, or use a different name from the start.
+8. **write_file tool truncates `~` in paths** — Use `os.path.join(os.path.expanduser("~"), ".hermes", "file")` instead of `~/.hermes/file` in strings that will be written via write_file.
+9. **Baserow `phone_number` field is strict** — Rejects spaces, dashes, parentheses. Strip to digits-only before writing: `"".join(c for c in phone if c.isdigit())`. Preserve leading `+` for international numbers. Google Contacts sync must clean phones.
+10. **Baserow `date` field requires valid year** — `0000` is rejected. Use `1900` as default for yearless dates (e.g., birthdays from Google Contacts in MM-DD format → `1900-MM-DD`).
+11. **Google OAuth token exchange** — Requires `application/x-www-form-urlencoded` content type, NOT JSON. Both refresh_token and code exchange endpoints need this. Refresh token revocation returns `invalid_grant` — requires full re-consent.
+12. **Baserow max page size is 100** — `?size=1000` returns HTTP 400. Always use `?size=100&page=N` for pagination.
+13. **Cron job `repeat` parameter** — `repeat: 0` means forever, `repeat: 1` means once. The `schedule` field uses cron expression format (`0 8 * * *`), NOT natural language (`daily at 8am UTC`).
 
 ## Airtable → Baserow Type Mapping (complete)
 
@@ -201,7 +196,7 @@ When migrating table definitions or comparing schemas, use this full mapping:
 | `date` | `date` | Requires `date_format` + `date_include_time` |
 | `url` | `url` | |
 | `email` | `email` | |
-| `phoneNumber` | `phone_number` | |
+| `phoneNumber` | `phone_number` | **Strict validation** — strip to digits-only |
 | `rating` | `rating` | Requires `max_value` |
 | `createdTime` | `created_on` | Auto-managed |
 | `lastModifiedTime` | `last_modified` | Auto-managed |
@@ -214,16 +209,16 @@ When migrating table definitions or comparing schemas, use this full mapping:
 `POST /api/jobs/` with `type: "airtable"` and a publicly shared Airtable base URL. Poll `GET /api/jobs/{id}/` for status.
 
 ### Migration Status (June 2026) — ✅ COMPLETE
-- ✅ 41 tables imported, `baserow_api.py` helper, all scripts migrated
+- ✅ 46 tables in Baserow (41 imported + 5 new Geeves modules)
+- ✅ `baserow_api.py` helper, all scripts migrated
 - ✅ `slack_capture.py` — migrated to Baserow
-- ✅ `bulletin_fetch.py` and `bulletin_fetch_parallel.py` updated
-- ✅ All fetch scripts migrated (weather, stocks, fact, token_usage)
+- ✅ All fetch scripts migrated (weather, stocks, fact, token_usage, starwars)
 - ✅ Skills and cron jobs updated
 - ✅ `table_builder.py` — rewritten for Baserow Platform API (JWT auth, table/field CRUD)
 - ✅ `geeves-airtable` skill marked as legacy
-- ✅ Data reconciliation — re-imported missing rows (Properties, Books, Workouts, Cycling) with decimal + select option handling
-- ✅ Full row-count verification: 35/40 tables match exactly; 5 have expected diffs (Baserow has newer live data)
-- ⏳ `build_digest_html.py`, `build_weekly_digest_html.py` — still read from Airtable (low priority — display only)
+- ✅ Data reconciliation — re-imported missing rows with decimal + select option handling
+- ✅ All old unused Airtable scripts archived to `legacy_airtable/`
+- ✅ **All active scripts now write to Baserow. No remaining Airtable dependencies.**
 
 ### Post-Import Fixes
 After import, check: number fields (negative allowed?), select options (all present?), linked records (table IDs correct?). Fix via JWT PATCH.
@@ -236,34 +231,57 @@ Use `references/compare_schemas.py` for full schema + row count comparison:
 python3 ~/.hermes/skills/devops/baserow/references/compare_schemas.py
 ```
 
-This script:
-- Compares all table names, field names, field types, and select options
-- Reports MISSING, EXTRA, TYPE MISMATCH, and OPTIONS diffs
-- Compares row counts using accurate pagination (not the unreliable `count` parameter)
-
-**Known import limitations:**
-- Airtable `currency` → Baserow `number` with `number_prefix: "£"` (functionally equivalent)
-- Airtable phone cells with Unicode direction markers (`\u202a`) may fail validation and be left empty
-- Import can be **partial** — verify row counts after import
-- Rating fields, select options, and link fields may need post-import fixes via JWT PATCH
-
 ## Scripts Using Baserow (`/root/Geeves/scripts/`)
 
 | Script | Purpose |
 |--------|---------|
-| `baserow_api.py` | CRUD helper with field name→ID resolution |
+| `baserow_api.py` | CRUD helper with field name→ID resolution. Supports `--json` flag on `list-rows` for machine-readable output. `create-row` outputs `Created: row N` text. |
 | `table_builder.py` | Table/field creation via Platform API (JWT auth) — for new modules |
 | `slack_capture.py` | Slack → Baserow |
+| `google_contacts_sync.py` | Google Contacts ↔ Baserow People two-way sync |
 | `weather_fetch.py` | London weather → Weather_Data |
 | `stocks_fetch.py` | Stock prices → Stock_Prices |
 | `fact_fetch.py` | Daily fact → Fact_of_the_Day |
 | `token_usage.py` | Hermes usage → Token_Usage |
 | `bulletin_fetch.py` | Master sequential fetch |
-| `bulletin_fetch_parallel.py` | Master parallel fetch |
+| `bulletin_fetch_parallel.py` | Master parallel fetch (weather, stocks, fact, star wars, token_usage) |
+| `starwars_fetch.py` | Star Wars character fact → Star_Wars_Fact (371) |
+| `property_scan_firecrawl.py` | Rightmove property scan → Baserow Properties table (380). Uses `baserow_api.py create-row` internally. |
+| `build_digest_baserow.py` | Digest builder reading from Baserow. Includes Properties + Todos sections. |
+
+## Migrating Scripts from Airtable → Baserow
+
+When you encounter a script still using `AIRTABLE_API_KEY` / `airtable_request()` / `api.airtable.com`, migrate it to use `baserow_api.py` instead. See `references/airtable-to-baserow-migration-pattern.md` for the full pattern.
+
+## Baserow API Response Gotchas (June 2026)
+
+When reading Baserow data via `baserow_api.py --json` or direct API:
+
+- **`single_select` fields** return `{"id": N, "value": "...", "color": "..."}` dicts, NOT plain strings. Use a `get_select_value()` helper:
+  ```python
+  def get_select_value(field_val):
+      if field_val is None: return ""
+      if isinstance(field_val, dict): return field_val.get("value", "")
+      return str(field_val)
+  ```
+- **`date` fields** return naive date strings (`"2026-06-10"`) — no timezone info. When comparing with `datetime.now(timezone.utc)`, add `.replace(tzinfo=timezone.utc)` to avoid `TypeError`.
+- **`number` fields** may return strings instead of ints in some contexts. Cast before formatting: `price_val = int(price) if price else 0` then `f"£{price_val:,}"`.
+- **`order_by` query param** returns HTTP 400. Fetch all pages and sort client-side.
+- **Pagination** is page-based (`?page=N&size=100`), not offset-based. The `next` field in the response indicates more pages.
+
+### `baserow_api.py` CLI Output Formats
+
+| Command | Default Output | Machine-Readable |
+|---------|---------------|-----------------|
+| `list-rows` | Human-readable table | Add `--json` flag |
+| `create-row` | `Created: row N` | Parse `stdout.split("Created: row")[1].strip()` |
+| `list-tables` | Human-readable | No JSON mode |
+| `list-fields` | Human-readable | No JSON mode |
 
 ## Platform API Reference
 
 See `references/baserow-platform-api.md` for field payloads, auth patterns, and common errors.
+See `references/session-learnings-june-2026-relationships.md` for recent build learnings (auto-created Notes field, write_file truncation, OAuth revocation, new module tables, Google Contacts sync).
 
 ## Troubleshooting
 
@@ -273,3 +291,5 @@ See `references/baserow-platform-api.md` for field payloads, auth patterns, and 
 | 401 on tables list | DB token can't access | Use JWT |
 | 400 `min_value` | `number_negative=False` | PATCH with JWT |
 | Select write fails | Unknown option value | Use exact option name |
+| Phone validation 400 | Non-digit characters in phone_number field | Strip to digits-only |
+| Date validation 400 | Year 0000 or empty string | Use 1900 as default year, skip empty dates |

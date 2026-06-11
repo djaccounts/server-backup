@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dinner Party Invitation — Saturday 20th June</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .card {
+    max-width: 520px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(233,69,96,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .date-badge {
+    display: inline-block;
+    background: #e94560;
+    color: #fff;
+    padding: 0.3rem 1rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
+    color: #1a1a1a;
+    position: relative;
+    z-index: 1;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 1.6rem;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+  }
+
+  .guests {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.6rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .guest-chip {
+    background: #f8f8f8;
+    border: 1px solid #e8e8e8;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: #333;
+    display: block;
+  }
+
+  .divider {
+    height: 1px;
+    background: #eee;
+    margin-bottom: 1.4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .menu-section h2 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #e94560;
+    margin-bottom: 0.7rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+
+  .menu-list {
+    list-style: none;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .menu-list li {
+    padding: 0.45rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .menu-list li:last-child { border-bottom: none; }
+
+  .menu-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4ecca3;
+    flex-shrink: 0;
+    margin-top: 0.45rem;
+  }
+
+  .dish-name {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #1a1a1a;
+  }
+
+  .dish-desc {
+    font-size: 0.78rem;
+    color: #888;
+    margin-top: 0.05rem;
+  }
+
+  .dietary-note {
+    margin-top: 1.2rem;
+    padding: 0.5rem 0.8rem;
+    background: #f0faf6;
+    border: 1px solid #d0e8db;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: #555;
+    position: relative;
+    z-index: 1;
+  }
+
+  .dietary-note strong { color: #2d9e6a; }
+
+  .address-block {
+    margin-top: 1.4rem;
+    padding: 0.8rem 1rem;
+    background: #f8f8f8;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #444;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+
+  .address-block strong { display: block; margin-bottom: 0.15rem; color: #1a1a1a; }
+
+  .closing {
+    margin-top: 1.6rem;
+    text-align: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1rem;
+    color: #999;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media print {
+    body { background: #fff; color: #222; padding: 0; }
+    .card { border: 1px solid #ddd; background: #fff; max-width: 100%; }
+    .card::before { display: none; }
+    .date-badge { background: #333; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="date-badge">Saturday 20th June · 1:30pm</div>
+
+  <h1>You're Invited</h1>
+  <p class="subtitle">A Middle Eastern–inspired lunch with family</p>
+
+  <div class="guests">
+    <span class="guest-chip">David</span>
+    <span class="guest-chip">Jill Jacobs</span>
+    <span class="guest-chip">Adam Redhouse</span>
+    <span class="guest-chip">Sidney Redhouse</span>
+    <span class="guest-chip">Grace Redhouse</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="menu-section">
+    <h2>On the Menu</h2>
+    <ul class="menu-list">
+      <li>
+        <span class="menu-dot"></span>
+        <div>
+          <div class="dish-name">Chicken Shawarma</div>
+          <div class="dish-desc">Spit-roasted with warm spices, sliced thin</div>
+        </div>
+      </li>
+      <li>
+        <span class="menu-dot"></span>
+        <div>
+          <div class="dish-name">Homemade Pita Bread</div>
+          <div class="dish-desc">Warm, soft, pillowy — straight from the oven</div>
+        </div>
+      </li>
+      <li>
+        <span class="menu-dot"></span>
+        <div>
+          <div class="dish-name">Hummus</div>
+          <div class="dish-desc">Creamy, lemony, made from scratch with tahini</div>
+        </div>
+      </li>
+      <li>
+        <span class="menu-dot"></span>
+        <div>
+          <div class="dish-name">Pickled Red Onions</div>
+          <div class="dish-desc">Tangy, crisp, bright pink — the ultimate topping</div>
+        </div>
+      </li>
+      <li>
+        <span class="menu-dot"></span>
+        <div>
+          <div class="dish-name">Quinoa Salad with Roasted Vegetables</div>
+          <div class="dish-desc">Eggplant, courgette, tomato, fresh herbs</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="dietary-note">
+    <strong>🌿 Dairy-free & Kosher-friendly</strong> — all dishes are completely dairy-free.
+  </div>
+
+  <div class="address-block">
+    <strong>📍 43 Englands Lane, NW3 4YD</strong>
+    Saturday 20th June at 1:30pm
+  </div>
+
+  <p class="closing">Come hungry. Leave happy.</p>
+</div>
+</body>
+</html>

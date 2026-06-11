@@ -9,13 +9,19 @@ author: Geeves
 
 Manages the `People` table and its linked companions (`Person Notes`, `Conversation Log`). The spine of the Geeves system — every other module links back to People.
 
-## Tables
+## Tables (Baserow)
 
-| Table | ID | Purpose |
-|-------|----|---------|
-| `People` | `tbl1WMPtQhWYW7bTI` | Everyone David knows |
-| `Person Notes` | `tbl6hnxzXXmWFkVfh` | Timestamped freeform notes about a person |
-| `Conversation Log` | `tbl2dbgksA9XveLcx` | Debrief notes after seeing someone |
+| Table | Baserow ID | Purpose |
+|-------|------------|---------|
+| `People` | 359 | Everyone David knows |
+| `Person Notes` | 368 | Timestamped freeform notes about a person |
+| `Conversation Log` | 369 | **DEPRECATED** — merged into Social Log (2026-06) |
+| `Social Log` | 406 | Merged from Conversation Log + social interactions (dinners, meetups, calls). Fields: Date, Type (single select), Person (link, multi), Summary, Key things to remember, Follow-up, Source |
+| `Occasions` | 403 | Birthdays, anniversaries per person. Fields: Person (link), Occasion Type (single select), Date, Recurring (checkbox), Remind days before (number), Extra Notes |
+| `Gift Ideas` | 404 | Running gift ideas per person. Fields: Person (link), Idea, Estimated Cost (single select), Occasion (free text), Status (single select), Extra Notes |
+| `Gift History` | 405 | Gifts given. Fields: Person (link), Gift, Occasion (free text), Date Given, Rating (1-5), Extra Notes |
+
+**All operations use Baserow, not Airtable.** Use `baserow_api.py` for CRUD. Mapping file: `/root/Geeves/baserow_mapping.json`.
 
 ## Key Fields (People)
 
@@ -69,31 +75,35 @@ Manages the `People` table and its linked companions (`Person Notes`, `Conversat
 | `Restaurants` | multipleRecordLinks | → Restaurants table |
 | `Workouts` | multipleRecordLinks | → Workouts table |
 
-## Airtable CRUD
+## Baserow CRUD
 
-Use `/root/Geeves/scripts/airtable_api.py`:
+Use `/root/Geeves/scripts/baserow_api.py`:
 
 ```bash
+# List all people
+python3 /root/Geeves/scripts/baserow_api.py list-rows People
+
 # Create a person
-python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "People" \
+python3 /root/Geeves/scripts/baserow_api.py create-row People \
   '{"Name": "Oran", "Tier": "Tier 2", "Relationship type": "Friend"}'
 
-# Look up a person
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "People" "filterByFormula={Name}='Oran'"
-
 # Update a person
-python3 /root/Geeves/scripts/airtable_api.py update-record appzvmonQXs4x2AlL "People" "<record_id>" \
-  '{"Last seen": "2026-06-07", "Hobbies & interests": "Cycling, running"}'
+python3 /root/Geeves/scripts/baserow_api.py update-row People <row_id> \
+  '{"Last Seen": "2026-06-07", "Hobbies & interests": "Cycling, running"}'
 
 # Add a person note
-python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "Person Notes" \
-  '{"Note": "Training for a marathon", "Person": ["<people_record_id>"], "Source": "Slack"}'
+python3 /root/Geeves/scripts/baserow_api.py create-row "Person Notes" \
+  '{"Note": "Training for a marathon", "Person": [<people_row_id>], "Source": "Slack"}'
 
-# List all people
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "People"
+# Find a person
+python3 /root/Geeves/scripts/baserow_api.py find People "Oran"
 ```
 
-**Auth:** Read `AIRTABLE_API_KEY` from `/root/.hermes/.env` via grep (never from `os.environ`).
+**Auth:** `BASEROW_API_TOKEN` from `/root/.hermes/.env`. The `baserow_api.py` helper reads it automatically.
+
+**Field names** are resolved to `field_XXXX` IDs automatically via `baserow_mapping.json`. Pass human-readable names.
+
+**Linked rows** use Baserow row IDs (integers), not Airtable record IDs. Pass as array: `[<row_id>]`.
 
 ## Workflows
 
@@ -180,6 +190,7 @@ None yet. Future: relationship nudge (scan People.last_seen → suggest who to c
 ## Dependencies
 
 - **All modules** — People is the spine. Recipes, Restaurants, Meals, Fitness, Events, Gifts, Occasions all link to People.
+- **relationships-agent** — manages Occasions, Gift Ideas, Gift History, Social Log tables
 
 ## Integration Points
 
@@ -194,21 +205,25 @@ None yet. Future: relationship nudge (scan People.last_seen → suggest who to c
 ## Standing Rules
 
 - All schema changes go through steward (`geeves-steward` skill)
-- Registry: `/root/Geeves/schema_registry.json`
-- Get David's explicit approval before creating any Airtable table
+- Registry: `/root/Geeves/baserow_mapping.json`
+- Get David's explicit approval before creating any Baserow table
 - Thread decisions supersede reference docs
 - Update this skill when conversation changes a decision
 - **Never delete a person** — use Tier 4 and uncheck Active if needed
+- **Baserow is the system of record** — Airtable is no longer used
 
 ## Pitfalls
 
-1. **Tier value mismatch:** Use exact values: `"Tier 1"`, `"Tier 2"`, `"Tier 3"`, `"Tier 4"` — NOT `"Tier 4 (other)"`.
+1. **Tier value mismatch:** Use exact values: `"Tier 1"`, `"Tier 2"`, `"Tier 3"`, `"Tier 4"`.
 2. **Relationship type mismatch:** Use exact values: `"Me"`, `"Spouse"`, `"Family"`, `"Close friend"`, `"Friend"`, `"Colleague"`, `"Acquaintance"`, `"Other"`.
 3. **Dietary/Allergy select values:** Use exact values from the Key Fields table. MultipleSelects accept arrays: `["Nuts", "Dairy"]`.
 4. **Person Notes is a separate table:** Don't try to write notes to the People table directly. Always create Person Notes records linked to the person.
-5. **Name matching:** `find_person` uses exact match on the Name field. "Oran" won't match "oran". Always use proper capitalization.
-6. **Linked record format:** When linking to People, pass an array of record IDs: `["recXXXX"]`.
-7. **filterByFormula on linked fields:** Cannot filter People by Person Notes content directly.
+5. **Name matching:** `find` uses text search on the Name field. Case-insensitive.
+6. **Linked row format:** When linking to People, pass an array of Baserow row IDs (integers): `[<row_id>]`.
+7. **Baserow API:** Use `baserow_api.py` helper — it handles field name→ID resolution and select option name→ID conversion. Never pass raw `field_XXXX` IDs unless you're sure.
+8. **Google Contacts sync:** The sync script at `/root/Geeves/scripts/google_contacts_sync.py` exists but requires Google OAuth re-auth (refresh token expired June 2026). Run `python3 /root/Geeves/scripts/google_contacts_sync.py --dry-run` after re-auth.
+9. **Junk fields in People table:** The `Films` (field_3318, link_row) and `Books` (field_3336, text) fields are legacy junk from the Airtable era. They need JWT auth to delete (database token can't delete fields). The proper Books link is `Books 2` (field_3337, link_row). Do not use the junk fields.
+10. **Field deletion requires JWT:** Database token (`BASEROW_API_TOKEN`) can read fields but NOT delete or create them. Field/table schema changes need JWT via `POST /api/user/token-auth/` with admin email+password. The admin password is NOT stored in any file — David must provide it.
 
 ## Reference
 

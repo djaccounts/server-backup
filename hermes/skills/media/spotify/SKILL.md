@@ -102,6 +102,37 @@ spotify_devices({"action": "list"})
 spotify_devices({"action": "transfer", "device_id": "<id>", "play": true})
 ```
 
+## Headless / Remote Server Auth
+
+`hermes auth spotify` opens an interactive browser flow that **does not work on a remote/headless server**. Use this workaround:
+
+1. Generate an auth URL manually (Python, on the server):
+   ```python
+   import urllib.parse, hashlib, base64, os, json
+   code_verifier = base64.urlsafe_b64encode(os.urandom(32)).rstrip(b'=').decode()
+   code_challenge = base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest()).rstrip(b'=').decode()
+   state = base64.urlsafe_b64encode(os.urandom(12)).rstrip(b'=').decode()
+   params = {
+       'client_id': '<YOUR_CLIENT_ID>',
+       'response_type': 'code',
+       'redirect_uri': 'http://127.0.0.1:43827/spotify/callback',
+       'scope': 'user-read-recently-played user-read-playback-state playlist-read-private user-library-read',
+       'state': state,
+       'code_challenge_method': 'S256',
+       'code_challenge': code_challenge,
+   }
+   url = 'https://accounts.spotify.com/authorize?' + urllib.parse.urlencode(params)
+   print(url)
+   with open('/tmp/spotify_auth.json', 'w') as f:
+       json.dump({'code_verifier': code_verifier, 'state': state}, f)
+   ```
+2. Open the printed URL in a browser on any machine, log in, click "Agree"
+3. The browser will redirect to `http://127.0.0.1:43827/...` and fail to load — **this is expected**
+4. Copy the full redirect URL from the browser address bar
+5. Complete the token exchange by running `hermes auth spotify login --client-id <ID> --no-browser` on the server **before opening the URL** (it starts a local callback listener), then open the URL in your browser
+
+**Alternative:** If the server has no browser *and* you can't run the listener, use the Spotify Web API directly with a refresh token obtained via a separate OAuth helper script.
+
 ## Critical failure modes
 
 **`403 Forbidden — No active device found`** on any playback action means Spotify isn't running anywhere. Tell the user: "Open Spotify on your phone/desktop/web player first, start any track for a second, then retry." Don't retry the tool call blindly — it will fail the same way. You can call `spotify_devices list` to confirm; an empty list means no active device.

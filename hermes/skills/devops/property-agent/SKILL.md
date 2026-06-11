@@ -98,7 +98,7 @@ The CLI's built-in `--rank` scoring is too basic (all properties score ~5). Our 
 
 ### Reference
 
-- `references/property-scan-v2.md` — v2 architecture, field mapping, enrichment details
+- `references/property-scan-baserow-migration.md` — Baserow migration details, table IDs, and gotchas
 - `references/uk-property-cli.md` — CLI usage, schema details, snapshot comparison
 - `references/rightmove-scraping.md` — legacy HTML scraping technique (deprecated)
 
@@ -132,9 +132,10 @@ New → Interested → Viewing Booked → Viewed → Dismissed
                                             Bought
 ```
 
-## Airtable Tables
+## Baserow Tables (migrated from Airtable June 2026)
 
-### Properties (`tblA0jfgqxhPFJU7S`)
+### Properties (table ID: 380)
+Key fields (use `field_XXXX` IDs with `baserow_api.py`):
 Key fields:
 - **Address** — Property address
 - **Rightmove URL** — Direct link: `https://www.rightmove.co.uk/properties/{id}`
@@ -192,16 +193,42 @@ When David or wife provides feedback on a property:
 
 When feedback indicates a preference pattern (e.g., "love the garden", "too small"), consider updating the scoring weights or adding new criteria.
 
-## API Key
+## API Access
 
-Read from `/root/.hermes/.env`:
+**System of record is Baserow** (migrated from Airtable June 2026). Use `baserow_api.py` for all operations:
+
 ```python
-import subprocess
-r = subprocess.run(["grep", "AIRTABLE_API_KEY", "/root/.hermes/.env"], capture_output=True, text=True)
-key = r.stdout.strip().split("\n")[0].split("=", 1)[1]
+import subprocess, json
+
+# Read
+result = subprocess.run(
+    ["python3", "/root/Geeves/scripts/baserow_api.py", "list-rows",
+     "380", "--limit", "100", "--json"],
+    capture_output=True, text=True
+)
+data = json.loads(result.stdout)
+rows = data["results"]
+
+# Write
+subprocess.run(
+    ["python3", "/root/Geeves/scripts/baserow_api.py", "create-row",
+     "380", '{"Address": "123 Main St", "Status": "New", "Price": 500000}'],
+    capture_output=True, text=True
+)
 ```
 
-Base ID: `appzvmonQXs4x2AlL`
+**⚠ Baserow API Gotchas (June 2026):**
+- `single_select` fields return `{"id": N, "value": "..."}` dicts — use `get_select_value()` helper
+- Date fields from Baserow are **naive** (no timezone) — use `.replace(tzinfo=timezone.utc)` before comparing with aware datetimes
+- `baserow_api.py list-rows` outputs human-readable text by default — use `--json` flag for machine parsing
+- `baserow_api.py create-row` outputs `Created: row N` text — parse with `stdout.split("Created: row")[1].strip()`
+- Direct Baserow API calls need `field_XXXX` IDs — use `baserow_api.py` helper for auto-resolution
+- Number fields may return strings from Baserow — cast with `int(price)` before formatting with `:,`
+- `order_by` query param returns 400 — fetch all pages and sort client-side
+
+**Legacy Airtable** (no longer used):
+- Base ID: `appzvmonQXs4x2AlL` (DO NOT USE)
+- Properties table: `tblA0jfgqxhPFJU7S` (DO NOT USE)
 
 ## Exclusion Rules (Updated June 2026)
 
@@ -212,13 +239,12 @@ Base ID: `appzvmonQXs4x2AlL`
 
 ## Pitfalls
 
-1. **property_scan_v2.py is the main scan script** — Uses `uk-property-cli` for fetching + raw Rightmove JSON enrichment. Run `python3 /root/Geeves/scripts/property_scan_v2.py`. The old `property_scan_firecrawl.py` is backed up but superseded.
-2. **uk-property-cli doesn't include all fields** — The CLI normalizes to `property-listing.v1` which drops tenure, location (lat/lon), firstVisibleDate, addedOrReduced, and branchDisplayName. The v2 script re-fetches raw JSON to enrich these. Don't rely on CLI output alone for scoring.
-3. **CLI ranking is too basic** — The built-in `--rank`/`--apply-filters` gives almost everything a score of ~5. Always use our custom scoring weights (garden, freehold, EPC, etc.) in the v2 script.
-4. **Select option mismatches** — Rightmove uses "End of Terrace" but our Airtable uses "Terraced". The scan script handles this mapping.
-5. **North-of-Thames filtering** — The CLI doesn't filter by postcode. The v2 script applies postcode prefix matching. SE/SW/CR/BR/SM/KT are excluded. TW uses latitude check.
-6. **Deduplication** — Always check Rightmove ID before creating new records.
-7. **Rightmove rate limiting** — The v2 script includes 1s delays between raw JSON fetch pages. Don't remove them.
-8. **Airtable errors at startup are harmless** — The 422/403 errors from the criteria table query appear every run. They don't affect the scan.
-7. **Sq ft not always present** — Only ~30% of listings include it. Parse from description text if present.
-8. **Location lookup can return empty** — `uk-property locations "north london"` may return nothing. Use `--location-id 'REGION^87490'` directly.
+1. **Baserow is the system of record** — All property data lives in Baserow (table 380). Airtable is no longer used. Use `baserow_api.py` for all CRUD.
+2. **property_scan_firecrawl.py is the main scan script** — Run `python3 /root/Geeves/scripts/property_scan_firecrawl.py --write`. It uses `baserow_api.py create-row` internally for proper field resolution.
+3. **Select option values** — When writing to Baserow single_select fields, pass the option NAME (e.g. `"New"`, `"Freehold"`), not the ID. The `baserow_api.py` helper resolves names to IDs automatically.
+4. **Price formatting** — Baserow number fields may return strings. Cast to int before f-string formatting: `price_val = int(price) if price else 0`
+5. **Date comparison** — Baserow date fields are naive. Always add timezone: `datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)`
+6. **Deduplication** — Always check Rightmove ID before creating new records. The scan script handles this automatically.
+7. **North-of-Thames filtering** — Postcode prefix matching: SE/SW/CR/BR/SM/KT excluded. TW uses latitude check.
+8. **Exclusion rules** — Dudley Road (always exclude), Queen Elizabeth Drive (too much refurb), no repeats.
+9. **Property Criteria in digest** — Do NOT show the raw Property Criteria table in the daily/weekly digest.

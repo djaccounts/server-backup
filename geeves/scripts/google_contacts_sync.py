@@ -220,6 +220,30 @@ def fetch_google_contacts(creds):
     return contacts
 
 
+def clean_phone(phone):
+    """Clean phone number for Baserow phone_number field. Returns digits only, max 15 chars."""
+    if not phone:
+        return ""
+    # Strip everything except digits and leading +
+    cleaned = phone.strip()
+    if cleaned.startswith("+"):
+        return "+" + "".join(c for c in cleaned[1:] if c.isdigit())
+    return "".join(c for c in cleaned if c.isdigit())
+
+
+def clean_birthday(birthday):
+    """Ensure birthday is in YYYY-MM-DD format for Baserow date field."""
+    if not birthday:
+        return ""
+    parts = birthday.split("-")
+    if len(parts) == 3:
+        return birthday  # Already YYYY-MM-DD
+    elif len(parts) == 2:
+        # MM-DD → 1900-MM-DD (Baserow date field requires valid year)
+        return f"1900-{parts[0].zfill(2)}-{parts[1].zfill(2)}"
+    return birthday
+
+
 def parse_google_contact(gc):
     names = gc.get("names", [])
     name = names[0].get("displayName", "") if names else ""
@@ -247,8 +271,8 @@ def parse_google_contact(gc):
         "resource_name": gc.get("resourceName", ""),
         "name": name,
         "email": email.strip().lower() if email else "",
-        "phone": phone.strip() if phone else "",
-        "birthday": birthday,
+        "phone": clean_phone(phone),
+        "birthday": clean_birthday(birthday),
     }
 
 

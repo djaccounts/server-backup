@@ -23,6 +23,7 @@ FETCHERS = [
     ("Weather",     "🌤️",  "weather_fetch.py"),
     ("Stocks",      "📈",  "stocks_fetch.py"),
     ("Fact",        "💡",  "fact_fetch.py"),
+    ("Star Wars",   "⚔️",  "starwars_fetch.py"),
     ("Token Usage", "📊",  "token_usage.py"),
 ]
 

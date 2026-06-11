@@ -102,12 +102,12 @@
     },
     "relationships": {
       "phase": 3,
-      "status": "planned",
-      "skill": null,
-      "tables": ["Occasions", "Gift Ideas", "Gift History"],
+      "status": "built",
+      "skill": "relationships-agent",
+      "tables": ["Occasions", "Gift Ideas", "Gift History", "Social Log"],
       "cron_jobs": [],
       "slack_capture": true,
-      "notes": "Not yet built. Depends on People graph."
+      "notes": "Built June 2026. Occasions (403), Gift Ideas (404), Gift History (405), Social Log (406). All in Baserow."
     },
     "goals_skills": {
       "phase": 3,
@@ -240,7 +240,8 @@
     "weekly-digest-agent (devops/weekly-digest-agent)",
     "books-agent (devops/books-agent)",
     "geeves-airtable (devops/geeves-airtable)",
-    "geeves-steward (geeves/geeves-steward)"
+    "geeves-steward (geeves/geeves-steward)",
+    "relationships-agent (geeves/relationships-agent)"
     ],
     "needed": [
       "people-agent",

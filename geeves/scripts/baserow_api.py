@@ -199,13 +199,17 @@ def main():
             idx = args.index("--limit")
             if idx + 1 < len(args):
                 limit = int(args[idx + 1])
+        json_mode = "--json" in args
         resp = api("GET", f"/api/database/rows/table/{tid}/?size={limit}")
         if "results" in resp:
             records = resp["results"]
-            print(f"{len(records)} records (total: {resp.get('count', '?')}):")
-            for rec in records:
-                name = rec.get("Name", rec.get("name", "(no name)"))
-                print(f"  {rec['id']:6d}  {name}")
+            if json_mode:
+                print(json.dumps({"results": records, "count": resp.get("count", len(records))}))
+            else:
+                print(f"{len(records)} records (total: {resp.get('count', '?')}):")
+                for rec in records:
+                    name = rec.get("Name", rec.get("name", "(no name)"))
+                    print(f"  {rec['id']:6d}  {name}")
 
     elif cmd == "create-row":
         table = args[1] if len(args) > 1 else ""

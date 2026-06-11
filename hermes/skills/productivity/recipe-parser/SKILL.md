@@ -1,11 +1,11 @@
 ---
 name: recipe-parser
-description: Parse raw recipe text or photos into structured Mealie-compatible JSON-LD format, push to Mealie, and sync to Airtable. Use when the user pastes a recipe, sends a photo of a recipe, or says "add this recipe" with unstructured text.
+description: Parse raw recipe text or photos into structured Mealie-compatible JSON-LD format, push to Mealie, and sync to Baserow. Use when the user pastes a recipe, sends a photo of a recipe, or says "add this recipe" with unstructured text.
 ---
 
-# Recipe Parser — Raw Text/Photo → Mealie → Airtable
+# Recipe Parser — Raw Text/Photo → Mealie → Baserow
 
-Parse unstructured recipe input (text or photo) into structured data, push to Mealie via the `html-or-json` endpoint, then sync to Airtable.
+Parse unstructured recipe input (text or photo) into structured data, push to Mealie via the `html-or-json` endpoint, then sync to Baserow.
 
 ## Trigger
 
@@ -175,7 +175,7 @@ with urllib.request.urlopen(req) as resp:
 
 The endpoint returns the slug as a plain quoted string.
 
-### Step 3: Sync to Airtable
+### Step 3: Sync to Baserow
 
 Run the existing sync script:
 
@@ -183,71 +183,59 @@ Run the existing sync script:
 python3 /root/Geeves/scripts/recipe_sync.py <slug>
 ```
 
-This creates the Airtable Recipes record and linked Ingredient records with auto-categorisation.
+This creates the Baserow Recipes record (table 379) and linked Ingredient records (table 375) with auto-categorisation.
 
 ### Step 4: Report Back
 
 Tell the user:
 - ✅ Recipe name and slug
 - ✅ Number of ingredients parsed and synced
-- ✅ Airtable link
-- ✅ Mealie link (http://77.68.33.121/mealie/recipes/<slug>)
+- ✅ Baserow link (http://77.68.33.121/database/132/table/379)
+- ✅ Mealie link (http://77.68.33.121:9925/recipes/<slug>)
 
 ## Edge Cases
 
 - **No structured ingredients in text:** If the user just pastes a paragraph describing a dish, ask for the ingredient list separately
 - **Photo too blurry:** Ask the user to retype the ingredients or send a clearer photo
-- **Duplicate recipe:** Check if a recipe with the same name already exists in Airtable before creating
-- **Mealie slug collision (expected behaviour):** Mealie auto-appends `-1`, `-2`, `-3` etc. when a similar slug already exists. This is **normal and fine** — don't try to avoid it. The `-N` suffix does not affect functionality. When re-pushing a recipe that was already created (e.g., from a previous test run), expect the next number in sequence. The Airtable sync links to whatever slug Mealie returns.
+- **Duplicate recipe:** Check if a recipe with the same slug already exists in Baserow before creating
+- **Mealie slug collision (expected behaviour):** Mealie auto-appends `-1`, `-2`, `-3` etc. when a similar slug already exists. This is **normal and fine** — don't try to avoid it.
 - **Mealie ingredient `food` field can be null:** When parsing ingredients from `GET /api/recipes/{slug}?loadFood=true`, the `food` key may be `null`. Always use `ing.get("food") or {}` before accessing `.get("name")` — otherwise `AttributeError: 'NoneType' object has no attribute 'get'`.
+- **Mealie ingredients are dicts, not strings:** The `?loadFood=true` endpoint returns ingredients as `{"display": "...", "note": "...", "food": {...}}` dicts. Extract text with `ing.get("display", "") or ing.get("note", "") or ing.get("food", {}).get("name", "")`.
 
-## Airtable Field Names (Exact — Do Not Guess)
+## Baserow Field Names (Exact — Do Not Guess)
 
-The Airtable API rejects unknown field names with HTTP 422. These are the **exact** field names as of June 2026:
+**Recipes table** (ID: 379):
+- `Name` — text
+- `Mealie Slug` — text
+- `Source URL` — text
+- `Notes` — long_text
 
-**Recipes table** (`tblehBgzRMa2Xucjd`):
-- `Name` — singleLineText
-- `Mealie Slug` — singleLineText (NOT `Slug`)
-- `Notes` — multilineText
-- `Ingredients` — multipleRecordLinks → Ingredients table
-
-**Ingredients table** (`tblNsgbYHNK8xWnB7`):
-- `Ingredient` — singleLineText (NOT `Name`)
+**Ingredients table** (ID: 375):
+- `Ingredient` — text
 - `Category` — singleSelect (must use existing options only)
-- `Recipe` — multipleRecordLinks → Recipes table
-- `Quantity` — singleLineText
+- `Recipe` — link_row → Recipes table
+- `Quantity` — text
+- `Seasonal` — multiple_select
 
 **Category single-select options** (exact strings): `Meat`, `Fish`, `Veg`, `Fruit`, `Dairy`, `Grain`, `Spice`, `Pantry`, `Eggs`, `Other`
 
-⚠️ Creating new select options via the Metadata API returns HTTP 422 "Insufficient permissions". Use `typecast=true` on POST to auto-create new options (e.g., "Eggs" was added this way).
-
-## Airtable Filter Formula Gotchas
-
-- Field names with spaces (e.g., `Mealie Slug`) **must be URL-encoded** in GET query params:
-  ```python
-  import urllib.parse
-  formula = f"{{Mealie Slug}}='{slug}'"
-  url = f"?filterByFormula={urllib.parse.quote(formula)}"
-  ```
-- `filterByFormula` does **not** work on `multipleRecordLinks` fields — filter locally after fetching.
-
 ## Full Pipeline Script
 
-For the complete photo/text/URL → Mealie → Airtable pipeline, use:
+For the complete photo/text/URL → Mealie → Baserow pipeline, use:
 ```
 python3 /root/Geeves/skills/recipe-parser/scripts/push_recipe.py --photo /path/to/image.jpg
 python3 /root/Geeves/skills/recipe-parser/scripts/push_recipe.py --text "recipe text..."
-python3 /root/Geeves/skills/recipe-parser/scripts/push_recipe.py --url "https://..."
+python3 /root/Geeves/skills/recipe-parser/scripts/push_recipe.py --json-ld '{"@type":"Recipe",...}'
 ```
 
-For Mealie → Airtable sync only (e.g., after manual Mealie edits):
+For Mealie → Baserow sync only (e.g., after manual Mealie edits):
 ```
 python3 /root/Geeves/scripts/recipe_sync.py <slug>
 ```
 
 ## Ingredient Name Cleaning
 
-When syncing to Airtable, ingredient names are **cleaned** — the `Ingredient` field stores ONLY the ingredient name, not the full recipe line. See `references/ingredient-cleaning.md` for the full algorithm, category mapping, and examples.
+When syncing to Baserow, ingredient names are **cleaned** — the `Ingredient` field stores ONLY the ingredient name, not the full recipe line. See `references/ingredient-cleaning.md` for the full algorithm, category mapping, and examples.
 
 ## Listing & Deduplicating Mealie Recipes
 
@@ -270,12 +258,13 @@ python3 /root/.hermes/skills/productivity/recipe-parser/scripts/list_mealie_reci
 1. Run with `--dupes` to see grouped duplicates
 2. Decide which slug to keep (usually the highest `-N` number = most recent)
 3. Delete unwanted slugs with `--delete-slug`
-4. Also clean up corresponding Airtable records and linked ingredients
+4. Also clean up corresponding Baserow records and linked ingredients
 
 ## Reference Files
 
-- `references/airtable-schema.md` — Exact field names, category options, API gotchas
+- `references/baserow-schema.md` — Exact field names, category options, API gotchas
 - `references/vision-providers.md` — Vision API provider status and priority order
+- `references/ingredient-cleaning.md` — Ingredient name cleaning algorithm
 
 ## Key Learnings (from testing)
 
@@ -304,11 +293,20 @@ python3 /root/.hermes/skills/productivity/recipe-parser/scripts/list_mealie_reci
 ```
 
 ### Sync Script
-- `/root/Geeves/scripts/recipe_sync.py <slug>` handles Mealie → Airtable
-- Parses the `display` field from Mealie's ingredient format
+- `/root/Geeves/scripts/recipe_sync.py <slug>` handles Mealie → Baserow
+- Parses the `display` field from Mealie's ingredient format (dicts, not strings)
 - Auto-categorises ingredients (heuristic-based)
 - Auto-tags seasonal months
 - Handles deduplication on re-sync
+
+### Baserow API Gotchas
+- Use `baserow_api.py create-row` for writes (handles field name→ID + select option resolution)
+- Use `baserow_api.py list-rows --json --limit N` for reads (machine-readable)
+- `create-row` outputs `Created: row N` — parse with `stdout.split("Created: row")[1].strip()`
+- `single_select` fields return `{"id": N, "value": "..."}` dicts — use `get_select_value()` helper
+- Date fields are naive — add `.replace(tzinfo=timezone.utc)` before comparing
+- `order_by` param returns 400 — sort client-side
+- Number fields may return strings — cast to `int()` before `f"{val:,}"` formatting
 
 ### Photo Input
 - Mealie has `POST /api/recipes/create/image` but it expects `images` (plural) multipart field

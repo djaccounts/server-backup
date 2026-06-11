@@ -1,4 +1,4 @@
-## Baserow + Mealie Nginx Config
+## Baserow + Mealie + Static Nginx Config
 
 server {
 	listen 80 default_server;
@@ -22,7 +22,6 @@ server {
 		proxy_read_timeout 300s;
 		proxy_connect_timeout 75s;
 
-		# Rewrite HTML responses to fix asset paths
 		sub_filter_once off;
 		sub_filter_types text/html;
 		sub_filter 'href="/' 'href="/mealie/';
@@ -32,13 +31,16 @@ server {
 		sub_filter "base href=\"/\"" "base href=\"/mealie/\"";
 	}
 
-	# Redirect /mealie to /mealie/
 	location = /mealie {
 		return 301 /mealie/;
 	}
 
-	# Baserow reverse proxy (default)
+	# Static files first, fall back to Baserow
 	location / {
+		try_files $uri @baserow;
+	}
+
+	location @baserow {
 		proxy_pass http://127.0.0.1:8080;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;

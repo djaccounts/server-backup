@@ -9,6 +9,7 @@ Also uses Firecrawl to enrich individual property pages for missing data.
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 import urllib.request
@@ -18,6 +19,12 @@ from pathlib import Path
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
+# Baserow table IDs (migrated from Airtable June 2026)
+BASEROW_URL = "http://77.68.33.121"
+PROPERTIES_TABLE_ID = 380
+CRITERIA_TABLE_ID = 381
+
+# Legacy Airtable IDs (kept for reference only)
 AIRTABLE_BASE_ID = "appzvmonQXs4x2AlL"
 PROPERTIES_TABLE = "tblA0jfgqxhPFJU7S"
 CRITERIA_TABLE = "tbl6oeRjhK3sds99TI"
@@ -61,73 +68,89 @@ def get_env_key(name):
     raise RuntimeError(f"{name} not found in .env")
 
 
-def airtable_request(method, table, data=None, params=None, record_id=None):
-    """Make an Airtable API request."""
-    key = get_env_key("AIRTABLE_API_KEY")
-    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{table}"
-    if record_id:
-        url += f"/{record_id}"
-    if params:
-        encoded = urllib.parse.urlencode(params, doseq=True)
-        url += "?" + encoded
-
-    req = urllib.request.Request(url, method=method)
-    req.add_header("Authorization", f"Bearer {key}")
-    req.add_header("Content-Type", "application/json")
-
-    if data:
-        req.data = json.dumps(data).encode()
-
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read())
-    except urllib.error.HTTPError as e:
-        body = e.read().decode() if e.fp else ""
-        print(f"  Airtable API error {e.code}: {body[:200]}", file=sys.stderr)
-        return None
+def baserow_get_all_rows(table_id, token):
+    """Get all rows from a Baserow table with pagination."""
+    all_rows = []
+    page = 1
+    while True:
+        url = f"{BASEROW_URL}/api/database/rows/table/{table_id}/?page={page}&size=100"
+        req = urllib.request.Request(url, headers={"Authorization": f"Token {token}"})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read())
+        except Exception as e:
+            print(f"  Baserow API error: {e}", file=sys.stderr)
+            break
+        results = data.get("results", [])
+        all_rows.extend(results)
+        if not data.get("next"):
+            break
+        page += 1
+    return all_rows
 
 
 def get_existing_rightmove_ids():
-    """Get all existing Rightmove IDs from Airtable to avoid duplicates."""
+    """Get all existing Rightmove IDs from Baserow to avoid duplicates."""
+    result = subprocess.run(
+        ["python3", "/root/Geeves/scripts/baserow_api.py", "list-rows",
+         str(PROPERTIES_TABLE_ID), "--limit", "200", "--json"],
+        capture_output=True, text=True, timeout=30
+    )
     ids = set()
-    offset = None
-    while True:
-        params = {"pageSize": 100, "fields": ["Rightmove ID"]}
-        if offset:
-            params["offset"] = offset
-        result = airtable_request("GET", PROPERTIES_TABLE, params=params)
-        if not result:
-            break
-        for record in result.get("records", []):
-            rm_id = record["fields"].get("Rightmove ID")
-            if rm_id:
-                ids.add(rm_id)
-        offset = result.get("offset")
-        if not offset:
-            break
+    if result.returncode == 0 and result.stdout.strip():
+        try:
+            data = json.loads(result.stdout)
+            records = data.get("results", [])
+            for row in records:
+                rm_id = row.get("Rightmove ID")
+                if rm_id:
+                    ids.add(str(rm_id))
+        except json.JSONDecodeError:
+            pass
     return ids
 
 
 def get_active_criteria():
-    """Fetch active property criteria from Airtable."""
-    result = airtable_request("GET", CRITERIA_TABLE, params={
-        "filterByFormula": "{Active} = TRUE()",
-        "pageSize": 100,
-    })
-    if not result:
-        return []
-    return [r["fields"] for r in result.get("records", [])]
+    """Fetch active property criteria from Baserow."""
+    result = subprocess.run(
+        ["python3", "/root/Geeves/scripts/baserow_api.py", "list-rows",
+         str(CRITERIA_TABLE_ID), "--limit", "100", "--json"],
+        capture_output=True, text=True, timeout=30
+    )
+    active = []
+    if result.returncode == 0 and result.stdout.strip():
+        try:
+            data = json.loads(result.stdout)
+            records = data.get("results", [])
+            for row in records:
+                if row.get("Active"):
+                    active.append(row)
+        except json.JSONDecodeError:
+            pass
+    return active
 
 
 def create_property_record(fields):
-    """Create a new property record in Airtable."""
-    result = airtable_request("POST", PROPERTIES_TABLE, data={
-        "fields": fields,
-        "typecast": True,
-    })
-    if result:
-        print(f"  ✓ Created: {fields.get('Address', 'unknown')} (ID: {result['id']})")
-    return result
+    """Create a new property record in Baserow using the baserow_api helper."""
+    fields_json = json.dumps(fields)
+    result = subprocess.run(
+        ["python3", "/root/Geeves/scripts/baserow_api.py", "create-row",
+         str(PROPERTIES_TABLE_ID), fields_json],
+        capture_output=True, text=True, timeout=30
+    )
+    if result.returncode == 0 and result.stdout.strip():
+        # Parse "Created: row 123" output
+        stdout = result.stdout.strip()
+        if "Created: row" in stdout:
+            row_id = int(stdout.split("Created: row")[1].strip())
+            print(f"  ✓ Created: {fields.get('Address', 'unknown')} (ID: {row_id})")
+            return {"id": row_id}
+        else:
+            print(f"  Created (raw): {stdout[:100]}")
+            return {"raw": stdout}
+    else:
+        print(f"  Baserow error: {result.stderr[:200]}", file=sys.stderr)
+        return None
 
 
 def check_exclusion_criteria(address, all_text, criteria):
@@ -469,7 +492,7 @@ def scan_properties():
     print(f"🏠 Property scan started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
 
-    print("Fetching existing listings from Airtable...")
+    print("Fetching existing listings from Baserow...")
     existing_ids = get_existing_rightmove_ids()
     print(f"  Found {len(existing_ids)} existing listings")
     print()

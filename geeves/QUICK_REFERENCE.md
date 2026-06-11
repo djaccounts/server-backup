@@ -4,11 +4,12 @@
 
 ## Project
 - **Name:** Geeves
-- **Airtable base:** `appzvmonQXs4x2AlL` (NEVER touch `appk0DXJthirMxTZV`)
+- **Baserow:** Self-hosted at `http://77.68.33.121` — database ID 132, 46 tables
 - **Lib path:** `/root/Geeves/lib/`
 - **API usage log:** `/root/Geeves/api_usage.jsonl`
 - **Master Plan:** `/root/Geeves/Geeves_Master_Plan_v2.md`
 - **Schema Reference:** `/root/Geeves/Geeves_Schema_Reference_v2.md`
+- **Mapping file:** `/root/Geeves/baserow_mapping.json` (table/field name → ID resolution)
 
 ## Model Routing
 - **Sensitive** (health, marriage, private third-party) → Ollama local only
@@ -16,15 +17,13 @@
 - **When in doubt → Sensitive**
 
 ## Messaging Targets
-- Main channel: `slack:#geeves` (C0B7DJU5412)
 - David DM: `slack:user:U0B73K4QWP5`
-- Use `resolve()` from `/root/Geeves/lib/messaging.py` for named targets
+- Home channel: `slack:C0B7C89HKQ9`
 
 ## Email (AgentMail + Himalaya)
 - **AgentMail inbox:** `blacksignal723@agentmail.to` (send FROM)
 - **Work email:** `dj@djaccounts.com` (receive AT)
 - **Himalaya:** v1.2.0, Gmail (daverj1987@gmail.com) — backup sending
-- **Digest schedule:** Daily 07:00, Weekly Monday 07:00
 
 ## Google Workspace
 - ✅ Authenticated (token at /root/.hermes/google_token.json, project geeves-498219)
@@ -37,31 +36,51 @@
 
 ## API Tracking
 Every API call gets logged to `/root/Geeves/api_usage.jsonl`.
-```python
-import sys; sys.path.insert(0, "/root/Geeves/lib")
-from api_usage_tracker import track
-track("airtable", tokens=0, note="what I did")
-```
 
-## Core Tables (v2 schema)
+## Core Tables (Baserow)
 | Table | ID | Notes |
-|-------|----|----|
-| People | tbl1WMPtQhWYW7bTI | 261 records, Tier 1-4 |
-| Person Notes | tbl6hnxzXXmWFkVfh | Timestamped freeform notes per person |
-| Conversation Log | tbl2dbgksA9XveLcx | Debriefs after seeing someone |
-| Todos | tblTcdZQ9AIltQDfu | Timeframe, Category, Source added |
-| Memory_Summaries | tblXH4eCLwM8S30cn | Hermes periodic summaries |
-| Output_Log | tbldJT41dAAX1WTkC | Generated output + ratings |
-| Weather_Data | tblFd4kAahIUozJsf | Daily bulletin |
-| Stock_Prices | tblI1oXlNIFXrVm7f | Daily bulletin |
-| Fact_of_the_Day | tblUTCWleQD61Ti2v | Daily bulletin |
+|-------|----|-------|
+| People | 359 | 265 records, Tier 1-4 |
+| Person Notes | 368 | Timestamped freeform notes per person |
+| Conversation Log | 369 | Debriefs after seeing someone |
+| Social Log | 406 | Social interactions (dinners, meetups, calls) |
+| Occasions | 403 | Birthdays, anniversaries per person |
+| Gift Ideas | 404 | Running gift ideas per person |
+| Gift History | 405 | Gifts given, with ratings |
+| Todos | 362 | Timeframe, Category, Source |
+| Memory_Summaries | 360 | Hermes periodic summaries |
+| Output_Log | 361 | Generated output + ratings |
+| Films | 366 | Film club |
+| Books | 398 | Reading list |
+| Properties | 380 | Property scan results |
+| Property Criteria | 381 | Search criteria |
+| Restaurants | 382 | Restaurant reviews |
+| Restaurant Visits | 383 | Visited restaurants |
+| Workouts | 392 | Fitness workouts |
+| Cycling | 396 | Garmin cycling data |
+| Fitness Goals | 395 | Fitness targets |
+| Recipes | 379 | Mealie recipes |
+| Ingredients | 375 | Recipe ingredients |
+| Dinner Parties | 376 | Dinner party planning |
+| Dinner Planner | 374 | Meal planning |
+| Shopping List | 377 | Shopping lists |
+| Dining Preferences | 378 | Taste preferences |
+| Sleep Log | 389 | Sleep tracking |
+| Habits | 385 | Habit tracking |
+| Habit Log | 388 | Habit entries |
+| Meals | 387 | Meal tracking |
+| Daily Nutrition Summary | 386 | Nutrition totals |
+| Intentions | 397 | Weekly intentions |
+| Digest Log | 390 | Digest history |
 
 ## Slack Capture
-- Real-time — you message me, I classify and write to Airtable
-- Categories: Person Note → People, Todo → Todos, Memory → Memory_Summaries, Module Request → Output_Log, General → skipped
+- Real-time — you message me, I classify and write to Baserow
+- Categories: Person Note → People, Todo → Todos, Memory → Memory_Summaries, Module Request → Output_Log, Occasion → Occasions, Gift Idea → Gift Ideas, Social → Social Log, General → skipped
 - Script: `/root/Geeves/scripts/slack_capture.py`
 
 ## Build Progress
 - **Phase 1 (Foundation):** ✅ People graph + Capture
-- **Phase 2 (Daily Bulletin):** 🔲 Wire bulletin into digest, Evening digest, Sleep/Habit/Fitness/Meal trackers
-- **Phase 3+ build on demand** — ask when you need a module
+- **Phase 2 (Daily Bulletin):** ✅ Bulletin, Todos, Meals, Sleep, Fitness, Cycling
+- **Phase 3 (Weekly Rhythm):** ✅ Weekly Digest, Recipes, Relationships & Occasions
+- **Phase 4 (Lifestyle):** ✅ Film Club, Restaurants, Books, Property
+- **Remaining:** Travel/Commute, Goals, Documents/Subscriptions, Wardrobe, Events, Watching/Reading, London, Phase 5
