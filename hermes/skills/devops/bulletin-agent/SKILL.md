@@ -1,7 +1,7 @@
 ---
 name: bulletin-agent
 description: "Geeves Bulletin Agent — fetch daily data, build HTML digest, generate PDF, and deliver via email + Slack. Runs as a cron job at 6am UTC. Use this skill when maintaining, debugging, or extending the bulletin/digest pipeline."
-version: 1.0.0
+version: 1.2.0
 author: Geeves
 ---
 
@@ -13,7 +13,7 @@ Fetches daily data, builds an HTML digest, generates a PDF, and delivers via ema
 
 ```
 Cron (6am UTC)
-  → bulletin_fetch_parallel.py --write  (fetch weather, stocks, fact, star wars, token_usage → Baserow)
+  → bulletin_fetch_parallel.py --write  (fetch weather, stocks, fact, star wars, token_usage, word_of_the_day → Baserow)
   → build_digest_baserow.py --save      (read ALL data from Baserow → HTML)
   → digest_to_pdf.py                    (HTML → PDF via PDFBolt)
   → AgentMail API                       (HTML body + PDF attachment → dj@djaccounts.com)
@@ -28,7 +28,7 @@ Cron (6am UTC)
 
 | Step | Script | Output |
 |------|--------|--------|
-| 1. Fetch data (parallel) | `bulletin_fetch_parallel.py --write` | Writes weather, stocks, fact, star wars, token_usage to Baserow |
+| 1. Fetch data (parallel) | `bulletin_fetch_parallel.py --write` | Writes weather, stocks, fact, star wars, token_usage, word_of_the_day to Baserow |
 | 1b. Fetch occasions | `python3 /root/Geeves/scripts/upcoming_occasions.py` | Upcoming birthdays/anniversaries for digest |
 | 2. Build HTML | `build_digest_baserow.py --save` | `/root/Geeves/digests/digest_YYYY-MM-DD.html` |
 | 3. Generate PDF | `digest_to_pdf.py --file <html>` | `/root/Geeves/digests/digest_YYYY-MM-DD.pdf` |
@@ -48,6 +48,7 @@ All scripts are in `/root/Geeves/scripts/`. All write to Baserow tables (migrate
 | `fact_fetch.py` | `Fact_of_the_Day` | 363 | 6 rotating sources | None |
 | `token_usage.py` | `Token_Usage` | 367 | Hermes state.db | None |
 | `starwars_fetch.py` | `Star_Wars_Fact` | 371 | SWAPI.tech | None |
+| `word_of_the_day_fetch.py` | `Word_of_the_Day` | 407 | Free Dictionary API + MyMemory Translation | None |
 | `upcoming_occasions.py` | `Occasions` | 403 | Baserow | None |
 
 **Fact rotation:** `day_of_year % 6` → 0=Wikipedia, 1=NASA, 2=Quote Garden, 3=Zen, 4=Holidays, 5=Useless Facts. Full fallback chain if primary fails.
@@ -141,9 +142,11 @@ def slack_post(text):
 
 | Section | Source Table | Table ID | Filter |
 |---------|-------------|----------|--------|
+| 📅 Today's Calendar | Google Calendar API (via `google_api.py` CLI) | N/A — external API | Today's date |
 | 🌤️ London Weather | `Weather_Data` | 364 | Latest record (today or yesterday) |
 | 📋 Short-Term Todos | `Todos` | 362 | Status ≠ Done, Due Date ≤ 7 days from today |
 | 💡 Fact of the Day | `Fact_of_the_Day` | 363 | Today's date |
+| 📖 Word of the Day | `Word_of_the_Day` | 407 | Today's date |
 | ⚔️ Star Wars Fact | `Star_Wars_Fact` | 371 | Today's date |
 | 📈 Markets | `Stock_Prices` | 365 | Today's date, deduplicated by ticker |
 | 📊 Token Usage | `Token_Usage` | 367 | Yesterday's date |
@@ -173,6 +176,9 @@ def slack_post(text):
 12. **Properties section requires Status="New"** — The scan script sets this via `baserow_api.py create-row` which resolves select option names to IDs. Direct API calls with string values fail silently.
 13. **Star Wars fetcher is in the parallel pipeline** — `starwars_fetch.py` runs as part of `bulletin_fetch_parallel.py` (5 fetchers, ~2s total). If Star Wars disappears from the digest, check: (a) is it in the `FETCHERS` list? (b) does `build_digest_baserow.py` have the Star Wars section? (c) is the `Star_Wars_Fact` table ID correct (371)?
 14. **Migrating a legacy Airtable fetcher to Baserow** — Pattern: (1) copy script to `/root/Geeves/scripts/`, (2) replace `AIRTABLE_API_KEY` / base URL with `baserow_api.baserow_post()`, (3) add to `bulletin_fetch_parallel.py` `FETCHERS` list, (4) add section to `build_digest_baserow.py`, (5) update this skill.
+15. **`google_api.py` is a CLI tool, not a Python library** — It uses `argparse` and `sys.argv`. You CANNOT `import` it and call functions directly. Always invoke via `subprocess.run(["python3", gapi_path, "calendar", "list", ...])` and parse JSON stdout. This applies to Calendar, Gmail, Drive, Sheets, Docs, and Contacts operations from within digest builder scripts.
+16. **Adding an external API section to the digest builder** — Pattern: (1) add a new `try/except` block in `build_digest_baserow.py` at the right position in the `sections` list, (2) call the external API via `subprocess.run()` + JSON parse (for CLI tools) or `urllib.request` (for REST APIs), (3) build HTML table/card rows from the response, (4) append to `sections`, (5) wrap in `except Exception: pass` so a failure doesn't break the whole digest, (6) update the Digest Sections table and Data Sources in this skill.
+17. **Word of the Day fetcher** — `word_of_the_day_fetch.py` runs as part of `bulletin_fetch_parallel.py` (6 fetchers). Uses Free Dictionary API (EN definition/pronunciation) + MyMemory Translation API (RU/HE translations). Curated 40-word list rotated by day-of-year. If Word of the Day disappears from the digest, check: (a) is it in the `FETCHERS` list? (b) does `build_digest_baserow.py` have the Word of the Day section? (c) is the `Word_of_the_Day` table ID correct (407)? (d) did the dictionary API return data for today's word?
 
 ## Related Pipelines
 
@@ -181,6 +187,7 @@ def slack_post(text):
 ## Reference
 
 - `references/baserow-migration-pattern.md` — Step-by-step pattern for migrating Airtable fetchers to Baserow, with field access patterns and common pitfalls.
-- `/root/Geeves/baserow_mapping.json` — Full Baserow mapping (all 41 tables, generated by baserow_api.py)
+- `/root/Geeves/baserow_mapping.json` — Full Baserow mapping (47 tables, generated via JWT auth — database token cannot list tables)
+- `references/baserow-migration-pattern.md` — Step-by-step pattern for creating new bulletin fetchers/tables, with JWT vs database token auth gotchas and field access patterns
 - `/root/Geeves/Module_Build_Playbook.md` — Standard module build process
 - `baserow` skill → `references/airtable-to-baserow-migration-pattern.md` — Pattern for migrating Airtable scripts to Baserow

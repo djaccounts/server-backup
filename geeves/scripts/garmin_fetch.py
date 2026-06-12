@@ -129,12 +129,17 @@ def fetch_cycling_activities(client, start_date, end_date):
 
 def activity_exists(date, route, distance_mi):
     """Check if a ride already exists in Baserow (dedup by date + route + distance)."""
-    # Baserow filter formula
-    formula = f"AND(DATE_ADD({{Date}},'days','0')='{date}','{{Route}}'='{route}',{{Distance (miles)}}={distance_mi})"
-    url = f"{BASEROW_BASE}/database/rows/table/{CYCLING_TABLE_ID}/?user_field_names=true&filter_by_formula={urllib.parse.quote(formula)}"
+    # Fetch all records and filter locally (Baserow formula filter unreliable with special chars)
+    url = f"{BASEROW_BASE}/database/rows/table/{CYCLING_TABLE_ID}/?user_field_names=true&size=200"
     try:
         result = baserow_get(url)
-        return len(result.get("results", [])) > 0
+        for r in result.get("results", []):
+            r_date = r.get("Date", "")
+            r_route = r.get("Route", "") or ""
+            r_dist = float(r.get("Distance (miles)", 0) or 0)
+            if r_date == date and r_route == route and abs(r_dist - distance_mi) < 0.2:
+                return True
+        return False
     except Exception:
         return False
 
@@ -246,7 +251,7 @@ def main():
             days = int(arg.split("=")[1]) * 7
         elif arg == "--backfill":
             backfill = True
-            days = 7
+            days = 30  # Monthly chunks for faster backfill
 
     print(f"🚴 Garmin Cycling Fetcher → Baserow")
     print(f"   Mode: {'WRITE' if write else 'DRY RUN'}")
@@ -325,9 +330,9 @@ def main():
 
         time.sleep(1)
 
-    # Update state
-    oldest = min(a.get("startTimeLocal", "")[:10] for a in activities)
-    state["oldest_imported"] = oldest
+    # Update state — always advance the window even if no rides found
+    oldest_in_batch = (datetime.strptime(state["oldest_imported"], "%Y-%m-%d") - timedelta(days=days)).strftime("%Y-%m-%d")
+    state["oldest_imported"] = oldest_in_batch
     state["last_run"] = datetime.now().isoformat()
     save_state(state)
 

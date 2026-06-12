@@ -146,14 +146,14 @@
     "archived_at": null,
     "created_at": "2026-06-08T09:30:12.483505+00:00",
     "created_by": "agent",
-    "last_patched_at": "2026-06-10T21:06:09.303053+00:00",
-    "last_used_at": "2026-06-10T21:05:31.935439+00:00",
-    "last_viewed_at": "2026-06-10T21:05:31.931646+00:00",
-    "patch_count": 50,
+    "last_patched_at": "2026-06-11T11:33:59.221875+00:00",
+    "last_used_at": "2026-06-11T11:35:20.510457+00:00",
+    "last_viewed_at": "2026-06-11T11:35:20.506453+00:00",
+    "patch_count": 59,
     "pinned": false,
     "state": "active",
-    "use_count": 32,
-    "view_count": 31
+    "use_count": 39,
+    "view_count": 37
   },
   "blogwatcher": {
     "archived_at": null,
@@ -185,14 +185,14 @@
     "archived_at": null,
     "created_at": "2026-06-06T08:03:17.132624+00:00",
     "created_by": null,
-    "last_patched_at": "2026-06-10T20:27:17.546036+00:00",
-    "last_used_at": "2026-06-10T20:48:52.595939+00:00",
-    "last_viewed_at": "2026-06-10T20:48:52.591951+00:00",
-    "patch_count": 28,
+    "last_patched_at": "2026-06-11T07:01:56.925506+00:00",
+    "last_used_at": "2026-06-11T06:59:45.862101+00:00",
+    "last_viewed_at": "2026-06-11T06:59:45.858855+00:00",
+    "patch_count": 34,
     "pinned": false,
     "state": "active",
-    "use_count": 12,
-    "view_count": 8
+    "use_count": 17,
+    "view_count": 12
   },
   "claude-code": {
     "archived_at": null,
@@ -376,6 +376,19 @@
     "use_count": 0,
     "view_count": 0
   },
+  "film-club-agent": {
+    "archived_at": null,
+    "created_at": "2026-06-11T20:09:53.390647+00:00",
+    "created_by": null,
+    "last_patched_at": "2026-06-11T22:34:47.435509+00:00",
+    "last_used_at": "2026-06-11T22:32:22.246921+00:00",
+    "last_viewed_at": "2026-06-11T22:32:22.242595+00:00",
+    "patch_count": 3,
+    "pinned": false,
+    "state": "active",
+    "use_count": 2,
+    "view_count": 2
+  },
   "findmy": {
     "archived_at": null,
     "created_at": "2026-06-07T22:34:55.720747+00:00",
@@ -393,27 +406,27 @@
     "archived_at": null,
     "created_at": "2026-06-08T20:07:49.270930+00:00",
     "created_by": null,
-    "last_patched_at": "2026-06-09T16:56:06.324558+00:00",
-    "last_used_at": "2026-06-09T16:55:16.359556+00:00",
-    "last_viewed_at": "2026-06-09T16:55:16.355774+00:00",
-    "patch_count": 4,
+    "last_patched_at": "2026-06-11T12:57:40.003292+00:00",
+    "last_used_at": "2026-06-11T12:56:20.004343+00:00",
+    "last_viewed_at": "2026-06-11T12:56:19.999618+00:00",
+    "patch_count": 8,
     "pinned": false,
     "state": "active",
-    "use_count": 3,
-    "view_count": 3
+    "use_count": 5,
+    "view_count": 5
   },
   "garmin-sync": {
     "archived_at": null,
     "created_at": "2026-06-09T09:34:25.678533+00:00",
     "created_by": "agent",
-    "last_patched_at": "2026-06-10T08:53:30.311939+00:00",
-    "last_used_at": "2026-06-10T08:51:44.319915+00:00",
-    "last_viewed_at": "2026-06-10T08:51:44.316429+00:00",
-    "patch_count": 2,
+    "last_patched_at": "2026-06-11T11:36:51.729593+00:00",
+    "last_used_at": "2026-06-11T11:37:05.505090+00:00",
+    "last_viewed_at": "2026-06-11T11:37:05.500510+00:00",
+    "patch_count": 5,
     "pinned": false,
     "state": "active",
-    "use_count": 3,
-    "view_count": 3
+    "use_count": 6,
+    "view_count": 6
   },
   "geeves-airtable": {
     "archived_at": null,
@@ -524,13 +537,13 @@
     "created_at": "2026-06-07T22:34:55.738556+00:00",
     "created_by": null,
     "last_patched_at": null,
-    "last_used_at": null,
-    "last_viewed_at": null,
+    "last_used_at": "2026-06-11T06:31:18.632972+00:00",
+    "last_viewed_at": "2026-06-11T06:31:18.629748+00:00",
     "patch_count": 0,
     "pinned": false,
     "state": "active",
-    "use_count": 0,
-    "view_count": 0
+    "use_count": 1,
+    "view_count": 1
   },
   "heartmula": {
     "archived_at": null,
@@ -575,14 +588,14 @@
     "archived_at": null,
     "created_at": "2026-06-08T09:24:21.290350+00:00",
     "created_by": null,
-    "last_patched_at": "2026-06-08T12:08:34.043597+00:00",
-    "last_used_at": "2026-06-09T08:20:42.472575+00:00",
-    "last_viewed_at": "2026-06-09T08:20:42.469400+00:00",
-    "patch_count": 7,
+    "last_patched_at": "2026-06-11T11:17:00.550437+00:00",
+    "last_used_at": "2026-06-11T11:16:43.061110+00:00",
+    "last_viewed_at": "2026-06-11T11:16:43.055989+00:00",
+    "patch_count": 8,
     "pinned": false,
     "state": "active",
-    "use_count": 7,
-    "view_count": 7
+    "use_count": 9,
+    "view_count": 9
   },
   "hermes-provider-config": {
     "archived_at": null,
@@ -674,6 +687,19 @@
     "state": "active",
     "use_count": 0,
     "view_count": 0
+  },
+  "imdb-ratings-lookup": {
+    "archived_at": null,
+    "created_at": "2026-06-11T20:10:14.051205+00:00",
+    "created_by": null,
+    "last_patched_at": null,
+    "last_used_at": "2026-06-11T20:10:14.054658+00:00",
+    "last_viewed_at": "2026-06-11T20:10:14.051228+00:00",
+    "patch_count": 0,
+    "pinned": false,
+    "state": "active",
+    "use_count": 1,
+    "view_count": 1
   },
   "imessage": {
     "archived_at": null,
@@ -843,6 +869,19 @@
     "state": "active",
     "use_count": 10,
     "view_count": 10
+  },
+  "meals-agent": {
+    "archived_at": null,
+    "created_at": "2026-06-11T06:32:14.934803+00:00",
+    "created_by": null,
+    "last_patched_at": "2026-06-11T11:19:53.319286+00:00",
+    "last_used_at": "2026-06-11T11:19:24.003322+00:00",
+    "last_viewed_at": "2026-06-11T11:19:23.999433+00:00",
+    "patch_count": 5,
+    "pinned": false,
+    "state": "active",
+    "use_count": 2,
+    "view_count": 2
   },
   "minecraft-modpack-server": {
     "archived_at": null,
@@ -1122,12 +1161,12 @@
     "created_at": "2026-06-06T19:48:04.776608+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-10T20:19:55.711950+00:00",
-    "last_used_at": "2026-06-10T20:13:51.166120+00:00",
+    "last_used_at": "2026-06-11T05:00:12.771734+00:00",
     "last_viewed_at": "2026-06-10T20:13:51.162433+00:00",
     "patch_count": 17,
     "pinned": false,
     "state": "active",
-    "use_count": 13,
+    "use_count": 14,
     "view_count": 9
   },
   "public-apis": {
@@ -1265,13 +1304,13 @@
     "created_at": "2026-06-08T06:06:54.353525+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-08T06:51:27.072657+00:00",
-    "last_used_at": "2026-06-09T09:37:17.488114+00:00",
-    "last_viewed_at": "2026-06-09T09:37:17.485124+00:00",
+    "last_used_at": "2026-06-11T06:26:42.216167+00:00",
+    "last_viewed_at": "2026-06-11T06:26:42.212326+00:00",
     "patch_count": 3,
     "pinned": false,
     "state": "active",
-    "use_count": 5,
-    "view_count": 5
+    "use_count": 6,
+    "view_count": 6
   },
   "songsee": {
     "archived_at": null,

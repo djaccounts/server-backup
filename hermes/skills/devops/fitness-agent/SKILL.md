@@ -75,35 +75,23 @@ Manages the `Workouts`, `Exercise Log`, `Cycling`, and `Fitness Goals` tables. H
 | `Active` | checkbox | Is this the current active goal? |
 | `Notes` | multilineText | Freeform goal notes |
 
-## Airtable CRUD
+## Baserow CRUD
 
-Use `/root/Geeves/scripts/airtable_api.py`:
+Use `/root/Geeves/scripts/baserow_api.py` for all CRUD operations. Baserow is the system of record (not Airtable).
 
 ```bash
 # Create a workout
-python3 /root/Geeves/scripts/airtable-api.py create-record appzvmonQXs4x2AlL "Workouts" \
+python3 /root/Geeves/scripts/baserow_api.py create 392 \
   '{"Date": "2026-06-09", "Type": "Gym", "Duration (mins)": 45, "Energy level": 4, "Perceived difficulty": 3, "Source": "Slack"}'
 
-# Create workout with exercise detail
-# Step 1: Create the workout
-WORKOUT_JSON='{"Date": "2026-06-09", "Type": "Gym", "Duration (mins)": 60, "Energy level": 4, "Source": "Slack"}'
-# Step 2: Create exercise log entries linked to the workout ID
-
 # List recent workouts
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Workouts"
-
-# List exercises for a workout
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Exercise Log"
+python3 /root/Geeves/scripts/baserow_api.py list 392
 
 # Check active fitness goals
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Fitness Goals" "filterByFormula={Active}=1"
-
-# Log a cycling ride
-python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "Workouts" \
-  '{"Date": "2026-06-09", "Type": "Cycle", "Duration (mins)": 90, "Distance (km)": 35, "Source": "Strava"}'
+python3 /root/Geeves/scripts/baserow_api.py list 395
 ```
 
-**Auth:** Read `AIRTABLE_API_KEY` from `/root/.hermes/.env` via grep (never from `os.environ`).
+**Auth:** Read `BASEROW_API_TOKEN` from `/root/.hermes/.env` via grep.
 
 ## Workflows
 
@@ -196,34 +184,42 @@ Script: `/root/Geeves/scripts/slack_capture.py`
 
 ## Garmin Connect Auto-Import
 
-Script: `/root/Geeves/scripts/garmin_sync.py`
-Cron: `0d2ddb20ece8` — daily 7am UTC
+Scripts:
+- `/root/Geeves/scripts/garmin_fetch.py` — daily incremental import (last 7 days or backfill mode)
+- `/root/Geeves/scripts/garmin_bulk_import.py` — one-time bulk import of all history
+- `/root/Geeves/scripts/garmin_update_hr.py` — update existing records with HR/calorie data
 
-### Two-Garmin Deduplication
+Cron: `0d2ddb20ece8` — daily 7am UTC (runs `garmin_fetch.py --write --backfill`)
 
-David wears two Garmins simultaneously — one set to cycling mode, one to walking mode. This produces duplicate activities for the same ride. The sync script handles this:
+### Two-Garmin Setup
 
-1. Fetches all activities from Garmin Connect (last 7 days)
-2. Separates into cycling-type and walking-type activities
-3. For each walking activity, checks if a cycling activity exists on the same day within ±1 mile distance
-4. If matched → walking duplicate is discarded (the cycling record is kept)
-5. Walking activities without cycling counterparts but ≥3 miles are kept (could be cycling misclassified by Garmin auto-naming)
-6. Walking activities <3 miles are filtered out (likely genuine walks)
+David wears two Garmins simultaneously — one set to cycling mode, one to walking mode. Mixed activity types (cycling + walking on same day) are **intentional and expected**. No dedup between types needed.
 
-**Garmin activity type IDs — cycling:** 2, 5, 10, 19, 21, 22, 25, 143, 152, 175, 176, 197, 198
-**Garmin activity type IDs — walking:** 3, 9, 15, 16
+### Garmin API — Critical Quirks
 
-### Garmin API Quirks
+**HR and calorie data is in the ACTIVITY SUMMARY, not the detail endpoint:**
+- `activity["averageHR"]` — average heart rate
+- `activity["maxHR"]` — max heart rate
+- `activity["calories"]` — calories burned
+- `activity["hrTimeInZone_1"]` through `hrTimeInZone_5` — time in each HR zone (seconds)
+- The detail endpoint (`get_activity_details()`) returns `heartRateDTOs: null` — do NOT rely on it for HR
+- **Always read HR/calories from the summary object returned by `get_activities()` / `get_activities_by_date()`**
 
-- `client.get_activities()` takes `start` (offset), `limit`, `activitytype` — NOT date range
-- `client.get_activities_by_date()` takes `startdate`, `enddate` — use this for date range queries
-- Garmin may return 429 rate limit errors on login — the `python-garminconnect` library auto-fallbacks (curl_cffi → requests), these warnings are normal
-- Credentials stored in `/root/.hermes/.env` as `GARMIN_EMAIL` and `GARMIN_PASSWORD`
+**Rate limiting:**
+- Garmin aggressively 429s on login — all auth paths (mobile+cffi, mobile+requests, widget+cffi) can fail
+- Wait 60 seconds and retry on 429
 - Auth tokens cached at `~/.garminconnect/` after first login
+
+**Pagination:**
+- `client.get_activities(offset, limit)` — offset 0 = most recent, returns `limit` activities, stops at empty array
+- `client.get_activities_by_date(startdate, enddate)` — date range query
+- For bulk import, use `get_activities()` pagination — much faster than date-range queries
+
+**Baserow `filter_by_formula` is unreliable** with field names containing spaces/special characters (e.g. "Distance (miles)"). Use local filtering instead: fetch all records, match in Python.
 
 ### Source Field
 
-When syncing from Garmin, set `Source` to `"Garmin"` in the Workouts table.
+When syncing from Garmin, set `Source` to `"Garmin"` in both Workouts and Cycling tables.
 
 ## Cron Jobs
 
@@ -244,8 +240,9 @@ When syncing from Garmin, set `Source` to `"Garmin"` in the Workouts table.
 ## Standing Rules
 
 - All schema changes go through steward (`geeves-steward` skill)
-- Registry: `/root/Geeves/schema_registry.json`
-- Get David's explicit approval before creating any Airtable table or field
+- Registry: `/root/Geeves/baserow_mapping.json`
+- Baserow is the system of record — Airtable is no longer used
+- Get David's explicit approval before creating any Baserow table or field
 - Thread decisions supersede reference docs
 - Update this skill when conversation changes a decision
 
@@ -261,6 +258,9 @@ When syncing from Garmin, set `Source` to `"Garmin"` in the Workouts table.
 8. **Distance on Workouts table is km, on Cycling table is miles:** Don't mix them up.
 9. **Dry-run print bug:** The `handle_fitness()` dry-run print statement has `dur={distance}` — should be `dur={duration}`. This is cosmetic (doesn't affect live writes) but confusing when debugging. Fix when touching the handler next.
 10. **Exercise extraction fallback:** The regex patterns in `_extract_exercises()` are greedy and can capture trailing words. The fallback to known exercise names is more reliable for simple "trained X and Y" messages. When the regex produces garbage, fall back to known-exercise matching.
+11. **Garmin HR data location:** HR, max HR, and calories are in the activity *summary* fields (`averageHR`, `maxHR`, `calories`), NOT in `get_activity_details()`. The detail endpoint's `heartRateDTOs` is often null. Always read from the summary object.
+12. **Baserow filter_by_formula unreliability:** Field names with spaces/special chars (e.g. "Distance (miles)") break Baserow's formula filter. Fetch all records and filter locally in Python instead.
+13. **Garmin rate limiting:** Aggressive 429s on every auth path. Always implement 60-second retry. For large backfills, expect ~2 min per 100 activities due to rate limit delays.
 
 ## Reference
 

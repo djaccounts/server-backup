@@ -13,7 +13,7 @@ Manages the Films table — film diary + film club in one table. Handles IMDb lo
 
 | Table | ID | Purpose |
 |-------|----|---------|
-| `Films` | `tblqCpp3EB7wU2ZZ3` | All film records — personal diary + film club |
+| `Films` | `366` | All film records — personal diary + film club |
 
 Film Club view: filter where `Film Club = Yes`.
 
@@ -74,24 +74,28 @@ def omdb_lookup(title=None, imdb_id=None):
 
 **⚠ Title ambiguity:** "Matrix" → 1993 TV film, not 1999. Use year or IMDb ID to disambiguate.
 
-## Airtable CRUD
+## Baserow CRUD
 
-Use `/root/Geeves/scripts/airtable_api.py`:
+Use `/root/Geeves/scripts/baserow_api.py`:
 
 ```bash
 # List records
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Films"
+python3 /root/Geeves/scripts/baserow_api.py list-rows Films
 
 # Create record
-python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "Films" \
+python3 /root/Geeves/scripts/baserow_api.py create-row Films \
   '{"Film Title": "The Matrix", "Year": 1999, "Film Club": "Yes"}'
 
 # Update record
-python3 /root/Geeves/scripts/airtable_api.py update-record appzvmonQXs4x2AlL "Films" "<record_id>" \
+python3 /root/Geeves/scripts/baserow_api.py update-row Films <row_id> \
   '{"My Rating": "8"}'
+
+# Find duplicate
+python3 /root/Geeves/scripts/baserow_api.py find Films "The Matrix"
 ```
 
-**Auth:** Read `AIRTABLE_API_KEY` from `/root/.hermes/.env` via grep (never from `os.environ`).
+**Auth:** Reads `BASEROW_API_TOKEN` from `/root/.hermes/.env`.
+**Database:** Baserow database ID 132. Films table ID 366.
 
 ## Rating Conversion
 
@@ -125,8 +129,12 @@ Script: `/root/Geeves/scripts/slack_capture.py`
 
 ## Adding a Film (Manual Workflow)
 
+**For simple "add to watchlist" requests, use the `add-film` skill instead.**
+
+This skill handles the full film club workflow:
+
 1. Look up IMDb data via OMDb
-2. Create Films record in Airtable with core fields + personal fields
+2. Create Films record in Baserow with core fields + personal fields
 3. If Film Club pick: set `Film Club = Yes`, `Month Picked`, `Recommended By`
 4. After watching: update member ratings
 

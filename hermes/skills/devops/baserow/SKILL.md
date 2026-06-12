@@ -1,7 +1,7 @@
 ---
 name: baserow
 description: "Baserow self-hosted no-code database. Use when managing, configuring, or migrating data to/from Baserow. Covers: Docker deployment, Nginx reverse proxy setup, Airtable import, API usage, and troubleshooting."
-version: 1.2.0
+version: 1.3.0
 author: OWL
 license: MIT
 platforms: [linux]
@@ -117,7 +117,7 @@ When migrating table definitions or creating new tables, use these Baserow Platf
 
 | Operation | Endpoint | Notes |
 |-----------|----------|-------|
-| List | `GET /api/database/rows/table/{id}/?size=N` | Paginated |
+| List | `GET /api/database/rows/table/{id}/?size=N` | Paginated, max size 100 |
 | Create | `POST /api/database/rows/table/{id}/` | Body: `{field_XXXX: value}` |
 | Update | `PATCH /api/database/rows/table/{id}/{row_id}/` | Body: `{field_YYYY: value}` |
 | Delete | `DELETE /api/database/rows/table/{id}/{row_id}/` | Returns 204 |
@@ -170,14 +170,18 @@ def bw_count_rows(table_id, token):
 5. **Database token can't list tables** — Use JWT for `/api/database/tables/database/{id}/`.
 5a. **Field DELETE on `/api/database/fields/{id}/` requires JWT** — The database token can GET (list/read) fields but cannot DELETE or PATCH them. Field read works with `Token`, field write/delete needs `JWT`. This is a common trap: `list-fields` works fine but `delete field` returns 401. You MUST use `POST /api/user/token-auth/` with admin email+password to get a JWT token first. The admin password is NOT stored in any file — David must provide it.
 5b. **Getting a JWT token is a two-step process**: `POST http://77.68.33.121/api/user/token-auth/` with `{"email": "daverj1987@gmail.com", "password": "..."}`. Returns `{"token": "..."}`. Use as `Authorization: JWT <token>`. The admin password is NOT stored in any file — David must provide it.
+5c. **Adding select options to an existing field requires JWT** — PATCH `/api/database/fields/{id}/` with `{"select_options": [...]}` to add/replace options on a `single_select` or `multiple_select` field. The database token CANNOT do this — it returns 401. You MUST use JWT auth. This is needed when a new module adds a new source type (e.g. "Photo" for meal logging from images).
 6. **Nginx path order** — Specific paths (`/mealie/`) MUST come before generic (`/`) in Nginx config.
 7. **Baserow auto-creates a "Notes" field** on new tables — If you also try to add a "Notes" field explicitly, you get `ERROR_FIELD_WITH_SAME_NAME_ALREADY_EXISTS`. Fix: after creating a table, list fields and rename the auto-created one (e.g., to "Extra Notes") via JWT PATCH, or use a different name from the start.
-8. **write_file tool truncates `~` in paths** — Use `os.path.join(os.path.expanduser("~"), ".hermes", "file")` instead of `~/.hermes/file` in strings that will be written via write_file.
+8. **write_file tool truncates `~` in paths** — Use `os.path.join(os.path.expanduser("~"), ".hermes", "file")` instead of `~/.hermes/file` in strings that will be written via write_file. For complex scripts with special characters, use `cat > file << 'EOF'` via terminal instead.
 9. **Baserow `phone_number` field is strict** — Rejects spaces, dashes, parentheses. Strip to digits-only before writing: `"".join(c for c in phone if c.isdigit())`. Preserve leading `+` for international numbers. Google Contacts sync must clean phones.
 10. **Baserow `date` field requires valid year** — `0000` is rejected. Use `1900` as default for yearless dates (e.g., birthdays from Google Contacts in MM-DD format → `1900-MM-DD`).
-11. **Google OAuth token exchange** — Requires `application/x-www-form-urlencoded` content type, NOT JSON. Both refresh_token and code exchange endpoints need this. Refresh token revocation returns `invalid_grant` — requires full re-consent.
+11. **Google OAuth token exchange** — Requires `application/x-www-form-urlencoded` content type, NOT JSON. Both refresh_token and code exchange endpoints need this. Refresh token revocation returns `invalid_grant` — requires full re-consent via OAuth consent screen URL.
 12. **Baserow max page size is 100** — `?size=1000` returns HTTP 400. Always use `?size=100&page=N` for pagination.
-13. **Cron job `repeat` parameter** — `repeat: 0` means forever, `repeat: 1` means once. The `schedule` field uses cron expression format (`0 8 * * *`), NOT natural language (`daily at 8am UTC`).
+13. **Cron job `repeat` parameter** — `repeat: 0` means forever, `repeat: 1` means once. The `schedule` field uses cron expression format (`0 8 * * *`), NOT natural language.
+14. **Select/link field response shapes** — `single_select` returns `{"id": N, "value": "...", "color": "..."}` dicts, NOT plain strings. `link_row` returns `[{"id": N, "value": "...", "order": "..."}]` lists of dicts. Use `extract_select_value()` and `extract_link_id()` helpers when reading Baserow data.
+15. **`filter_by_formula` is unreliable with special characters** — Baserow's `?filter_by_formula=` query param silently returns ALL records (no filtering) when field names contain spaces, parentheses, or special characters (e.g., `Distance (miles)`, `Route`). The formula parser fails silently. **Always fetch all records and filter client-side in Python** instead of relying on `filter_by_formula` for dedup or lookup. This affects any script that uses formula-based filtering for existence checks.
+16. **`baserow_mapping.json` is a critical file — back it up before any schema change** — The mapping file at `/root/Geeves/baserow_mapping.json` is used by every Baserow script. If it gets corrupted or overwritten (e.g. by error output redirection), ALL Baserow operations break. The git backup at `/root/server-backup/geeves/baserow_mapping.json` is the recovery path: `cp /root/server-backup/geeves/baserow_mapping.json /root/Geeves/baserow_mapping.json`. Always verify the file is valid JSON after any operation that touches it: `python3 -c "import json; json.load(open('/root/Geeves/baserow_mapping.json')); print('OK')"`.
 
 ## Airtable → Baserow Type Mapping (complete)
 
@@ -239,6 +243,7 @@ python3 ~/.hermes/skills/devops/baserow/references/compare_schemas.py
 | `table_builder.py` | Table/field creation via Platform API (JWT auth) — for new modules |
 | `slack_capture.py` | Slack → Baserow |
 | `google_contacts_sync.py` | Google Contacts ↔ Baserow People two-way sync |
+| `upcoming_occasions.py` | Fetch upcoming birthdays/anniversaries for morning digest |
 | `weather_fetch.py` | London weather → Weather_Data |
 | `stocks_fetch.py` | Stock prices → Stock_Prices |
 | `fact_fetch.py` | Daily fact → Fact_of_the_Day |
@@ -247,6 +252,7 @@ python3 ~/.hermes/skills/devops/baserow/references/compare_schemas.py
 | `bulletin_fetch_parallel.py` | Master parallel fetch (weather, stocks, fact, star wars, token_usage) |
 | `starwars_fetch.py` | Star Wars character fact → Star_Wars_Fact (371) |
 | `property_scan_firecrawl.py` | Rightmove property scan → Baserow Properties table (380). Uses `baserow_api.py create-row` internally. |
+| `meal_photo_pipeline.py` | Food photo → vision analysis → Baserow Meals table (387). Downloads Slack images, prepares for vision, logs with macro estimates. |
 | `build_digest_baserow.py` | Digest builder reading from Baserow. Includes Properties + Todos sections. |
 
 ## Migrating Scripts from Airtable → Baserow
@@ -264,10 +270,20 @@ When reading Baserow data via `baserow_api.py --json` or direct API:
       if isinstance(field_val, dict): return field_val.get("value", "")
       return str(field_val)
   ```
+- **`link_row` fields** return `[{"id": N, "value": "...", "order": "..."}]` lists of dicts. Use a `get_link_id()` helper:
+  ```python
+  def get_link_id(field_val):
+      if isinstance(field_val, list) and field_val:
+          item = field_val[0]
+          if isinstance(item, dict): return item.get("id")
+          return item
+      if isinstance(field_val, dict): return field_val.get("id")
+      return field_val
+  ```
 - **`date` fields** return naive date strings (`"2026-06-10"`) — no timezone info. When comparing with `datetime.now(timezone.utc)`, add `.replace(tzinfo=timezone.utc)` to avoid `TypeError`.
 - **`number` fields** may return strings instead of ints in some contexts. Cast before formatting: `price_val = int(price) if price else 0` then `f"£{price_val:,}"`.
 - **`order_by` query param** returns HTTP 400. Fetch all pages and sort client-side.
-- **Pagination** is page-based (`?page=N&size=100`), not offset-based. The `next` field in the response indicates more pages.
+- **Pagination** is page-based (`?page=N&size=100`), not offset-based. The `next` field in the response indicates more pages. Max page size is 100.
 
 ### `baserow_api.py` CLI Output Formats
 
@@ -278,10 +294,14 @@ When reading Baserow data via `baserow_api.py --json` or direct API:
 | `list-tables` | Human-readable | No JSON mode |
 | `list-fields` | Human-readable | No JSON mode |
 
+## Photo Meal Logging
+
+For the photo-to-meal pipeline (download Slack image → vision analysis → Baserow log), see `references/photo-meal-logging.md`.
+
 ## Platform API Reference
 
 See `references/baserow-platform-api.md` for field payloads, auth patterns, and common errors.
-See `references/session-learnings-june-2026-relationships.md` for recent build learnings (auto-created Notes field, write_file truncation, OAuth revocation, new module tables, Google Contacts sync).
+See `references/session-learnings-june-2026-relationships.md` for recent build learnings (auto-created Notes field, write_file truncation, OAuth revocation, new module tables, Google Contacts sync, select/link response shapes).
 
 ## Troubleshooting
 
@@ -293,3 +313,9 @@ See `references/session-learnings-june-2026-relationships.md` for recent build l
 | Select write fails | Unknown option value | Use exact option name |
 | Phone validation 400 | Non-digit characters in phone_number field | Strip to digits-only |
 | Date validation 400 | Year 0000 or empty string | Use 1900 as default year, skip empty dates |
+| Select value shows as dict | `single_select` returns full object | Use `extract_select_value()` helper |
+| Link value shows as list of dicts | `link_row` returns objects not IDs | Use `extract_link_id()` helper |
+| write_file truncates `~` | write_file tool mangles tilde | Use `os.path.expanduser()` or heredoc |
+| Auto-created "Notes" field | Baserow adds it on new tables | Rename via JWT PATCH after creation |
+| Google OAuth `invalid_grant` | Refresh token revoked/expired | Re-authorize via consent screen |
+| Cron `repeat: 1` means once | Confusing semantics | Use `repeat: 0` for forever |

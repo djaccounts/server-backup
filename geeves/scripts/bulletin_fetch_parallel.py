@@ -25,6 +25,7 @@ FETCHERS = [
     ("Fact",        "💡",  "fact_fetch.py"),
     ("Star Wars",   "⚔️",  "starwars_fetch.py"),
     ("Token Usage", "📊",  "token_usage.py"),
+    ("Word of Day", "📖",  "word_of_the_day_fetch.py"),
 ]
 
 

@@ -52,11 +52,31 @@ David wears two Garmins simultaneously — one on the bike (records as cycling),
 
 ## Pitfalls
 
-1. **429 rate limiting**: Garmin returns 429 on login attempts. The script auto-retries after 60 seconds. The library also auto-fallbacks (curl_cffi → requests). These warnings are normal.
-2. **Dedup uses Baserow filter formula**: Checks date + route + distance. Records with slightly different distances (e.g., 7.0 vs 7.2) are treated as separate rides.
-3. **Backfill mode**: `--backfill` works backwards from the oldest imported date. Each cron run fetches 7 days further back. State tracked in `.garmin_import_state.json`.
+1. **429 rate limiting**: Garmin returns 429 on login attempts. The script auto-retries after 60 seconds. The library also auto-fallbacks (curl_cffi → requests). These warnings are normal. During bulk imports, rate limiting can add significant time — expect ~2 min per batch of 100 activities.
+2. **Dedup must be client-side**: Baserow's `filter_by_formula` is unreliable with field names containing spaces/special characters (e.g., `Distance (miles)`). It silently returns ALL records instead of filtering. **Always fetch all Baserow records and filter locally in Python** for dedup checks. The `activity_exists()` function in `garmin_fetch.py` does this correctly.
+3. **Backfill state must advance even on empty batches**: If a date range has 0 cycling activities, the state file must still advance the `oldest_imported` date. Otherwise the script gets stuck re-fetching the same empty range forever. Fixed in v2.1.0.
 4. **Garmin auto-naming**: Garmin sometimes names cycling activities "Walking" (e.g., "Reading Walking" for a 46-mile ride). This is cosmetic — the activity type ID is correct.
+5. **Bulk import is faster than week-by-week backfill**: For large historical datasets (4+ years), use `garmin_bulk_import.py` which uses `client.get_activities(offset, limit)` pagination instead of date-range queries. Much faster than the week-by-week `--backfill` approach. The bulk script supports resume via `.garmin_bulk_state.json`.
+
+## Bulk Import Script
+
+`/root/Geeves/scripts/garmin_bulk_import.py` — One-time bulk import using Garmin's offset-based pagination.
+
+```bash
+python3 garmin_bulk_import.py           # Dry run — shows count
+python3 garmin_bulk_import.py --write   # Write all to Baserow
+```
+
+- Fetches all activities in batches of 100 via `client.get_activities(offset, limit)`
+- Filters client-side for cycling types
+- Deduplicates against existing Baserow records (client-side comparison)
+- State tracked in `.garmin_bulk_state.json` — supports resume if interrupted
+- Sorts oldest-first before writing
 
 ## Cron
 
-Job `0d2ddb20ece8` — daily 7am UTC, `--backfill --write` mode.
+Job `0d2ddb20ece8` — daily 7am UTC, `--backfill --write` mode for incremental new rides.
+
+## Reference
+
+- `references/garmin-api-gotchas.md` — Garmin API quirks, rate limiting, activity types, two-Garmin setup

@@ -5245,6 +5245,129 @@
           "order": 10
         }
       }
+    },
+    "Word_of_the_Day": {
+      "id": 407,
+      "fields": {
+        "Name": {
+          "id": 3782,
+          "name": "Name",
+          "type": "text",
+          "order": 0
+        },
+        "Notes": {
+          "id": 3783,
+          "name": "Notes",
+          "type": "long_text",
+          "order": 1
+        },
+        "Active": {
+          "id": 3784,
+          "name": "Active",
+          "type": "boolean",
+          "order": 2
+        },
+        "Date": {
+          "id": 3785,
+          "name": "Date",
+          "type": "date",
+          "order": 3
+        },
+        "Word": {
+          "id": 3786,
+          "name": "Word",
+          "type": "text",
+          "order": 4
+        },
+        "Pronunciation": {
+          "id": 3787,
+          "name": "Pronunciation",
+          "type": "text",
+          "order": 5
+        },
+        "Part of Speech": {
+          "id": 3788,
+          "name": "Part of Speech",
+          "type": "single_select",
+          "order": 6,
+          "select_options": [
+            {
+              "id": 1976,
+              "value": "Noun"
+            },
+            {
+              "id": 1977,
+              "value": "Verb"
+            },
+            {
+              "id": 1978,
+              "value": "Adjective"
+            },
+            {
+              "id": 1979,
+              "value": "Adverb"
+            },
+            {
+              "id": 1980,
+              "value": "Phrase"
+            }
+          ]
+        },
+        "Definition EN": {
+          "id": 3789,
+          "name": "Definition EN",
+          "type": "long_text",
+          "order": 7
+        },
+        "Example EN": {
+          "id": 3790,
+          "name": "Example EN",
+          "type": "long_text",
+          "order": 8
+        },
+        "Russian": {
+          "id": 3791,
+          "name": "Russian",
+          "type": "text",
+          "order": 9
+        },
+        "Russian Definition": {
+          "id": 3792,
+          "name": "Russian Definition",
+          "type": "long_text",
+          "order": 10
+        },
+        "Russian Example": {
+          "id": 3793,
+          "name": "Russian Example",
+          "type": "long_text",
+          "order": 11
+        },
+        "Hebrew": {
+          "id": 3794,
+          "name": "Hebrew",
+          "type": "text",
+          "order": 12
+        },
+        "Hebrew Definition": {
+          "id": 3795,
+          "name": "Hebrew Definition",
+          "type": "long_text",
+          "order": 13
+        },
+        "Hebrew Example": {
+          "id": 3796,
+          "name": "Hebrew Example",
+          "type": "long_text",
+          "order": 14
+        },
+        "Source URL": {
+          "id": 3797,
+          "name": "Source URL",
+          "type": "url",
+          "order": 15
+        }
+      }
     }
   }
 }

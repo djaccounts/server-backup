@@ -267,3 +267,21 @@ User must run from SSH (not from inside the agent):
 ```bash
 hermes gateway restart
 ```
+
+### Toolset Loading
+
+Optional toolsets (like `vision`, `computer_use`, etc.) must be **explicitly listed** in the `toolsets:` array to load. Defining them at the bottom of config as plugins is not enough.
+
+```yaml
+# ~/.hermes/config.yaml
+toolsets:
+- hermes-cli
+- vision        # ← must be listed here to load vision_analyze
+```
+
+If a tool appears in the manifest but isn't callable, check:
+1. Is the toolset in the `toolsets:` list? `hermes config get toolsets`
+2. Add it: `hermes config set toolsets '["hermes-cli", "vision"]'`
+3. Restart the gateway from SSH
+
+**Note:** `disabled_toolsets: []` being empty is not sufficient — that only means "don't disable anything", not "enable everything". The `toolsets:` list is opt-in.

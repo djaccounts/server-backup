@@ -1,7 +1,7 @@
 ---
 name: meals-agent
-description: "Geeves Meals Agent — log meals and track nutrition in the Airtable Meals table. Use when logging food, meals, calories, macros, or when the user mentions eating, food, calories, protein, carbs, fat, breakfast, lunch, dinner, or snacks."
-version: 1.0.0
+description: "Geeves Meals Agent — log meals and track nutrition in the Baserow Meals table. Use when logging food, meals, calories, macros, or when the user mentions eating, food, calories, protein, carbs, fat, breakfast, lunch, dinner, or snacks. Also use when the user uploads a food photo for meal logging."
+version: 1.1.0
 author: Geeves
 ---
 
@@ -11,9 +11,9 @@ Manages the `Meals` table — meal and nutrition logging. Handles Airtable CRUD,
 
 ## Tables
 
-| Table | ID | Purpose |
-|-------|----|---------|
-| `Meals` | `tblzEBw7Whoomb63E` | Every meal/snack logged |
+| Table | Baserow ID | Purpose |
+|-------|------------|---------|
+| `Meals` | `387` | Every meal/snack logged |
 | `Daily Nutrition Summary` | `tbl16Z64tClYJaPLZ` | Daily roll-up (auto-generated) |
 | `Fitness Goals` | `tblAM0Grin01IQmdd` | Calorie/macro targets |
 
@@ -30,26 +30,26 @@ Manages the `Meals` table — meal and nutrition logging. Handles Airtable CRUD,
 | `Fat (g)` | number | Fat in grams |
 | `From recipe` | multipleRecordLinks | Link to Recipes table (if cooked from a saved recipe) |
 | `Accuracy` | single select | Estimated / Barcode / From recipe |
-| `Source` | single select | Manual / Slack / Voice |
+| `Source` | single_select | Manual / Slack / Voice |
 | `Logged` | date | When this was logged |
 
-## Airtable CRUD
+## Baserow CRUD
 
-Use `/root/Geeves/scripts/airtable_api.py`:
+Use `/root/Geeves/scripts/baserow_api.py`:
 
 ```bash
 # Create a meal record
-python3 /root/Geeves/scripts/airtable_api.py create-record appzvmonQXs4x2AlL "Meals" \
+python3 /root/Geeves/scripts/baserow_api.py create-row Meals \
   '{"Description": "Porridge with banana and honey", "Date": "2026-06-07", "Meal type": "Breakfast", "Calories (est)": 420, "Protein (g)": 12, "Carbs (g)": 68, "Fat (g)": 8, "Accuracy": "Estimated", "Source": "Slack"}'
 
 # List today's meals
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Meals" "filterByFormula={Date}=TODAY()"
+python3 /root/Geeves/scripts/baserow_api.py list-rows Meals
 
 # List all meals (recent first)
-python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Meals"
+python3 /root/Geeves/scripts/baserow_api.py list-rows Meals
 ```
 
-**Auth:** Read `AIRTABLE_API_KEY` from `/root/.hermes/.env` via grep (never from `os.environ`).
+**Auth:** Reads `BASEROW_API_TOKEN` from `/root/.hermes/.env`. Field names are auto-resolved to Baserow field IDs via `baserow_mapping.json`.
 
 ## Workflows
 
@@ -67,7 +67,7 @@ python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Mea
    - Other → Snack
 4. **Check if from a recipe** — if the user mentions a recipe name, search the Recipes table and link it
 5. Set `Accuracy` to `"Estimated"` (default), `"Barcode"` (if scanned), or `"From recipe"` (if linked)
-6. Set `Source` to `"Slack"` when logged via Slack
+6. Set `Source` to `"Slack"` when logged via Slack text, `"Photo"` when logged from a photo
 7. Confirm back to the user with the description and macros
 
 **Macro estimation heuristics:**
@@ -87,6 +87,48 @@ python3 /root/Geeves/scripts/airtable_api.py list-records appzvmonQXs4x2AlL "Mea
 1. Find the matching record (search by description + date)
 2. Update only the fields that changed
 3. Confirm the update
+
+## Photo Meal Logging
+
+When the user uploads a food photo in Slack (or sends an image attachment):
+
+1. **Download the image** from the Slack attachment URL:
+   - The image URL is in the message's `files[0].url_private_download` field
+   - Use `curl` with the Slack bot token to download:
+     ```bash
+     SLACK_BOT_TOKEN=*** SLACK_BOT_TOKEN ~/.hermes/.env | head -1 | cut -d= -f2)
+     curl -sL -H "Authorization: Bearer $SLACK...EN" "$IMAGE_URL" -o /tmp/meal_photo.jpg
+     ```
+
+2. **Analyze the image** using `vision_analyze`:
+   - Pass the downloaded image to the vision tool
+   - Ask it to identify all food items, estimate portion sizes, and estimate calories + macros
+   - Prompt: "Identify all food and drink items in this photo. For each item, estimate the portion size and provide approximate calories, protein (g), carbs (g), and fat (g). Return as a structured list."
+
+3. **Determine meal type** from context:
+   - If the user says "breakfast/lunch/dinner/snack" → use that
+   - Otherwise infer from time of day:
+     - Before 11am → Breakfast
+     - 11am-2pm → Lunch
+     - 5pm+ → Dinner
+     - Other → Snack
+
+4. **Log to Baserow**:
+   ```bash
+   python3 /root/Geeves/scripts/baserow_api.py create-row Meals \
+     '{"Description": "Grilled salmon with rice and broccoli", "Date": "2026-06-10", "Meal type": "Dinner", "Calories (est)": 650, "Protein (g)": 42, "Carbs (g)": 55, "Fat (g)": 18, "Accuracy": "Estimated", "Source": "Photo"}'
+   ```
+
+5. **Confirm to user** with:
+   - What was identified in the photo
+   - Estimated macros
+   - Meal type
+   - "Does that look right? Let me know if you want to adjust anything."
+
+**Notes:**
+- Always be transparent that macros are estimates from visual analysis
+- If the photo is unclear, ask the user to describe the meal
+- Set `Source` to `"Photo"` once the option is added to Baserow (currently use `"Slack"` as fallback)
 
 ## Slack Capture
 
@@ -136,17 +178,19 @@ None yet. Future: daily nutrition summary generation (reads from Meals → write
 
 - All schema changes go through steward (`geeves-steward` skill)
 - Registry: `/root/Geeves/schema_registry.json`
-- Get David's explicit approval before creating any Airtable table
+- Get David's explicit approval before creating any Baserow table
 - Thread decisions supersede reference docs
 - Update this skill when conversation changes a decision
 
 ## Pitfalls
 
-1. **Date field format:** Always use `YYYY-MM-DD` for Airtable date fields. The `Date` field in Meals also accepts time.
+1. **Date field format:** Always use `YYYY-MM-DD` for Baserow date fields.
 2. **Select field 422 errors:** Writing an undefined select option fails with 422. Always use exact values: `"Breakfast"`, `"Lunch"`, `"Dinner"`, `"Snack"` for Meal type; `"Estimated"`, `"Barcode"`, `"From recipe"` for Accuracy.
 3. **From recipe linking:** Only link to Recipes if the user specifically mentions a recipe name or you can confidently match it. Don't guess.
 4. **Macro estimation honesty:** If you can't estimate macros confidently, log the meal with just the description and set Accuracy to "Estimated". Don't fabricate numbers.
 5. **filterByFormula on date fields:** Use `TODAY()` or `DATESTR()` functions. Direct date string comparison may not work as expected.
+6. **Number fields are integers in Baserow** — Calories, Protein, Carbs, Fat all use 0 decimal places. Always `int(round(value))` before sending. Sending floats like `420.5` causes HTTP 400 `max_decimal_places` error.
+7. **Photo logging:** When logging from a photo, always note the uncertainty. Use phrases like "From your photo, I can see..." and "Estimated from visual analysis."
 
 ## Reference
 

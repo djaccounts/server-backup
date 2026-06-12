@@ -129,6 +129,94 @@ def build_html():
                 <p class="source">⚠️ Weather data unavailable ({e})</p>
             </div>""")
 
+    # === CALENDAR (today's events) ===
+    try:
+        _gapi = "/root/.hermes/skills/productivity/google-workspace/scripts/google_api.py"
+        # Fetch today's timed events
+        _r1 = subprocess.run(
+            ["python3", _gapi, "calendar", "list",
+             "--start", today_iso + "T00:00:00Z",
+             "--end", today_iso + "T23:59:59Z",
+             "--max", "20"],
+            capture_output=True, text=True, timeout=15
+        )
+        cal_events = json.loads(_r1.stdout) if _r1.returncode == 0 else []
+        # Fetch wider window to catch all-day events
+        _prev = (today_dt - timedelta(days=1)).strftime("%Y-%m-%d")
+        _r2 = subprocess.run(
+            ["python3", _gapi, "calendar", "list",
+             "--start", _prev + "T00:00:00Z",
+             "--end", today_iso + "T23:59:59Z",
+             "--max", "20"],
+            capture_output=True, text=True, timeout=15
+        )
+        cal_events_all = json.loads(_r2.stdout) if _r2.returncode == 0 else []
+
+        # Merge: prefer timed events from today, add all-day events whose date matches today
+        all_day_events = []
+        timed_events = []
+        seen_ids = set()
+        for ev in cal_events_all + cal_events:
+            eid = ev.get("id", "")
+            if eid in seen_ids:
+                continue
+            seen_ids.add(eid)
+            start_val = ev.get("start", "")
+            if len(start_val) == 10:  # all-day event (YYYY-MM-DD)
+                if start_val == today_iso:
+                    all_day_events.append(ev)
+            else:
+                if start_val.startswith(today_iso):
+                    timed_events.append(ev)
+
+        if all_day_events or timed_events:
+            cal_rows = ""
+            # All-day events first
+            for ev in all_day_events:
+                summary = ev.get("summary", "(No title)")
+                cal_rows += f"""
+                <tr>
+                    <td style="padding: 6px 8px; border-bottom: 1px solid #e5e7eb;">📌 {summary}</td>
+                    <td style="padding: 6px 8px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">All day</td>
+                </tr>"""
+            # Then timed events, sorted by start time
+            timed_events.sort(key=lambda e: e.get("start", ""))
+            for ev in timed_events:
+                summary = ev.get("summary", "(No title)")
+                start_val = ev.get("start", "")
+                end_val = ev.get("end", "")
+                # Extract HH:MM from ISO timestamp (already in local tz from Google)
+                def _fmt_time(ts):
+                    try:
+                        if "T" in ts:
+                            return ts.split("T")[1][:5]
+                        return ts
+                    except:
+                        return ts
+                start_str = _fmt_time(start_val)
+                end_str = _fmt_time(end_val)
+                loc = ev.get("location", "")
+                loc_html = f' <span style="color:#6b7280;font-size:12px;">📍 {loc}</span>' if loc else ""
+                cal_rows += f"""
+                <tr>
+                    <td style="padding: 6px 8px; border-bottom: 1px solid #e5e7eb;">{summary}{loc_html}</td>
+                    <td style="padding: 6px 8px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">{start_str} – {end_str}</td>
+                </tr>"""
+
+            sections.append(f"""
+            <div class="section">
+                <h2>📅 Today's Calendar</h2>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr>
+                        <th style="text-align: left; padding: 4px 8px; border-bottom: 2px solid #e5e7eb; color: #6b7280;">Event</th>
+                        <th style="text-align: left; padding: 4px 8px; border-bottom: 2px solid #e5e7eb; color: #6b7280;">Time</th>
+                    </tr>
+                    {cal_rows}
+                </table>
+            </div>""")
+    except Exception:
+        pass
+
     # === SHORT-TERM TODOS ===
     try:
         t_data = baserow_get_all(362)
@@ -213,6 +301,62 @@ def build_html():
                 <h2>💡 Fact of the Day</h2>
                 <p class="source">Category: {cat_name}</p>
                 <p>{fact_text}</p>
+                {source_link}
+            </div>""")
+    except Exception:
+        pass
+
+    # === WORD OF THE DAY ===
+    try:
+        w_data = baserow_get(407)
+        w_recs = [r for r in w_data.get("results", []) if r.get("field_3785") == today_iso]
+        if w_recs:
+            w = w_recs[0]
+            word = w.get("field_3786", "")
+            pronunciation = w.get("field_3787", "")
+            pos = get_select_value(w.get("field_3788"))
+            definition_en = w.get("field_3789", "").replace("\n", "<br>\n")
+            example_en = w.get("field_3790", "").replace("\n", "<br>\n")
+            russian = w.get("field_3791", "")
+            russian_def = w.get("field_3792", "").replace("\n", "<br>\n")
+            russian_ex = w.get("field_3793", "").replace("\n", "<br>\n")
+            hebrew = w.get("field_3794", "")
+            hebrew_def = w.get("field_3795", "").replace("\n", "<br>\n")
+            hebrew_ex = w.get("field_3796", "").replace("\n", "<br>\n")
+            source_url = w.get("field_3797", "")
+            source_link = f'<br><a href="{source_url}" class="source">Source</a>' if source_url else ""
+
+            # Build trilingual display
+            ru_html = ""
+            if russian:
+                ru_html = f'<p><strong>🇷🇺 Russian:</strong> {russian}</p>'
+                if russian_def:
+                    ru_html += f'<p style="font-size:13px;color:#4b5563;">{russian_def}</p>'
+                if russian_ex:
+                    ru_html += f'<p style="font-size:13px;font-style:italic;color:#6b7280;">"{russian_ex}"</p>'
+
+            he_html = ""
+            if hebrew:
+                he_html = f'<p><strong>🇮🇱 Hebrew:</strong> <span dir="rtl">{hebrew}</span></p>'
+                if hebrew_def:
+                    he_html += f'<p style="font-size:13px;color:#4b5563;"><span dir="rtl">{hebrew_def}</span></p>'
+                if hebrew_ex:
+                    he_html += f'<p style="font-size:13px;font-style:italic;color:#6b7280;"><span dir="rtl">"{hebrew_ex}"</span></p>'
+
+            pron_html = f' <span style="color:#6b7280;font-size:13px;">{pronunciation}</span>' if pronunciation else ""
+            pos_html = f'<p class="source">{pos}</p>' if pos else ""
+            example_html = f'<p style="font-style:italic;color:#4b5563;">"{example_en}"</p>' if example_en else ""
+
+            sections.append(f"""
+            <div class="section">
+                <h2>📖 Word of the Day</h2>
+                <p style="font-size:18px;margin:4px 0;"><strong>{word}</strong>{pron_html}</p>
+                {pos_html}
+                <p>{definition_en}</p>
+                {example_html}
+                <hr style="border:0;border-top:1px solid #e5e7eb;margin:12px 0;">
+                {ru_html}
+                {he_html}
                 {source_link}
             </div>""")
     except Exception:
