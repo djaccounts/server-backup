@@ -188,9 +188,10 @@ None yet. Future: daily nutrition summary generation (reads from Meals → write
 2. **Select field 422 errors:** Writing an undefined select option fails with 422. Always use exact values: `"Breakfast"`, `"Lunch"`, `"Dinner"`, `"Snack"` for Meal type; `"Estimated"`, `"Barcode"`, `"From recipe"` for Accuracy.
 3. **From recipe linking:** Only link to Recipes if the user specifically mentions a recipe name or you can confidently match it. Don't guess.
 4. **Macro estimation honesty:** If you can't estimate macros confidently, log the meal with just the description and set Accuracy to "Estimated". Don't fabricate numbers.
-5. **filterByFormula on date fields:** Use `TODAY()` or `DATESTR()` functions. Direct date string comparison may not work as expected.
-6. **Number fields are integers in Baserow** — Calories, Protein, Carbs, Fat all use 0 decimal places. Always `int(round(value))` before sending. Sending floats like `420.5` causes HTTP 400 `max_decimal_places` error.
-7. **Photo logging:** When logging from a photo, always note the uncertainty. Use phrases like "From your photo, I can see..." and "Estimated from visual analysis."
+5. **Number fields are integers in Baserow** — Calories, Protein, Carbs, Fat all use 0 decimal places. Always `int(round(value))` before sending. Sending floats like `420.5` causes HTTP 400 `max_decimal_places` error.
+6. **Photo logging:** When logging from a photo, always note the uncertainty. Use phrases like "From your photo, I can see..." and "Estimated from visual analysis."
+7. **vision_analyze tool availability:** The `vision_analyze` tool requires BOTH `vision` in the `toolsets:` list AND a vision-capable `vision.model` in `~/.hermes/.env`. The model `openrouter/owl-alpha` may NOT support vision — use `openrouter/anthropic/claude-sonnet-4` or another vision-capable model instead. After changing config, the gateway must be restarted. The tool is NOT available mid-session — it only loads at session start. If unavailable, ask the user to describe the meal as fallback.
+8. **baserow_mapping.json corruption:** This file can be accidentally overwritten (e.g., by stderr redirect). If it becomes invalid JSON, restore from backup: `cp /root/server-backup/geeves/baserow_mapping.json /root/Geeves/baserow_mapping.json`. Always verify with `python3 -c "import json; json.load(open('/root/Geeves/baserow_mapping.json'))"` after restore.
 
 ## Reference
 
@@ -198,3 +199,4 @@ None yet. Future: daily nutrition summary generation (reads from Meals → write
 - `Geeves_Schema_Reference_v2.md` — full field definitions (Module 7 — Meal Tracker)
 - `geeves-airtable/references/slack-capture.md` — classification rules, extraction patterns
 - `recipes-agent/SKILL.md` — Recipes module for linking meals to recipes
+- `references/vision-setup.md` — vision_analyze tool configuration and troubleshooting

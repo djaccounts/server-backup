@@ -23,15 +23,15 @@
       "schedule_display": "0 6 * * *",
       "repeat": {
         "times": null,
-        "completed": 9
+        "completed": 10
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-02T15:29:19.046414+00:00",
-      "next_run_at": "2026-06-12T06:00:00+00:00",
-      "last_run_at": "2026-06-11T06:01:58.919961+00:00",
+      "next_run_at": "2026-06-13T06:00:00+00:00",
+      "last_run_at": "2026-06-12T06:05:59.719055+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -113,15 +113,15 @@
       "schedule_display": "0 2 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T15:56:27.457927+00:00",
-      "next_run_at": "2026-06-13T02:00:00+00:00",
-      "last_run_at": "2026-06-11T02:00:27.482391+00:00",
+      "next_run_at": "2026-06-14T02:00:00+00:00",
+      "last_run_at": "2026-06-12T02:00:23.701557+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -158,17 +158,17 @@
       "schedule_display": "0 5 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-06T19:43:45.740827+00:00",
-      "next_run_at": "2026-06-12T05:00:00+00:00",
-      "last_run_at": "2026-06-11T05:01:10.065241+00:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: Error code: 400 - {'error': {'message': 'This model only supports single tool-calls at once! This model only supports single tool-calls at once!', 'type': 'BadRequestError', 'param': None, 'code': 400}}",
+      "next_run_at": "2026-06-13T05:00:00+00:00",
+      "last_run_at": "2026-06-12T05:02:27.124473+00:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "local",
       "origin": {
@@ -256,15 +256,15 @@
       "schedule_display": "0 7 * * *",
       "repeat": {
         "times": null,
-        "completed": 2
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-09T07:15:25.963482+00:00",
-      "next_run_at": "2026-06-12T07:00:00+00:00",
-      "last_run_at": "2026-06-11T07:05:31.985744+00:00",
+      "next_run_at": "2026-06-13T07:00:00+00:00",
+      "last_run_at": "2026-06-12T07:04:10.173976+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -302,15 +302,15 @@
       "schedule_display": "every 15m",
       "repeat": {
         "times": null,
-        "completed": 115
+        "completed": 206
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-10T18:27:17.748211+00:00",
-      "next_run_at": "2026-06-12T02:02:05.600837+00:00",
-      "last_run_at": "2026-06-12T01:47:05.600837+00:00",
+      "next_run_at": "2026-06-13T02:07:04.419114+00:00",
+      "last_run_at": "2026-06-13T01:52:04.419114+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -345,15 +345,15 @@
       "schedule_display": "0 8 * * *",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 2
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-06-10T21:01:46.901732+00:00",
-      "next_run_at": "2026-06-12T08:00:00+00:00",
-      "last_run_at": "2026-06-11T08:06:29.538986+00:00",
+      "next_run_at": "2026-06-13T08:00:00+00:00",
+      "last_run_at": "2026-06-12T08:01:10.554630+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -367,7 +367,50 @@
       "enabled_toolsets": null,
       "workdir": null,
       "profile": null
+    },
+    {
+      "id": "4baaa029632d",
+      "name": "Mac Mini M4 Refurb Scanner UK",
+      "prompt": "Run the Mac Mini M4 refurb scanner for UK Apple Store.\n\nStep 1: For each of these 3 product pages, use the mcp_firecrawl_firecrawl_scrape tool with formats=[\"markdown\"], onlyMainContent=true, waitFor=8000 to get the JS-rendered page content:\n\n1. https://www.apple.com/uk/shop/product/fcyt4b/a/Refurbished-Mac-mini-Apple-M4-Chip-with-10-Core-CPU-and-10-Core-GPU-Gigabit-Ethernet-\n2. https://www.apple.com/uk/shop/product/g1cg1b/a/Refurbished-Mac-mini-Apple-M4-Chip-with-10-Core-CPU-and-10-Core-GPU-Gigabit-Ethernet-\n3. https://www.apple.com/uk/shop/product/fcx44b/a/Refurbished-Mac-mini-Apple-M4-Pro-Chip-with-12-Core-CPU-and-16-Core-GPU-Gigabit-Ethernet-\n\nFor each page, extract from the markdown content:\n- Look for \"Delivery:\" followed by \"- Out of stock\" or similar delivery/shipping info\n- If \"Out of stock\" appears \u2192 NOT available\n- If it shows a delivery estimate like \"Delivers in X days\" or \"Ships in X days\" \u2192 AVAILABLE\n- If neither (no delivery section at all, and \"Add to Bag\" is present) \u2192 likely AVAILABLE\n- Extract price, RAM, storage from the content\n\nStep 2: Update the state file at ~/.hermes/mac_mini_refurb_state.json with current availability.\n\nStep 3: Append scan results to ~/.hermes/mac_mini_refurb_scan_log.jsonl as JSON.\n\nStep 4: Determine which configs are AVAILABLE (in stock, deliverable, 24GB+ RAM).\n\nStep 5: ONLY send a Slack message if at least one config is AVAILABLE. Format:\n\"\ud83c\udf4e Mac Mini M4 Refurb Available (UK):\n\u2022 M4 24GB/512GB \u2014 \u00a3849 \u2014 Delivers in X days\n  https://www.apple.com/uk/shop/product/fcyt4b/a/...\"\n(Only list configs that are actually available with delivery info)\n\nIf NOTHING is available: do NOT send a message. Save results silently.\n\nState file format: {\"product_id\": {\"in_stock\": bool, \"last_checked\": \"ISO timestamp\"}}\nLog file format: one JSON line per scan with timestamp and results.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * *",
+        "display": "0 10 * * *"
+      },
+      "schedule_display": "0 10 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-06-12T10:26:59.290563+00:00",
+      "next_run_at": "2026-06-13T10:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "slack",
+        "chat_id": "C0B7DJU5412",
+        "chat_name": "C0B7DJU5412",
+        "thread_id": "1781251884.113409"
+      },
+      "enabled_toolsets": null,
+      "workdir": null,
+      "profile": null
     }
   ],
-  "updated_at": "2026-06-12T02:00:06.329421+00:00"
+  "updated_at": "2026-06-13T02:00:04.673867+00:00"
 }

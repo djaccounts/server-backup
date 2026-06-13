@@ -612,4 +612,4 @@ mcp_servers:
       FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}
     timeout: 60
 vision:
-  model: openrouter/owl-alpha
+  model: openrouter/google/gemini-2.0-flash

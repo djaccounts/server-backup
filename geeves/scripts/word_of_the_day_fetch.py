@@ -18,6 +18,13 @@ Usage:
 import subprocess, sys, json, urllib.request, urllib.error
 from datetime import datetime, timezone
 
+# Fix encoding for cron environments where stdout may be ASCII-only
+import io
+if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 sys.path.insert(0, "/root/Geeves/scripts")
 import baserow_api
 
@@ -38,7 +45,7 @@ WORD_LIST = [
     "tartle", "kenopsia", "ellipsism", "liberosis", "altschmerz",
     "occhiolism", "nodus tollens", "anagnorisis", "catharsis", "hubris",
     "nemesis", "metanoia", "phronesis", "arete", "eudaimonia",
-    "ataraxia", "aporia", "kairos", "anchínoia", "deipnosophist",
+    "ataraxia", "aporia", "kairos", "mellifluous", "quintessential",
 ]
 
 
@@ -50,8 +57,14 @@ def fetch_json(url, timeout=15):
 
 def fetch_english(word):
     """Fetch English definition, pronunciation, part of speech, example from Free Dictionary API."""
-    url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
-    data = fetch_json(url)
+    import urllib.parse
+    url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{urllib.parse.quote(word)}"
+    try:
+        data = fetch_json(url)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            raise Exception(f"No dictionary entry for '{word}' (404)")
+        raise
 
     if not isinstance(data, list) or len(data) == 0:
         raise Exception(f"No dictionary entry for '{word}'")
@@ -204,14 +217,24 @@ def main():
         if idx + 1 < len(sys.argv):
             word = sys.argv[idx + 1]
 
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    print(f"📖 Word of the Day — {today}")
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today_dt = datetime.now(timezone.utc)
+    print(f"📖 Word of the Day — {today_str}")
 
     try:
         record = fetch_word_of_the_day(word)
     except Exception as e:
-        print(f"  ❌ Fetch failed: {e}")
-        sys.exit(1)
+        print(f"  ❌ Fetch failed for '{word}': {e}")
+        # Try next word in list as fallback
+        day_of_year = today_dt.timetuple().tm_yday
+        fallback_idx = (day_of_year + 1) % len(WORD_LIST)
+        fallback_word = WORD_LIST[fallback_idx]
+        print(f"  🔄 Trying fallback word: {fallback_word}")
+        try:
+            record = fetch_word_of_the_day(fallback_word)
+        except Exception as e2:
+            print(f"  ❌ Fallback also failed: {e2}")
+            sys.exit(1)
 
     print(f"\n  Summary:")
     print(f"    EN: {record['Word']} ({record['Part of Speech']}) — {record['Definition EN'][:60]}...")
