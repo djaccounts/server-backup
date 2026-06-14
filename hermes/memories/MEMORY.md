@@ -12,4 +12,8 @@ Garmin API: HR/calories in summary fields, NOT details. Baserow filter_by_formul
 §
 Baserow: DB token = row CRUD only. JWT (table_builder.py) = schema ops (create/delete tables, add/delete fields, list tables). Regenerate baserow_mapping.json manually after JWT schema ops.
 §
-Mac Mini M4 Refurb Scanner: Daily 10am UTC. Must use Firecrawl JS rendering (waitFor:8000) — static HTML always shows "Add to Bag" even OOS. Real status: "Delivery: - Out of stock" rendered client-side. Cron: 4baaa029632d. Script: /root/mac_mini_refurb/scanner.py. IDs: fcyt4b (24GB/512GB £849), g1cg1b (24GB/1TB £1019), fcx44b (M4 Pro 24GB/512GB £1189). All OOS June 12 2026. Only alert Slack when in stock.
+Mac Mini M4 Refurb Scanner: Daily 10am UTC (cron 4baaa029632d). Firecrawl JS rendering (waitFor:8000) required — static HTML always shows "Add to Bag". IDs: fcyt4b (£849), g1cg1b (£1019), fcx44b (£1189). Only alert when in stock.
+§
+Vision: `vision_analyze` unreliable. Use OpenRouter API: `anthropic/claude-sonnet-4` (best), `gemini-2.5-flash` (ok). Groq 403. Env var: `GOOGLE_API_KEY` not `GEMINI_API_KEY`.
+§
+Russian chicken cutlets recipe

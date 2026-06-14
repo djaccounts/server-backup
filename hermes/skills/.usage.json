@@ -147,12 +147,12 @@
     "created_at": "2026-06-08T09:30:12.483505+00:00",
     "created_by": "agent",
     "last_patched_at": "2026-06-11T11:33:59.221875+00:00",
-    "last_used_at": "2026-06-12T07:00:55.575981+00:00",
+    "last_used_at": "2026-06-13T07:00:19.520401+00:00",
     "last_viewed_at": "2026-06-11T11:35:20.506453+00:00",
     "patch_count": 59,
     "pinned": false,
     "state": "active",
-    "use_count": 40,
+    "use_count": 41,
     "view_count": 37
   },
   "blogwatcher": {
@@ -186,12 +186,12 @@
     "created_at": "2026-06-06T08:03:17.132624+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-12T06:07:52.885487+00:00",
-    "last_used_at": "2026-06-12T06:06:07.564374+00:00",
+    "last_used_at": "2026-06-13T06:00:21.364098+00:00",
     "last_viewed_at": "2026-06-12T06:06:07.561111+00:00",
     "patch_count": 37,
     "pinned": false,
     "state": "active",
-    "use_count": 19,
+    "use_count": 20,
     "view_count": 13
   },
   "claude-code": {
@@ -874,14 +874,14 @@
     "archived_at": null,
     "created_at": "2026-06-11T06:32:14.934803+00:00",
     "created_by": null,
-    "last_patched_at": "2026-06-12T21:01:07.304162+00:00",
-    "last_used_at": "2026-06-12T20:59:21.794674+00:00",
-    "last_viewed_at": "2026-06-12T20:59:21.790845+00:00",
-    "patch_count": 8,
+    "last_patched_at": "2026-06-13T07:29:28.470923+00:00",
+    "last_used_at": "2026-06-13T07:29:01.776553+00:00",
+    "last_viewed_at": "2026-06-13T07:29:01.773084+00:00",
+    "patch_count": 12,
     "pinned": false,
     "state": "active",
-    "use_count": 3,
-    "view_count": 3
+    "use_count": 6,
+    "view_count": 6
   },
   "minecraft-modpack-server": {
     "archived_at": null,
@@ -1174,12 +1174,12 @@
     "created_at": "2026-06-06T19:48:04.776608+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-10T20:19:55.711950+00:00",
-    "last_used_at": "2026-06-12T05:00:54.930914+00:00",
+    "last_used_at": "2026-06-13T05:00:55.208423+00:00",
     "last_viewed_at": "2026-06-10T20:13:51.162433+00:00",
     "patch_count": 17,
     "pinned": false,
     "state": "active",
-    "use_count": 15,
+    "use_count": 16,
     "view_count": 9
   },
   "public-apis": {
@@ -1226,13 +1226,13 @@
     "created_at": "2026-06-06T08:36:22.857550+00:00",
     "created_by": null,
     "last_patched_at": "2026-06-10T11:03:27.954902+00:00",
-    "last_used_at": "2026-06-10T10:59:05.083084+00:00",
-    "last_viewed_at": "2026-06-10T10:59:05.079500+00:00",
+    "last_used_at": "2026-06-13T22:05:50.501805+00:00",
+    "last_viewed_at": "2026-06-13T22:05:50.496884+00:00",
     "patch_count": 13,
     "pinned": false,
     "state": "active",
-    "use_count": 10,
-    "view_count": 10
+    "use_count": 11,
+    "view_count": 11
   },
   "requesting-code-review": {
     "archived_at": null,

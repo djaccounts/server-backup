@@ -5368,6 +5368,30 @@
           "order": 15
         }
       }
+    },
+    "Routes": {
+      "id": 892,
+      "fields": {
+        "Route": {"id": 8225, "name": "Route", "type": "text", "order": 0},
+        "Notes": {"id": 8226, "name": "Notes", "type": "long_text", "order": 1},
+        "Active": {"id": 8227, "name": "Active", "type": "boolean", "order": 2},
+        "From": {"id": 8228, "name": "From", "type": "text", "order": 3},
+        "To": {"id": 8229, "name": "To", "type": "text", "order": 4},
+        "Default Mode": {"id": 8230, "name": "Default Mode", "type": "single_select", "order": 5,
+                        "select_options": [
+                            {"id": 3763, "value": "Tube"},
+                            {"id": 3764, "value": "Bus"},
+                            {"id": 3765, "value": "Walk"},
+                            {"id": 3766, "value": "Cycle"},
+                            {"id": 3767, "value": "Train"},
+                            {"id": 3768, "value": "Drive"}
+                        ]},
+        "Typical Duration (mins)": {"id": 8231, "name": "Typical Duration (mins)", "type": "number", "order": 6},
+        "From lat": {"id": 8232, "name": "From lat", "type": "number", "order": 7},
+        "From lon": {"id": 8233, "name": "From lon", "type": "number", "order": 8},
+        "To lat": {"id": 8234, "name": "To lat", "type": "number", "order": 9},
+        "To lon": {"id": 8235, "name": "To lon", "type": "number", "order": 10}
+      }
     }
   }
 }

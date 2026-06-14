@@ -96,14 +96,44 @@ When the user uploads a food photo in Slack (or sends an image attachment):
    - The image URL is in the message's `files[0].url_private_download` field
    - Use `curl` with the Slack bot token to download:
      ```bash
-     SLACK_BOT_TOKEN=*** SLACK_BOT_TOKEN ~/.hermes/.env | head -1 | cut -d= -f2)
-     curl -sL -H "Authorization: Bearer $SLACK...EN" "$IMAGE_URL" -o /tmp/meal_photo.jpg
+     SLACK_BOT_TOKEN=$(grep SLACK_BOT_TOKEN ~/.hermes/.env | head -1 | cut -d= -f2)
+     curl -sL -H "Authorization: Bearer $SLACK_BOT_TOKEN" "$IMAGE_URL" -o /tmp/meal_photo.jpg
      ```
 
-2. **Analyze the image** using `vision_analyze`:
-   - Pass the downloaded image to the vision tool
-   - Ask it to identify all food items, estimate portion sizes, and estimate calories + macros
-   - Prompt: "Identify all food and drink items in this photo. For each item, estimate the portion size and provide approximate calories, protein (g), carbs (g), and fat (g). Return as a structured list."
+2. **Analyze the image** using the OpenRouter vision API:
+   - The `vision_analyze` tool has been unreliable — use the direct API approach instead:
+   ```python
+   import base64, json, urllib.request, subprocess, os
+   
+   # Get OpenRouter API key
+   r = subprocess.run(['grep', 'OPENROUTER_API_KEY', os.path.expanduser('~/.hermes/.env')], capture_output=True, text=True)
+   or_key = r.stdout.strip().split('\n')[0].split('=', 1)[1]
+   
+   # Read and encode image
+   with open('/tmp/meal_photo.jpg', 'rb') as f:
+       b64 = base64.b64encode(f.read()).decode()
+   
+   # Call OpenRouter with Claude Sonnet 4 (vision-capable)
+   data = json.dumps({
+       'model': 'anthropic/claude-sonnet-4',
+       'messages': [{
+           'role': 'user',
+           'content': [
+               {'type': 'text', 'text': 'Identify all food and drink items in this photo. For each item, estimate the portion size and provide approximate calories, protein (g), carbs (g), and fat (g). Return as a structured list.'},
+               {'type': 'image_url', 'image_url': {'url': f'data:image/jpeg;base64,{b64}'}}
+           ]
+       }],
+       'max_tokens': 1000
+   }).encode()
+   
+   req = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions',
+       data=data, headers={'Authorization': f'Bearer {or_key}', 'Content-Type': 'application/json'})
+   resp = json.loads(urllib.request.urlopen(req, timeout=120).read())
+   analysis = resp['choices'][0]['message']['content']
+   ```
+   - This runs via `execute_code` / `terminal` — no special tool needed
+   - **Do NOT fabricate** what's in the photo — if the API can't identify food, ask the user to describe it
+   - **Verify the output** — if the API says "no food visible" (e.g. it's a cycling selfie 😂), don't log anything
 
 3. **Determine meal type** from context:
    - If the user says "breakfast/lunch/dinner/snack" → use that
@@ -118,17 +148,19 @@ When the user uploads a food photo in Slack (or sends an image attachment):
    python3 /root/Geeves/scripts/baserow_api.py create-row Meals \
      '{"Description": "Grilled salmon with rice and broccoli", "Date": "2026-06-10", "Meal type": "Dinner", "Calories (est)": 650, "Protein (g)": 42, "Carbs (g)": 55, "Fat (g)": 18, "Accuracy": "Estimated", "Source": "Photo"}'
    ```
+   - **IMPORTANT**: Baserow number fields are integers only — use `int(round(value))` for all macro values
+   - **IMPORTANT**: "Photo" may not be a valid `Source` option in Baserow yet — use `"Slack"` as fallback
 
 5. **Confirm to user** with:
-   - What was identified in the photo
+   - What was identified in the photo (quote the analysis)
    - Estimated macros
    - Meal type
    - "Does that look right? Let me know if you want to adjust anything."
 
 **Notes:**
 - Always be transparent that macros are estimates from visual analysis
-- If the photo is unclear, ask the user to describe the meal
-- Set `Source` to `"Photo"` once the option is added to Baserow (currently use `"Slack"` as fallback)
+- If the photo is unclear or contains no food, ask the user to describe the meal
+- The `meal_photo_pipeline.py` script at `/root/Geeves/scripts/meal_photo_pipeline.py` handles steps 1+4 but NOT vision analysis (step 2 must be done by the agent)
 
 ## Slack Capture
 
@@ -190,8 +222,9 @@ None yet. Future: daily nutrition summary generation (reads from Meals → write
 4. **Macro estimation honesty:** If you can't estimate macros confidently, log the meal with just the description and set Accuracy to "Estimated". Don't fabricate numbers.
 5. **Number fields are integers in Baserow** — Calories, Protein, Carbs, Fat all use 0 decimal places. Always `int(round(value))` before sending. Sending floats like `420.5` causes HTTP 400 `max_decimal_places` error.
 6. **Photo logging:** When logging from a photo, always note the uncertainty. Use phrases like "From your photo, I can see..." and "Estimated from visual analysis."
-7. **vision_analyze tool availability:** The `vision_analyze` tool requires BOTH `vision` in the `toolsets:` list AND a vision-capable `vision.model` in `~/.hermes/.env`. The model `openrouter/owl-alpha` may NOT support vision — use `openrouter/anthropic/claude-sonnet-4` or another vision-capable model instead. After changing config, the gateway must be restarted. The tool is NOT available mid-session — it only loads at session start. If unavailable, ask the user to describe the meal as fallback.
+7. **vision_analyze tool availability:** The `vision_analyze` Hermes tool requires `vision` in the `toolsets:` config AND a vision-capable `vision.model`. It only loads at session start — NOT mid-session. If unavailable, use the direct OpenRouter API approach documented in the Photo Meal Logging section §2 above.
 8. **baserow_mapping.json corruption:** This file can be accidentally overwritten (e.g., by stderr redirect). If it becomes invalid JSON, restore from backup: `cp /root/server-backup/geeves/baserow_mapping.json /root/Geeves/baserow_mapping.json`. Always verify with `python3 -c "import json; json.load(open('/root/Geeves/baserow_mapping.json'))"` after restore.
+9. **Gemini API key env var:** The Hermes `vision.model` config for Google Gemini models reads from `GOOGLE_API_KEY` in `~/.hermes/.env` (NOT `GEMINI_API_KEY`). If adding a new Gemini key, use `GOOGLE_API_KEY=***` as the env var name. The key `GEMINI_API_KEY` is not recognized by Hermes's credential resolver.
 
 ## Reference
 
@@ -199,4 +232,4 @@ None yet. Future: daily nutrition summary generation (reads from Meals → write
 - `Geeves_Schema_Reference_v2.md` — full field definitions (Module 7 — Meal Tracker)
 - `geeves-airtable/references/slack-capture.md` — classification rules, extraction patterns
 - `recipes-agent/SKILL.md` — Recipes module for linking meals to recipes
-- `references/vision-setup.md` — vision_analyze tool configuration and troubleshooting
+- `references/vision-setup.md` — vision tool configuration and API fallback reference
